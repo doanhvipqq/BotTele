@@ -4,6 +4,7 @@ import telebot
 from bot.nct import register_nct
 from bot.scl import register_scl
 from bot.girl import register_girl
+from bot.anime import register_anime
 from bot.images import register_images
 
 # Lấy token từ biến môi trường
@@ -14,6 +15,7 @@ bot = telebot.TeleBot(TOKEN)
 register_nct(bot)
 register_scl(bot)
 register_girl(bot)
+register_anime(bot)
 register_images(bot)
 
 if __name__ == '__main__':
