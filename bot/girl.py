@@ -1,9 +1,8 @@
 import random
-import telebot
 
-def register_girl(bot: telebot.TeleBot):
+def register_girl(bot):
     @bot.message_handler(commands=['girl'])
-    def send_girl_video(message):
+    def handle_girl(message):
         try:
             file_path = "bot/url/girl.txt"
             with open(file_path, "r", encoding="utf-8") as file:
@@ -14,7 +13,6 @@ def register_girl(bot: telebot.TeleBot):
                 return
 
             selected_video = random.choice(video_urls)
-            bot.send_video(chat_id=message.chat.id, video=selected_video)
+            bot.send_video(chat_id=message.chat.id, video=selected_video, reply_to_message_id=message.message_id)
         except Exception as e:
-            print("Lỗi:", e)  # In ra lỗi chi tiết để bạn debug
-            bot.reply_to(message, "Đã xảy ra lỗi khi xử lý video.")
+            bot.reply_to(message, f"Lỗi: {e}")
