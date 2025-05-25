@@ -6,7 +6,7 @@ def register_girl(bot):
         try:
             # Lấy video URL từ API
             api_url = "https://api-girl.onrender.com/api/girl"
-            response = requests.get(api_url, timeout=10).json()
+            response = requests.get(api_url, timeout=30).json()
             video_url = response['video_url']
             
             try:
