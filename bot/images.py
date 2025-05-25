@@ -17,13 +17,17 @@ def register_images(bot):
             bot.reply_to(message, 'URL không hợp lệ. Hãy bắt đầu bằng http:// hoặc https://')
             return
 
-        bot.reply_to(message, f'Đang tải trang: {url} ...')
+        # Gửi tin nhắn thông báo đang tải và lưu lại đối tượng tin nhắn
+        loading_msg = bot.reply_to(message, f'Đang tải trang: {url} ...')
         try:
             resp = requests.get(url, timeout=10)
             resp.raise_for_status()  # Kiểm tra lỗi HTTP
         except Exception as e:
             bot.reply_to(message, f'Không thể tải trang: {e}')
             return
+
+        # Khi tải trang thành công, xoá tin nhắn "Đang tải trang..."
+        bot.delete_message(message.chat.id, loading_msg.message_id)
 
         soup = BeautifulSoup(resp.text, 'html.parser')
         image_urls = []
@@ -38,7 +42,7 @@ def register_images(bot):
         # Lấy URL từ thuộc tính style (ví dụ: background-image)
         for tag in soup.find_all(style=True):
             style = tag['style']
-            matches = re.findall(r'url\(["\']?(.*?)["\']?\)', style)
+            matches = re.findall(r'url["\']?(.*?)["\']?', style)
             for match in matches:
                 full_url = requests.compat.urljoin(resp.url, match)
                 image_urls.append(full_url)
