@@ -1,7 +1,2 @@
-Flask
-pillow
+bs4
 telebot
-requests
-beautifulsoup4
-pyTelegramBotAPI
-python-telegram-bot 
