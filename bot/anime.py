@@ -6,7 +6,7 @@ def register_anime(bot):
         try:
             # Lấy video URL từ API
             api_url = "https://api-anime-0rz7.onrender.com/api/anime"
-            response = requests.get(api_url, timeout=30).json()
+            response = requests.get(api_url, timeout=40).json()
             video_url = response['video_url']
             
             try:
