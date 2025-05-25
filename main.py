@@ -7,7 +7,7 @@ from bot.girl import register_girl
 from bot.images import register_images
 
 # Lấy token từ biến môi trường
-TOKEN = "os.getenv("TELEGRAM_TOKEN")"
+TOKEN = os.getenv("TELEGRAM_TOKEN")
 bot = telebot.TeleBot(TOKEN)
 
 # Đăng ký các handler từ các file module khác nhau
