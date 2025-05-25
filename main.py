@@ -1,9 +1,9 @@
 # main_bot.py
 import os
 import telebot
-from girl import register_girl
-from images import register_images
-from scl import register_scl
+from bot.girl import register_girl
+from bot.images import register_images
+from bot.scl import register_scl
 
 # Lấy token từ biến môi trường
 TOKEN = "7757320016:AAEyc-YORyiR2aPz4UTrz7LHNHveSq9NgZw"
