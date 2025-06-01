@@ -3,7 +3,7 @@ import os
 import telebot
 from bot.nct import register_nct
 from bot.scl import register_scl
-from bot.ramdom import *
+from bot.random import *
 from bot.images import register_images
 
 # Lấy token từ biến môi trường
