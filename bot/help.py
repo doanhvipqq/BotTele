@@ -1,21 +1,21 @@
 caption = """<blockquote>┌───────────────⭓
-│◈/help: Menu bot
-│◈/admin: Info admin
-│◈/time: Check time bot
+│» /help: Menu bot
+│» /admin: Info admin
+│» /time: Check time bot
 ├───────────────⭔
-│◈/github: Info github 🐈‍⬛
-│◈/images: Lấy url ảnh web 👻
-│◈/scl: Tải nhạc SoundCloud 🎶
-│◈/sourceweb: Tải source web 🎃
+│» /github: Info github 🐈‍⬛
+│» /images: Lấy url ảnh web 👻
+│» /scl: Tải nhạc SoundCloud 🎶
+│» /sourceweb: Tải source web 🎃
 ├───────────────⭔
-│◈/pussy: 🔞
-│◈/squeeze: Bóp 🌚
-│◈/girl: Video gái 🌚
-│◈/butt: Ảnh mông gái 🙅‍♀️
-│◈/anime: Video anime 🇯🇵
-│◈/imganime: Ảnh anime 🦄
-│◈/cosplay: Ảnh cosplay 🧝‍♀️
-│◈/nude: Ảnh bán thoả thân 🔞
+│» /pussy: 🔞
+│» /squeeze: Bóp 🌚
+│» /girl: Video gái 🌚
+│» /butt: Ảnh mông gái 🙅‍♀️
+│» /anime: Video anime 🇯🇵
+│» /imganime: Ảnh anime 🦄
+│» /cosplay: Ảnh cosplay 🧝‍♀️
+│» /nude: Ảnh bán thoả thân 🔞
 └───────────────⭓
 </blockquote>"""
 
