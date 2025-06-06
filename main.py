@@ -3,6 +3,7 @@ import os
 import telebot
 from bot.nct import register_nct
 from bot.scl import register_scl
+from bot.time import register_time
 from bot.random import *
 from bot.images import register_images
 from bot.github import register_github
@@ -14,6 +15,7 @@ bot = telebot.TeleBot(TOKEN)
 # Đăng ký các handler từ các file module khác nhau
 register_nct(bot)
 register_scl(bot)
+register_time(bot)
 
 # Random
 register_girl(bot)
