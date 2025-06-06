@@ -68,11 +68,11 @@ def register_butt(bot):
         except Exception as e:
             bot.reply_to(message, f"Lỗi: {e}")
 
-def register_breastsqueeze(bot):
-    @bot.message_handler(commands=['breastsqueeze'])
-    def handle_breastsqueeze(message):
+def register_squeeze(bot):
+    @bot.message_handler(commands=['squeeze'])
+    def handle_squeeze(message):
         try:
-            file_path = "bot/url/breastsqueeze"
+            file_path = "bot/url/squeeze"
             with open(file_path, "r", encoding="utf-8") as file:
                 image_urls = [line.strip() for line in file if line.strip()]
             
