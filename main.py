@@ -4,11 +4,11 @@ import telebot
 from bot.nct import register_nct
 from bot.scl import register_scl
 from bot.time import register_time
+from bot.help import register_help
 from bot.random import *
 from bot.images import register_images
 from bot.github import register_github
 
-# Lấy token từ biến môi trường
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 bot = telebot.TeleBot(TOKEN)
 
@@ -16,6 +16,7 @@ bot = telebot.TeleBot(TOKEN)
 register_nct(bot)
 register_scl(bot)
 register_time(bot)
+register_help(bot)
 
 # Random
 register_girl(bot)
