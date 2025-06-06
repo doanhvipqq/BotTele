@@ -30,8 +30,12 @@ def register_time(bot):
             bot.reply_to(message, "Không thể lấy video anime.")
             return
         
-        caption = f"» <b>Bot đã hoạt động được:</b> [{uptime}]"
-        bot.send_photo(
+        caption = f"""<blockquote>
+    ⭔───────────────⭓
+    <b>⏳ Thời gian hoạt động của Bot là:</b> [{uptime}] 
+    ⭓───────────────⭔
+    </blockquote>"""
+        bot.send_videophoto(
             message.chat.id,
             video_url,
             caption = caption,
