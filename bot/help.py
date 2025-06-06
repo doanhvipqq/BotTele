@@ -23,4 +23,4 @@ caption = """<blockquote>
 def register_help(bot):
     @bot.message_handler(commands=['help'])
     def send_help(message):
-        bot.reply_to(message.chat.id, caption, parse_mode='HTML')
+        bot.reply_to(message, caption, parse_mode='HTML')
