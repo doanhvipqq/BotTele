@@ -35,7 +35,7 @@ def register_time(bot):
     <b>⏳ Thời gian hoạt động của Bot là:</b> [{uptime}] 
     ⭓───────────────⭔
     </blockquote>"""
-        bot.send_videophoto(
+        bot.send_video(
             message.chat.id,
             video_url,
             caption = caption,
