@@ -13,7 +13,6 @@ def register_github(bot):
                 avatar_url = data.get('avatar_url', 'Không có avatar')
                 caption = f"""<blockquote>
 ⭔───────────────⭓
-   <b>INFO GITHUB</b>
 » <b>user:</b> {data.get('login', 'Không có')}
 » <b>ID:</b> {data.get('id', 'Không có')}
 » <b>Tên:</b> {data.get('name', 'Không có')} 
@@ -31,4 +30,4 @@ def register_github(bot):
                 bot.reply_to(message, "Không tìm thấy thông tin Github của người dùng. Vui lòng thử lại.") 
      
         except IndexError: 
-            bot.reply_to(message, "Vui lòng cung cấp username sau lệnh /github. Ví dụ: /github HgAnh7")
+            bot.reply_to(message, "🚫 Vui lòng cung cấp username cần check. Ví dụ: /github HgAnh7")
