@@ -255,9 +255,9 @@ def register_scl(bot):
             caption = f"""<blockquote>
 ⭔───────────────⭓
  <b>{track['title']}</b>
- Nghệ sĩ: {track['user']['username']}
- Lượt nghe: {track['playback_count']:,} | Lượt thích: {track['likes_count']:,}
- Nguồn: <b>SoundCloud 🎶</b> 
+ » <b>Nghệ sĩ:</b> {track['user']['username']}
+ » <b>Lượt nghe:</b> {track['playback_count']:,} | <b>Lượt thích:</b> {track['likes_count']:,}
+ » <b>Nguồn:</b> SoundCloud 🎶 
 ⭓───────────────⭔
 </blockquote>"""
             
