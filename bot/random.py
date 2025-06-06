@@ -81,7 +81,7 @@ def register_breastsqueeze(bot):
                 return
 
             selected_image = random.choice(image_urls)
-            bot.send_photo(chat_id=message.chat.id, photo=selected_image, reply_to_message_id=message.message_id)
+            bot.send_animation(chat_id=message.chat.id, animation=selected_image, reply_to_message_id=message.message_id)
         except Exception as e:
             bot.reply_to(message, f"Lỗi: {e}")
 
