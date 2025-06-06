@@ -11,8 +11,7 @@ def register_github(bot):
      
             if response.status_code == 200:
                 avatar_url = data.get('avatar_url', 'Không có avatar')
-                caption = f"""<blockquote>
-⭔───────────────⭓
+                caption = f"""<blockquote>⭔───────────────⭓
 » <b>user:</b> {data.get('login', 'Không có')}
 » <b>ID:</b> {data.get('id', 'Không có')}
 » <b>Tên:</b> {data.get('name', 'Không có')} 
