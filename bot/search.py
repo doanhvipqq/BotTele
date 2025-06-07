@@ -75,7 +75,7 @@ def timkiem(search_term, max_pages=2, proxy_file=""):
 
     return all_results
 
-def register_search(bot)
+def register_search(bot):
     @bot.message_handler(commands=['search'])
     def handle_search_command(message):
         args = message.text.split(' ', 1)
