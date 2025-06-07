@@ -8,6 +8,7 @@ from bot.help import register_help
 from bot.random import *
 from bot.images import register_images
 from bot.github import register_github
+from bot.thongtin import register_thongtin
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 bot = telebot.TeleBot(TOKEN)
@@ -17,6 +18,7 @@ register_nct(bot)
 register_scl(bot)
 register_time(bot)
 register_help(bot)
+register_thongtin(bot)
 
 # Random
 register_girl(bot)
