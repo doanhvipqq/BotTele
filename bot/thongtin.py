@@ -41,17 +41,17 @@ def register_thongtin(bot):
                     joined_date = "Không có thông tin"
 
             # Chuẩn bị nội dung tin nhắn
-            caption = (
-                f"👤 <b>Thông Tin Của {'Bạn' if user.id == message.from_user.id else 'Người Dùng'}</b>\n"
-                f"<blockquote>┌ ID: <code>{user.id}</code>\n"
-                f"├ Tên: {user_first_name} {user_last_name}\n"
-                f"├ Username: {user_username}\n"
-                f"├ Ngôn ngữ mặc định: {user_language}\n"
-                f"├ Trạng thái trong nhóm: {status}\n"
-                f"├ Ngày tham gia nhóm: {joined_date}\n"
-                f"├ Bio: {bio}\n"
-                f"└ Avatar: {'✅ Có' if user_photos.total_count > 0 else '❌ Không'}</blockquote>"
-            )
+            caption = """<b>Thông Tin Của {'Bạn' if user.id == message.from_user.id else 'Người Dùng'}</b>
+<blockquote>⭔───────────────⭓
+<b>ID:</b> <code>{user.id}</code>
+<b>Tên:</b> {user_first_name} {user_last_name}
+<b>Username:</b> {user_username}
+<b>Ngôn ngữ mặc định:</b> {user_language}
+<b>Trạng thái trong nhóm:</b> {status}
+<b>Ngày tham gia nhóm:</b> {joined_date}
+<b>Bio:</b> {bio}
+<b>Avatar:</b> {'✅ Có' if user_photos.total_count > 0 else '❌ Không'}
+⭓───────────────⭔</blockquote>"""
 
             # Gửi ảnh đại diện nếu có
             if user_photos.total_count > 0:
