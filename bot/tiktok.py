@@ -1,4 +1,3 @@
-https://www.tikwm.com/api/?url=https%3A%2F%2Fwww.tiktok.com%2F%40hganh_7%2Fvideo%2F7453811758151617799
 import requests
 
 API_URL = "https://www.tikwm.com/api/"
