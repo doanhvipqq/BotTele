@@ -2,6 +2,7 @@ caption = """<blockquote>┌───────────────⭓
 ├ /help: Menu bot
 ├ /admin: Info admin
 ├ /time: Check time bot
+├ /tiktok: Lấy thông tin video TikTok
 ├ /thongtin: Lấy thông tin người dùng
 ├───────────────⭔
 ├ /github: Info github 🐈‍⬛
