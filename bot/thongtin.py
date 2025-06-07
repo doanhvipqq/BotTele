@@ -1,6 +1,5 @@
-import telebot
-from telebot.types import Message
 from datetime import datetime
+from telebot.types import Message
 
 def register_thongtin(bot):
     @bot.message_handler(commands=['thongtin'])
@@ -22,7 +21,6 @@ def register_thongtin(bot):
             # Mặc định trạng thái là "Không trong nhóm" nếu chat là private
             status = "Trong cuộc trò chuyện riêng"
             joined_date = "Không khả dụng"
-            message_count = "Không thể lấy thông tin này trực tiếp từ API Telegram"
 
             if message.chat.type in ['group', 'supergroup']:
                 status_dict = {
@@ -51,7 +49,6 @@ def register_thongtin(bot):
                 f"├ Ngôn ngữ mặc định: {user_language}\n"
                 f"├ Trạng thái trong nhóm: {status}\n"
                 f"├ Ngày tham gia nhóm: {joined_date}\n"
-                f"├ Số lượng tin nhắn đã gửi: {message_count}\n"
                 f"├ Bio: {bio}\n"
                 f"└ Avatar: {'✅ Có' if user_photos.total_count > 0 else '❌ Không'}</blockquote>"
             )
