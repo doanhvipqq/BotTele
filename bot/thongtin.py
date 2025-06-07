@@ -41,7 +41,7 @@ def register_thongtin(bot):
                     joined_date = "Không có thông tin"
 
             # Chuẩn bị nội dung tin nhắn
-            caption = """<b>Thông Tin Của {'Bạn' if user.id == message.from_user.id else 'Người Dùng'}</b>
+            caption = f"""<b>Thông Tin Của {'Bạn' if user.id == message.from_user.id else 'Người Dùng'}</b>
 <blockquote>⭔───────────────⭓
 <b>ID:</b> <code>{user.id}</code>
 <b>Tên:</b> {user_first_name} {user_last_name}
