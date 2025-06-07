@@ -6,6 +6,7 @@ from bot.scl import register_scl
 from bot.time import register_time
 from bot.help import register_help
 from bot.random import *
+from bot.tiktok import register_tiktok
 from bot.images import register_images
 from bot.github import register_github
 from bot.thongtin import register_thongtin
@@ -18,6 +19,7 @@ register_nct(bot)
 register_scl(bot)
 register_time(bot)
 register_help(bot)
+register_tiktok(bot)
 register_thongtin(bot)
 
 # Random
