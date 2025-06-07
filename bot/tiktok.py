@@ -1,3 +1,4 @@
+https://www.tikwm.com/api/?url=https%3A%2F%2Fwww.tiktok.com%2F%40hganh_7%2Fvideo%2F7453811758151617799
 import requests
 
 API_URL = "https://www.tikwm.com/api/"
@@ -43,19 +44,19 @@ def register_tiktok(bot):
 
             info_text = f"""<blockquote>⭔───────────────⭓
     <b>{title}</b>
-    <b>Khu vực:</b> {region}
-    <b>Thời lượng:</b> {duration} giây
-    <b>Lượt thích:</b> {likes}
-    <b>Bình luận:</b> {comments}
-    <b>Chia sẻ:</b> {shares}
-    <b>Lượt xem:</b> {views}
-    <b>Trạng thái tài khoản:</b> {verified}
-    <b>ID TikTok:</b> {unique_id}
-    <b>UID bảo mật:</b> {sec_uid}
-    <b>Đang theo dõi:</b> {following_count}
-    <b>Tổng số video:</b> {video_count}
-    <b>Link chia sẻ:</b> {share_url}
-    <b>Nhạc nền:</b> {music_url}
+    » <b>Khu vực:</b> {region}
+    » <b>Thời lượng:</b> {duration} giây
+    » <b>Lượt thích:</b> {likes}
+    » <b>Bình luận:</b> {comments}
+    » <b>Chia sẻ:</b> {shares}
+    » <b>Lượt xem:</b> {views}
+    » <b>Trạng thái tài khoản:</b> {verified}
+    » <b>ID TikTok:</b> {unique_id}
+    » <b>UID bảo mật:</b> {sec_uid}
+    » <b>Đang theo dõi:</b> {following_count}
+    » <b>Tổng số video:</b> {video_count}
+    » <b>Link chia sẻ:</b> {share_url}
+    » <b>Nhạc nền:</b> {music_url}
     ⭓───────────────⭔</blockquote>"""
             
             bot.send_photo(message.chat.id, avatar, caption=f"Người đăng: {author}")
