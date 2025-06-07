@@ -9,6 +9,7 @@ from bot.random import *
 from bot.tiktok import register_tiktok
 from bot.images import register_images
 from bot.github import register_github
+from bot.search import register_search
 from bot.thongtin import register_thongtin
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -20,6 +21,7 @@ register_scl(bot)
 register_time(bot)
 register_help(bot)
 register_tiktok(bot)
+register_search(bot)
 register_thongtin(bot)
 
 # Random
