@@ -20,27 +20,27 @@ def register_tiktok(bot):
                 return
 
             data = response["data"]
+            author_info = data.get("author", {})
 
             # Lấy thông tin từ API
             video_url = data.get("play")
             music_url = data.get("music", "Không có")
             title = data.get("title", "Không có tiêu đề")
-            author = data["author"]["nickname"]
-            avatar = data["author"]["avatar"]
+            author = author_info.get("nickname", "Không rõ")
+            avatar = author_info.get("avatar", "")
             region = data.get("region", "Không xác định")
             duration = data.get("duration", 0)
             likes = data.get("digg_count", 0)
             comments = data.get("comment_count", 0)
             shares = data.get("share_count", 0)
             views = data.get("play_count", 0)
-            verified = "Đã xác minh" if data["author"].get("verified", False) else "Chưa xác minh"
-            unique_id = data["author"].get("unique_id", "Không có ID")
-            sec_uid = data["author"].get("sec_uid", "Không có UID bảo mật")
-            following_count = data["author"].get("following_count", 0)
-            video_count = data.get("video_count", 0)
-            share_url = data.get("share_url", "Không có link chia sẻ")        
+            verified = "Đã xác minh" if author_info.get("verified", False) else "Chưa xác minh"
+            unique_id = author_info.get("unique_id", "Không có ID")
+            sec_uid = author_info.get("sec_uid", "Không có UID bảo mật")
+            following_count = author_info.get("following_count", 0)
+            video_count = author_info.get("video_count", 0)
+            share_url = data.get("share_url", "Không có link chia sẻ")
 
-            # Tạo thông tin video
             info_text = f"""<blockquote>⭔───────────────⭓
     <b>{title}</b>
     <b>Khu vực:</b> {region}
