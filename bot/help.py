@@ -1,4 +1,4 @@
-caption = """┌───────────────⭓
+caption = """<blockquote>┌───────────────⭓
 ├ /help: Menu bot
 ├ /admin: Info admin
 ├ /time: Check time bot
@@ -19,14 +19,9 @@ caption = """┌───────────────⭓
 ├ /cosplay: Ảnh cosplay 🧝‍♀️
 ├ /nude: Ảnh bán thoả thân 🔞
 └───────────────⭓
-"""
+</blockquote>"""
 
 def register_help(bot):
     @bot.message_handler(commands=['help'])
     def send_help(message):
-        bot.send_message(
-            chat_id=message.chat.id,
-            text=caption,
-            reply_to_message_id=message.message_id,  # TRẢ LỜI TIN `/help` → có khung
-            parse_mode='HTML'  # hoặc bỏ nếu không dùng HTML tag
-        )
+        bot.reply_to(message, caption, parse_mode='HTML')
