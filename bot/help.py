@@ -1,4 +1,4 @@
-caption = """<tg-spolier>┌───────────────⭓
+caption = """<blockquote>┌───────────────⭓
 ├ /help: Menu bot
 ├ /admin: Info admin
 ├ /time: Check time bot
@@ -19,7 +19,7 @@ caption = """<tg-spolier>┌───────────────⭓
 ├ /cosplay: Ảnh cosplay 🧝‍♀️
 ├ /nude: Ảnh bán thoả thân 🔞
 └───────────────⭓
-</tg-spolier>"""
+</blockquote>"""
 
 def register_help(bot):
     @bot.message_handler(commands=['help'])
