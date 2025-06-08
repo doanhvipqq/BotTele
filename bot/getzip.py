@@ -29,7 +29,7 @@ def extract_chapter_info(url):
         return "unknown_manga", "unknown_chapter"
 
 def get_manga_images(url):
-    """Lấy tất cả ảnh manga từ URL"""
+    """Lấy tất cả ảnh manga từ URL với xử lý lazy loading"""
     try:
         # Headers để giả lập browser
         headers = {
@@ -49,11 +49,13 @@ def get_manga_images(url):
         # Tìm ảnh trong các container phổ biến của lxmanga
         image_containers = [
             '.reading-content img',
-            '.chapter-content img',
+            '.chapter-content img', 
             '.manga-content img',
             '.page-chapter img',
             '#chapter-content img',
-            '.entry-content img'
+            '.entry-content img',
+            'div[id*="chapter"] img',
+            'div[class*="page"] img'
         ]
         
         img_tags = []
@@ -63,15 +65,66 @@ def get_manga_images(url):
                 img_tags = imgs
                 break
         
-        # Fallback: tìm tất cả img tags
+        # Fallback: tìm tất cả img tags nhưng lọc kỹ hơn
         if not img_tags:
-            img_tags = soup.find_all('img')
+            all_imgs = soup.find_all('img')
+            # Chỉ lấy img có src hoặc data-src chứa đường dẫn ảnh manga
+            img_tags = [img for img in all_imgs if has_manga_src(img)]
         
         return img_tags
         
     except Exception as e:
         print(f"Lỗi khi lấy HTML: {e}")
         return []
+
+def has_manga_src(img_tag):
+    """Kiểm tra xem img tag có chứa src của ảnh manga không"""
+    src = img_tag.get('data-src') or img_tag.get('data-original') or img_tag.get('src') or ''
+    
+    # Các pattern thường thấy trong URL ảnh manga
+    manga_patterns = [
+        '/wp-content/uploads/',
+        '/images/manga/',
+        '/chapter/',
+        '/page/',
+        '.jpg',
+        '.jpeg', 
+        '.png',
+        '.webp'
+    ]
+    
+    return any(pattern in src.lower() for pattern in manga_patterns)
+
+def is_loading_gif(src, content=None):
+    """Kiểm tra xem có phải ảnh loading/gif không"""
+    if not src:
+        return False
+        
+    # Kiểm tra URL chứa từ khóa loading
+    loading_keywords = [
+        'loading', 'spinner', 'load', 'wait', 'preload',
+        'lxmanga.com', 'lxers', 'logo', 'watermark',
+        'gif', 'placeholder', 'lazy'
+    ]
+    
+    src_lower = src.lower()
+    if any(keyword in src_lower for keyword in loading_keywords):
+        return True
+    
+    # Kiểm tra content nếu có
+    if content:
+        try:
+            img = Image.open(BytesIO(content))
+            # Ảnh loading thường có kích thước nhỏ và là GIF
+            if img.format == 'GIF' and (img.width < 200 or img.height < 200):
+                return True
+            # Ảnh có kích thước giống logo lxmanga
+            if img.width == img.height and img.width < 300:
+                return True
+        except:
+            pass
+    
+    return False
 
 def register_getzip(bot):
     @bot.message_handler(commands=['getzip'])
@@ -130,13 +183,9 @@ def register_getzip(bot):
                     from urllib.parse import urljoin
                     src = urljoin(url, src)
                 
-                # Bỏ các ảnh không liên quan
-                exclude_keywords = [
-                    'logo', 'icon', 'ads', 'footer', 'spinner', 'loading', 
-                    'lxmanga.com', 'banner', 'avatar', 'favicon', 'thumb'
-                ]
-                
-                if any(keyword in src.lower() for keyword in exclude_keywords):
+                # KIỂM TRA QUAN TRỌNG: Bỏ qua ảnh loading/gif
+                if is_loading_gif(src):
+                    print(f"Bỏ qua ảnh loading: {src}")
                     continue
                 
                 try:
@@ -150,14 +199,34 @@ def register_getzip(bot):
                     r = requests.get(src, headers=img_headers, timeout=15)
                     r.raise_for_status()
                     
+                    # Kiểm tra kép: cả URL và nội dung
+                    if is_loading_gif(src, r.content):
+                        print(f"Bỏ qua ảnh loading (sau khi tải): {src}")
+                        continue
+                    
                     if is_valid_image(r.content):
+                        # Kiểm tra cuối: đảm bảo không phải ảnh vuông nhỏ (logo)
+                        try:
+                            img = Image.open(BytesIO(r.content))
+                            # Bỏ ảnh vuông có kích thước nhỏ (thường là logo)
+                            if img.width == img.height and img.width < 400:
+                                print(f"Bỏ qua logo/ảnh vuông: {src} ({img.width}x{img.height})")
+                                continue
+                            # Ảnh manga thường có tỷ lệ dọc
+                            if img.height < img.width * 0.8:  # Quá ngang, có thể là banner
+                                print(f"Bỏ qua ảnh ngang: {src} ({img.width}x{img.height})")
+                                continue
+                        except:
+                            pass
+                        
                         # Đặt tên file theo thứ tự
                         filename = f'page_{valid_count + 1:03d}.jpg'
                         images.append((filename, r.content))
                         valid_count += 1
+                        print(f"Đã tải ảnh hợp lệ: {src}")
                         
-                        # Cập nhật tiến độ mỗi 5 ảnh
-                        if valid_count % 5 == 0:
+                        # Cập nhật tiến độ mỗi 3 ảnh (để người dùng thấy tiến độ)
+                        if valid_count % 3 == 0:
                             bot.edit_message_text(
                                 f"⏳ Đang tải ảnh: *{manga_slug} / {chapter_slug}*\n📥 Đã tải: {valid_count} ảnh hợp lệ...",
                                 message.chat.id,
