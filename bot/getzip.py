@@ -27,7 +27,7 @@ def extract_chapter_info(url):
     except Exception:
         return "unknown_manga", "unknown_chapter"
         
-def register_getbot(bot):
+def register_getzip(bot):
     # === XỬ LÝ YÊU CẦU ===
     @bot.message_handler(commands=['getzip'])
     def handle_getzip(message):
