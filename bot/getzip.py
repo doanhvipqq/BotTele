@@ -29,57 +29,143 @@ def extract_chapter_info(url):
         return "unknown_manga", "unknown_chapter"
 
 def get_manga_images(url):
-    """Lấy tất cả ảnh manga từ URL với xử lý lazy loading"""
-    try:
-        # Headers để giả lập browser
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language': 'vi-VN,vi;q=0.8,en-US;q=0.5,en;q=0.3',
-            'Accept-Encoding': 'gzip, deflate',
-            'Connection': 'keep-alive',
-            'Referer': url
-        }
-        
-        response = requests.get(url, headers=headers, timeout=15)
-        response.raise_for_status()
-        
-        soup = BeautifulSoup(response.content, 'html.parser')
-        
-        # Tìm ảnh trong các container phổ biến của lxmanga
-        image_containers = [
-            '.reading-content img',
-            '.chapter-content img', 
-            '.manga-content img',
-            '.page-chapter img',
-            '#chapter-content img',
-            '.entry-content img',
-            'div[id*="chapter"] img',
-            'div[class*="page"] img'
-        ]
-        
-        img_tags = []
-        for selector in image_containers:
-            imgs = soup.select(selector)
-            if imgs:
-                img_tags = imgs
-                break
-        
-        # Fallback: tìm tất cả img tags nhưng lọc kỹ hơn
-        if not img_tags:
-            all_imgs = soup.find_all('img')
-            # Chỉ lấy img có src hoặc data-src chứa đường dẫn ảnh manga
-            img_tags = [img for img in all_imgs if has_manga_src(img)]
-        
-        return img_tags
-        
-    except Exception as e:
-        print(f"Lỗi khi lấy HTML: {e}")
-        return []
+    """Lấy tất cả ảnh manga từ URL với xử lý chống bot"""
+    import time
+    
+    # Danh sách User-Agent để thử
+    user_agents = [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15'
+    ]
+    
+    for attempt, ua in enumerate(user_agents):
+        try:
+            print(f"Thử lần {attempt + 1} với User-Agent: {ua[:50]}...")
+            
+            # Session với cookie support
+            session = requests.Session()
+            
+            # Headers giả lập browser thực
+            headers = {
+                'User-Agent': ua,
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'DNT': '1',
+                'Connection': 'keep-alive',
+                'Upgrade-Insecure-Requests': '1',
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'none',
+                'Sec-Fetch-User': '?1',
+                'Cache-Control': 'max-age=0'
+            }
+            
+            # Thêm delay ngẫu nhiên để tránh bị phát hiện
+            time.sleep(2 + attempt)
+            
+            # Request đầu tiên để lấy cookie
+            response = session.get(url, headers=headers, timeout=20, allow_redirects=True)
+            
+            # Kiểm tra status code
+            if response.status_code == 403:
+                print(f"Bị chặn 403, thử User-Agent khác...")
+                continue
+            elif response.status_code == 503:
+                print(f"Server quá tải 503, chờ thêm...")
+                time.sleep(5)
+                continue
+            elif response.status_code != 200:
+                print(f"Status code: {response.status_code}")
+                continue
+            
+            # Kiểm tra xem có phải trang Cloudflare không
+            if 'cloudflare' in response.text.lower() or 'checking your browser' in response.text.lower():
+                print("Phát hiện Cloudflare protection, thử cách khác...")
+                time.sleep(5)
+                continue
+            
+            # Kiểm tra xem có nội dung không
+            if len(response.text) < 1000:
+                print("Nội dung quá ngắn, có thể bị chặn...")
+                continue
+            
+            soup = BeautifulSoup(response.content, 'html.parser')
+            
+            # Debug: In title để kiểm tra
+            title = soup.find('title')
+            if title:
+                print(f"Trang title: {title.get_text()[:100]}")
+            
+            # Tìm ảnh trong các container phổ biến của lxmanga
+            image_selectors = [
+                # Selector chính cho lxmanga
+                '.reading-content img',
+                '.chapter-content img', 
+                '.manga-content img',
+                '.page-chapter img',
+                '#chapter-content img',
+                '.entry-content img',
+                'div[id*="chapter"] img',
+                'div[class*="page"] img',
+                'div[class*="reading"] img',
+                # Selector backup
+                'img[src*="wp-content"]',
+                'img[data-src*="wp-content"]',
+                'img[src*="uploads"]',
+                'img[data-src*="uploads"]'
+            ]
+            
+            img_tags = []
+            for selector in image_selectors:
+                imgs = soup.select(selector)
+                if imgs:
+                    print(f"Tìm thấy {len(imgs)} ảnh với selector: {selector}")
+                    img_tags = imgs
+                    break
+            
+            # Fallback: tìm tất cả img tags
+            if not img_tags:
+                print("Fallback: tìm tất cả img tags...")
+                all_imgs = soup.find_all('img')
+                print(f"Tổng số img tags: {len(all_imgs)}")
+                
+                # Debug: In ra một vài src để kiểm tra
+                for i, img in enumerate(all_imgs[:5]):
+                    src = img.get('data-src') or img.get('data-original') or img.get('src')
+                    print(f"IMG {i+1}: {src}")
+                
+                # Lọc img có pattern manga
+                img_tags = [img for img in all_imgs if has_manga_src(img)]
+                print(f"Img tags sau khi lọc: {len(img_tags)}")
+            
+            if img_tags:
+                return img_tags
+            else:
+                print("Không tìm thấy img tags, thử User-Agent khác...")
+                continue
+                
+        except requests.exceptions.Timeout:
+            print(f"Timeout lần {attempt + 1}")
+            continue
+        except requests.exceptions.ConnectionError:
+            print(f"Connection error lần {attempt + 1}")
+            continue
+        except Exception as e:
+            print(f"Lỗi lần {attempt + 1}: {e}")
+            continue
+    
+    print("Đã thử hết tất cả User-Agent")
+    return []
 
 def has_manga_src(img_tag):
     """Kiểm tra xem img tag có chứa src của ảnh manga không"""
     src = img_tag.get('data-src') or img_tag.get('data-original') or img_tag.get('src') or ''
+    
+    if not src:
+        return False
     
     # Các pattern thường thấy trong URL ảnh manga
     manga_patterns = [
@@ -87,13 +173,36 @@ def has_manga_src(img_tag):
         '/images/manga/',
         '/chapter/',
         '/page/',
-        '.jpg',
-        '.jpeg', 
-        '.png',
-        '.webp'
+        'uploads/',
+        'manga',
+        'chapter'
     ]
     
-    return any(pattern in src.lower() for pattern in manga_patterns)
+    # Kiểm tra file extension
+    image_extensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif']
+    has_image_ext = any(ext in src.lower() for ext in image_extensions)
+    
+    # Kiểm tra pattern manga
+    has_manga_pattern = any(pattern in src.lower() for pattern in manga_patterns)
+    
+    # Loại bỏ các ảnh rõ ràng không phải manga
+    exclude_patterns = [
+        'logo', 'icon', 'favicon', 'avatar', 'banner', 
+        'ads', 'advertisement', 'social', 'footer',
+        'lxmanga.com/wp-content/themes',  # Theme assets
+        'lxmanga.com/wp-includes',       # WordPress core
+        'loading', 'spinner', 'preload'
+    ]
+    
+    is_excluded = any(pattern in src.lower() for pattern in exclude_patterns)
+    
+    # Debug log
+    if has_image_ext and has_manga_pattern and not is_excluded:
+        print(f"✅ Valid manga src: {src[:80]}...")
+    elif is_excluded:
+        print(f"❌ Excluded src: {src[:80]}...")
+    
+    return has_image_ext and has_manga_pattern and not is_excluded
 
 def is_loading_gif(src, content=None):
     """Kiểm tra xem có phải ảnh loading/gif không"""
@@ -159,9 +268,9 @@ def register_getzip(bot):
                 )
                 return
             
-            # Cập nhật trạng thái
+            # Cập nhật trạng thái với thông tin debug
             bot.edit_message_text(
-                f"⏳ Đang tải ảnh: *{manga_slug} / {chapter_slug}*\n📥 Tìm thấy {len(img_tags)} ảnh, đang tải...",
+                f"⏳ Đang tải ảnh: *{manga_slug} / {chapter_slug}*\n🔍 Tìm thấy {len(img_tags)} ảnh tiềm năng...\n📝 Đang phân tích từng ảnh...",
                 message.chat.id,
                 status_msg.message_id,
                 parse_mode="Markdown"
