@@ -5,12 +5,12 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from io import BytesIO
 
-def register_getzip(bot):
-    @bot.message_handler(commands=['getzip'])
-    def handle_getzip(message):
+def register_lxmanga(bot):
+    @bot.message_handler(commands=['lxmanga'])
+    def handle_lxmanga(message):
         args = message.text.split(maxsplit=1)
         if len(args) != 2 or not args[1].startswith("http"):
-            bot.reply_to(message, "❗ Bạn cần nhập đúng định dạng: `/getzip <url>`", parse_mode="Markdown")
+            bot.reply_to(message, "❗ Bạn cần nhập đúng định dạng: `/lxmanga <url>`", parse_mode="Markdown")
             return
 
         chap_url = args[1].strip()
