@@ -6,7 +6,7 @@ from io import BytesIO
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
-def register_lxmanga_multi(bot):
+def register_lxmanga(bot):
     @bot.message_handler(commands=['lxmanga'])
     def handle_lxmanga(message):
         args = message.text.split(maxsplit=1)
