@@ -1,90 +1,96 @@
 import os
-import requests
 import zipfile
+import requests
+from PIL import Image
+from io import BytesIO
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-from io import BytesIO
 
-def register_lxmanga(bot):
+def register_lxmanga_multi(bot):
     @bot.message_handler(commands=['lxmanga'])
     def handle_lxmanga(message):
         args = message.text.split(maxsplit=1)
         if len(args) != 2 or not args[1].startswith("http"):
-            bot.reply_to(message, "❗ Bạn cần nhập đúng định dạng: `/lxmanga <url>`", parse_mode="Markdown")
+            bot.reply_to(message, "❗ Bạn cần nhập đúng định dạng: `/lxmanga <url-truyen>`", parse_mode="Markdown")
             return
 
-        chap_url = args[1].strip()
-        sent_msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
+        story_url = args[1].strip()
+        sent_msg = bot.reply_to(message, "🔍 Đang lấy danh sách chương...")
 
         try:
-            zip_data, total = get_zip_from_chapter(chap_url)
-
-            if total == 0:
-                bot.edit_message_text(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id, text="❌ Không tìm thấy ảnh nào trong trang.")
+            chapter_urls = get_chapter_urls(story_url)
+            if not chapter_urls:
+                bot.edit_message_text(sent_msg.chat.id, sent_msg.message_id, "❌ Không tìm thấy chương nào.")
                 return
 
-            zip_data.seek(0)
-            file_name = get_story_name_from_url(chap_url) + ".zip"
+            bot.edit_message_text(sent_msg.chat.id, sent_msg.message_id, f"📥 Đang tải {len(chapter_urls)} chương...")
 
-            # Xóa tin nhắn "đang xử lý"
-            bot.delete_message(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id)
+            zip_img_buffer = BytesIO()
+            zip_pdf_buffer = BytesIO()
 
-            # Gửi file zip
-            bot.send_document(
-                chat_id=message.chat.id,
-                document=zip_data,
-                visible_file_name=file_name,
-                caption=f"✅ Đã tải xong {total} ảnh từ chương truyện!",
-                reply_to_message_id=message.message_id
-            )
+            with zipfile.ZipFile(zip_img_buffer, "w") as zip_img, zipfile.ZipFile(zip_pdf_buffer, "w") as zip_pdf:
+                for chap_url in chapter_urls:
+                    chapter_name, img_datas = get_chapter_images(chap_url)
+                    if not img_datas:
+                        continue
+
+                    # Ghi vào zip ảnh
+                    for i, img_bytes in enumerate(img_datas):
+                        zip_img.writestr(f"{chapter_name}/{i+1:03d}.jpg", img_bytes)
+
+                    # Ghi PDF
+                    pdf_bytes = make_pdf(img_datas)
+                    zip_pdf.writestr(f"{chapter_name}.pdf", pdf_bytes)
+
+            zip_img_buffer.seek(0)
+            zip_pdf_buffer.seek(0)
+            story_name = get_story_name_from_url(story_url)
+
+            bot.send_document(message.chat.id, zip_img_buffer, visible_file_name=f"{story_name}_images.zip")
+            bot.send_document(message.chat.id, zip_pdf_buffer, visible_file_name=f"{story_name}_pdfs.zip")
 
         except Exception as e:
-            bot.edit_message_text(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id, text=f"❌ Đã xảy ra lỗi:\n`{str(e)}`", parse_mode="Markdown")
+            bot.edit_message_text(sent_msg.chat.id, sent_msg.message_id, f"❌ Lỗi: `{str(e)}`", parse_mode="Markdown")
 
-    def get_zip_from_chapter(chap_url):
-        headers = {
-            "Referer": chap_url,
-            "User-Agent": "Mozilla/5.0",
-        }
+    def get_chapter_urls(story_url):
+        res = requests.get(story_url)
+        res.raise_for_status()
+        soup = BeautifulSoup(res.text, "html.parser")
+        chap_links = soup.select(".works-chapter-list a")
+        urls = [a['href'] for a in chap_links if a['href'].startswith("http")]
+        return urls[::-1]  # đảo ngược để từ chap đầu đến chap mới
 
-        response = requests.get(chap_url, headers=headers)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, "html.parser")
-
+    def get_chapter_images(chap_url):
+        res = requests.get(chap_url)
+        res.raise_for_status()
+        soup = BeautifulSoup(res.text, "html.parser")
         img_divs = soup.select("div.text-center div.lazy")
         img_urls = [div.get("data-src") for div in img_divs if div.get("data-src")]
+        images = []
+        for url in img_urls:
+            try:
+                img = requests.get(url, timeout=10).content
+                images.append(img)
+            except:
+                continue
+        return get_chapter_name_from_url(chap_url), images
 
-        zip_buffer = BytesIO()
-
-        story_name = get_story_name_from_url(chap_url)
-        chapter_name = get_chapter_name_from_url(chap_url)
-
-        with zipfile.ZipFile(zip_buffer, "w") as zipf:
-            for idx, img_url in enumerate(img_urls):
-                ext = img_url.split(".")[-1].split("?")[0]
-                filename = f"{idx+1:03d}.{ext}"
-
-                img_data = requests.get(img_url, headers=headers).content
-
-                # Ghi file theo cấu trúc thư mục trong zip
-                zip_path = f"{story_name}/{chapter_name}/{filename}"
-                zipf.writestr(zip_path, img_data)
-
-        return zip_buffer, len(img_urls)
+    def make_pdf(img_datas):
+        imgs = [Image.open(BytesIO(data)).convert("RGB") for data in img_datas]
+        if not imgs:
+            return b''
+        pdf_buffer = BytesIO()
+        imgs[0].save(pdf_buffer, format="PDF", save_all=True, append_images=imgs[1:])
+        pdf_buffer.seek(0)
+        return pdf_buffer.read()
 
     def get_story_name_from_url(url):
-        path_parts = urlparse(url).path.strip("/").split("/")
-        # Giả sử URL kiểu /truyen/one-piece/chap-1084/
-        if len(path_parts) >= 2 and path_parts[0].lower() == "truyen":
-            # Thay dấu "-" bằng dấu cách
-            return path_parts[1].replace("-", " ")
-        else:
-            # Fallback, thay "/" bằng "_"
-            return urlparse(url).path.strip("/").replace("/", "_")
+        parts = urlparse(url).path.strip("/").split("/")
+        return parts[1].replace("-", " ") if len(parts) > 1 else "story"
 
     def get_chapter_name_from_url(url):
-        path_parts = urlparse(url).path.strip("/").split("/")
-        for part in path_parts:
-            if part.lower().startswith("chap"):
-                return part.replace("-", " ")
-        return "chapter"  # fallback
+        parts = urlparse(url).path.strip("/").split("/")
+        for p in parts:
+            if "chap" in p.lower():
+                return p.replace("-", " ")
+        return "unknown-chapter"
