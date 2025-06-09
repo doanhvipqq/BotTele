@@ -34,7 +34,8 @@ def register_getzip(bot):
                 chat_id=message.chat.id,
                 document=zip_data,
                 visible_file_name=file_name,
-                caption=f"✅ Đã tải xong {total} ảnh từ chương truyện!"
+                caption=f"✅ Đã tải xong {total} ảnh từ chương truyện!",
+                reply_to_message_id=message.message_id
             )
 
         except Exception as e:
