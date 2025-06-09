@@ -1,4 +1,4 @@
-caption = """<pre>┌───────────────⭓
+caption = """<blockquote expandable>┌───────────────⭓
 ├ /help: Menu bot
 ├ /admin: Info admin
 ├ /time: Check time bot
@@ -19,7 +19,7 @@ caption = """<pre>┌───────────────⭓
 ├ /cosplay: Ảnh cosplay 🧝‍♀️
 ├ /nude: Ảnh bán thoả thân 🔞
 └───────────────⭓
-</pre>"""
+</blockquote>"""
 
 def register_help(bot):
     @bot.message_handler(commands=['help'])
