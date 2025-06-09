@@ -1,5 +1,4 @@
 bs4
-tqdm
 pillow
 telebot
 requests
