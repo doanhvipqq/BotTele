@@ -1,90 +1,76 @@
-import os
-import requests
 import zipfile
-from bs4 import BeautifulSoup
-from urllib.parse import urlparse
+import requests
+import cloudscraper
 from io import BytesIO
+from bs4 import BeautifulSoup
 
 def register_lxmanga(bot):
     @bot.message_handler(commands=['lxmanga'])
     def handle_lxmanga(message):
         args = message.text.split(maxsplit=1)
         if len(args) != 2 or not args[1].startswith("http"):
-            bot.reply_to(message, "❗️ Bạn cần nhập đúng định dạng: /lxmanga <url>", parse_mode="Markdown")
+            bot.reply_to(message, "❗ Vui lòng nhập: /lxmanga <url>", parse_mode="Markdown")
             return
 
         chap_url = args[1].strip()
-        sent_msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
+        sent_msg = bot.reply_to(message, "🔍 Đang xử lý...")
 
         try:
             zip_data, total = get_zip_from_chapter(chap_url)
-
             if total == 0:
-                bot.edit_message_text(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id, text="❌ Không tìm thấy ảnh nào trong trang.")
+                bot.edit_message_text(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id, text="❌ Không tìm thấy ảnh.")
                 return
 
             zip_data.seek(0)
-            file_name = get_story_name_from_url(chap_url) + ".zip"
-
-            # Xóa tin nhắn "đang xử lý"
             bot.delete_message(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id)
-
-            # Gửi file zip
             bot.send_document(
                 chat_id=message.chat.id,
                 document=zip_data,
-                visible_file_name=file_name,
-                caption=f"✅ Đã tải xong {total} ảnh từ chương truyện!",
+                visible_file_name="chapter.zip",
+                caption=f"Tải thành công {total} ảnh!",
                 reply_to_message_id=message.message_id
             )
-
         except Exception as e:
-            bot.edit_message_text(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id, text=f"❌ Đã xảy ra lỗi:\n`{str(e)}`", parse_mode="Markdown")
+            bot.edit_message_text(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id, text=f"❌ Lỗi: {str(e)}", parse_mode="Markdown")
 
-    def get_zip_from_chapter(chap_url):
-        headers = {
-            "Referer": chap_url,
-            "User-Agent": "Mozilla/5.0",
-        }
-
-        response = requests.get(chap_url, headers=headers)
+def get_zip_from_chapter(chap_url):
+    headers = {"Referer": chap_url, "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0.4472.124"}
+    scraper = cloudscraper.create_scraper()
+    
+    # Thử dùng requests trước
+    try:   
+        response = requests.get(chap_url, headers=headers, timeout=10)
         response.raise_for_status()
-        soup = BeautifulSoup(response.text, "html.parser")
+    except:
+        # Dự phòng dùng cloudscraper
+        response = scraper.get(chap_url, headers=headers, timeout=10)
+        response.raise_for_status()
 
-        img_divs = soup.select("div.text-center div.lazy")
-        img_urls = [div.get("data-src") for div in img_divs if div.get("data-src")]
+    soup = BeautifulSoup(response.text, "html.parser")
+    img_urls = [div["data-src"] for div in soup.select("div.text-center div.lazy") if div.get("data-src")]
 
-        zip_buffer = BytesIO()
+    zip_buffer = BytesIO()
+    story_name = soup.select_one("div.mb-4 span") or "Manga"
+    story_name = story_name.text.strip().replace("/", "_") if isinstance(story_name, BeautifulSoup) else story_name
+    chapter_name = soup.select_one("span.text-ellipsis") or "Chapter"
+    chapter_name = chapter_name.text.strip().replace("/", "_") if isinstance(chapter_name, BeautifulSoup) else chapter_name
 
-        story_name = get_story_name_from_url(chap_url)
-        chapter_name = get_chapter_name_from_url(chap_url)
+    with zipfile.ZipFile(zip_buffer, "w") as zipf:
+        for idx, img_url in enumerate(img_urls):
+            ext = img_url.split(".")[-1].split("?")[0]
+            try:
+                # Tải ảnh với cloudscraper hoặc requests
+                img_response = requests.get(img_url, headers=headers, timeout=5)
+                if "image" not in img_response.headers.get("Content-Type", ""):
+                    continue
+                img_data = img_response.content
+            except:
+                img_response = scraper.get(img_url, headers=headers, timeout=5)
+                if "image" not in img_response.headers.get("Content-Type", ""):
+                    continue
+                img_data = img_response.content
 
-        with zipfile.ZipFile(zip_buffer, "w") as zipf:
-            for idx, img_url in enumerate(img_urls):
-                ext = img_url.split(".")[-1].split("?")[0]
-                filename = f"{idx+1:03d}.{ext}"
+            zip_path = f"{story_name}/{chapter_name}/{idx+1:03d}.{ext}"
+            zipf.writestr(zip_path, img_data)
 
-                img_data = requests.get(img_url, headers=headers).content
-
-                # Ghi file theo cấu trúc thư mục trong zip
-                zip_path = f"{story_name}/{chapter_name}/{filename}"
-                zipf.writestr(zip_path, img_data)
-
-        return zip_buffer, len(img_urls)
-
-    def get_story_name_from_url(url):
-        path_parts = urlparse(url).path.strip("/").split("/")
-        # Giả sử URL kiểu /truyen/one-piece/chap-1084/
-        if len(path_parts) >= 2 and path_parts[0].lower() == "truyen":
-            # Thay dấu "-" bằng dấu cách
-            return path_parts[1].replace("-", " ")
-        else:
-            # Fallback, thay "/" bằng "_"
-            return urlparse(url).path.strip("/").replace("/", "_")
-
-    def get_chapter_name_from_url(url):
-        path_parts = urlparse(url).path.strip("/").split("/")
-        for part in path_parts:
-            if part.lower().startswith("chap"):
-                return part.replace("-", " ")
-        return "chapter"  # fallback
+    return zip_buffer, len(img_urls)
