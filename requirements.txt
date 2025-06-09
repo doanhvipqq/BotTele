@@ -2,3 +2,4 @@ bs4
 pillow
 telebot
 requests
+cloudscraper
