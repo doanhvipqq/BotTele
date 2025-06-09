@@ -42,7 +42,7 @@ def register_thongtin(bot):
 
             # Chuẩn bị nội dung tin nhắn
             caption = f"""<b>Thông Tin Của {'Bạn' if user.id == message.from_user.id else 'Người Dùng'}</b>
-<blockquote>⭔───────────────⭓
+<blockquote expandable>⭔───────────────⭓
 <b>ID:</b> <code>{user.id}</code>
 <b>Tên:</b> {user_first_name} {user_last_name}
 <b>Username:</b> {user_username}
