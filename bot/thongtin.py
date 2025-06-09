@@ -50,7 +50,7 @@ def register_thongtin(bot):
 <b>Trạng thái trong nhóm:</b> {status}
 <b>Ngày tham gia nhóm:</b> {joined_date}
 <b>Bio:</b> {bio}
-<b>Avatar:</b> {'✅ Có' if user_photos.total_count > 0 else '❌ Không'}
+<b>Avatar:</b> {'Có' if user_photos.total_count > 0 else 'Không'}
 ⭓───────────────⭔</blockquote>"""
 
             # Gửi ảnh đại diện nếu có
