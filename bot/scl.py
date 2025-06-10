@@ -179,7 +179,7 @@ def register_scl(bot):
                     "❌ Bạn không có quyền sử dụng nút này!",
                     show_alert=True
                 )
-            return
+                return
             
             # Kiểm tra index hợp lệ
             tracks = data["tracks"]
