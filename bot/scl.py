@@ -151,16 +151,7 @@ def register_scl(bot):
             chat_id = int(parts[1])
             track_index = int(parts[2])
             
-            # Kiểm tra quyền truy cập
-            if call.message.chat.id != chat_id:
-                bot.answer_callback_query(
-                    call.id,
-                    "❌ Bạn không có quyền sử dụng nút này!",
-                    show_alert=True
-                )
-                return
-            
-            # Kiểm tra dữ liệu tồn tại
+            # Lấy dữ liệu lưu trữ
             if str(chat_id) not in scl_data:
                 bot.answer_callback_query(
                     call.id,
@@ -170,9 +161,10 @@ def register_scl(bot):
                 return
             
             data = scl_data[str(chat_id)]
-            tracks = data["tracks"]
+            original_user_id = data.get("user_id")
             
             # Kiểm tra index hợp lệ
+            tracks = data["tracks"]
             if track_index >= len(tracks):
                 bot.answer_callback_query(
                     call.id,
