@@ -9,7 +9,6 @@ from telebot import types
 
 # Biến toàn cục và cấu hình
 scl_data = {}
-PLATFORM = "soundcloud"
 API_BASE = "https://api-v2.soundcloud.com"
 CONFIG_PATH = "config.json"
 USER_AGENTS = [
@@ -252,7 +251,7 @@ def register_scl(bot):
                 )
                 return
             
-            caption = f"""<blockquote expandable>⭔───────────────⭓
+            caption = f"""<blockquote>⭔───────────────⭓
  <b>{track['title']}</b>
  » <b>Nghệ sĩ:</b> {track['user']['username']}
  » <b>Lượt nghe:</b> {track['playback_count']:,} | <b>Lượt thích:</b> {track['likes_count']:,}
