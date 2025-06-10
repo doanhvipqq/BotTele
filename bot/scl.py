@@ -138,10 +138,11 @@ def register_scl(bot):
             reply_markup=markup
         )
         # Lưu data cho callback
+        user_identity = message.from_user.id if message.from_user else message.sender_chat.id
         scl_data[str(message.chat.id)] = {
             "tracks": tracks,
             "message_id": sent.message_id,
-            "user_id": message.from_user.id
+            "user_id": user_identity
         }
 
     @bot.callback_query_handler(func=lambda call: call.data.startswith('scl_'))
@@ -163,9 +164,16 @@ def register_scl(bot):
             
             data = scl_data[str(chat_id)]
             original_user_id = data.get("user_id")
+            
+            # Xác định ID người dùng (hoặc kênh) đang sử dụng callback
+            current_user_id = (
+                call.from_user.id
+                if call.from_user
+                else call.sender_chat.id if call.sender_chat else None
+            )
     
             # Kiểm tra quyền truy cập: chỉ người gửi lệnh mới được dùng nút inline
-            if call.from_user.id != original_user_id:
+            if current_user_id != original_user_id:
                 bot.answer_callback_query(
                     call.id,
                     "❌ Bạn không có quyền sử dụng nút này!",
