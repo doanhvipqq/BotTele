@@ -161,7 +161,7 @@ def register_scl(bot):
                 return
             
             # Kiểm tra dữ liệu tồn tại
-            if str(chat_id) not in scl_data:
+            if str(user_id) not in scl_data:
                 bot.answer_callback_query(
                     call.id,
                     "❌ Dữ liệu đã hết hạn!",
