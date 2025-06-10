@@ -125,7 +125,7 @@ def register_scl(bot):
         for i in range(len(tracks)):
             button = types.InlineKeyboardButton(
                 text=str(i + 1),
-                callback_data=f"scl_{message.chat.id}_{i}"
+                callback_data=f"scl_{message.from_user.id}_{i}"
             )
             buttons.append(button)
         markup.add(*buttons)
@@ -138,11 +138,9 @@ def register_scl(bot):
             reply_markup=markup
         )
         # Lưu data cho callback
-        user_identity = message.from_user.id if message.from_user else message.sender_chat.id
-        scl_data[str(message.chat.id)] = {
+        scl_data[str(message.from_user.id)] = {
             "tracks": tracks,
             "message_id": sent.message_id,
-            "user_id": user_identity
         }
 
     @bot.callback_query_handler(func=lambda call: call.data.startswith('scl_'))
@@ -150,10 +148,19 @@ def register_scl(bot):
         try:
             # Parse callback data
             parts = call.data.split('_')
-            chat_id = int(parts[1])
+            user_id = int(parts[1])
             track_index = int(parts[2])
             
-            # Lấy dữ liệu lưu trữ
+            # Kiểm tra quyền truy cập
+            if call.from_user.id != user_id:
+                bot.answer_callback_query(
+                    call.id,
+                    "❌ Bạn không có quyền sử dụng nút này!",
+                    show_alert=True
+                )
+                return
+            
+            # Kiểm tra dữ liệu tồn tại
             if str(chat_id) not in scl_data:
                 bot.answer_callback_query(
                     call.id,
@@ -162,27 +169,10 @@ def register_scl(bot):
                 )
                 return
             
-            data = scl_data[str(chat_id)]
-            original_user_id = data.get("user_id")
-            
-            # Xác định ID người dùng (hoặc kênh) đang sử dụng callback
-            current_user_id = (
-                call.from_user.id
-                if call.from_user
-                else call.sender_chat.id if call.sender_chat else None
-            )
-    
-            # Kiểm tra quyền truy cập: chỉ người gửi lệnh mới được dùng nút inline
-            if current_user_id != original_user_id:
-                bot.answer_callback_query(
-                    call.id,
-                    "❌ Bạn không có quyền sử dụng nút này!",
-                    show_alert=True
-                )
-                return
+            data = scl_data[str(user_id)]
+            tracks = data["tracks"]
             
             # Kiểm tra index hợp lệ
-            tracks = data["tracks"]
             if track_index >= len(tracks):
                 bot.answer_callback_query(
                     call.id,
@@ -250,8 +240,8 @@ def register_scl(bot):
                     pass
                 
                 # Dọn dẹp dữ liệu lưu trữ
-                if str(chat_id) in scl_data:
-                    del scl_data[str(chat_id)]
+                if str(user_id) in scl_data:
+                    del scl_data[str(user_id)]
             except Exception as e:
                 bot.edit_message_text(
                     chat_id=call.message.chat.id,
