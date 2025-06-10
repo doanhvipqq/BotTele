@@ -163,6 +163,15 @@ def register_scl(bot):
             
             data = scl_data[str(chat_id)]
             original_user_id = data.get("user_id")
+    
+            # Kiểm tra quyền truy cập: chỉ người gửi lệnh mới được dùng nút inline
+            if call.from_user.id != original_user_id:
+                bot.answer_callback_query(
+                    call.id,
+                    "❌ Bạn không có quyền sử dụng nút này!",
+                    show_alert=True
+                )
+            return
             
             # Kiểm tra index hợp lệ
             tracks = data["tracks"]
