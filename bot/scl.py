@@ -152,7 +152,7 @@ def register_scl(bot):
             track_index = int(parts[2])
             
             # Kiểm tra quyền truy cập
-            if call.from_user.id != user_id:
+            if call.message.from_user.id != user_id:
                 bot.answer_callback_query(
                     call.id,
                     "❌ Bạn không có quyền sử dụng nút này!",
