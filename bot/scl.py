@@ -140,7 +140,8 @@ def register_scl(bot):
         # Lưu data cho callback
         scl_data[str(message.chat.id)] = {
             "tracks": tracks,
-            "message_id": sent.message_id
+            "message_id": sent.message_id,
+            "user_id": message.from_user.id
         }
 
     @bot.callback_query_handler(func=lambda call: call.data.startswith('scl_'))
