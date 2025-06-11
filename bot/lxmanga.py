@@ -1,4 +1,3 @@
-import os
 import zipfile
 import requests
 from io import BytesIO
@@ -8,12 +7,14 @@ from urllib.parse import urlparse
 def register_lxmanga(bot):
     @bot.message_handler(commands=['lxmanga'])
     def handle_lxmanga(message):
-        args = message.text.split(maxsplit=1)
-        if len(args) != 2 or not args[1].startswith("http"):
+        try:
+            chap_url = message.text.split(maxsplit=1)[1].strip()
+            if not chap_url.startswith("https://lxmanga"):
+                raise ValueError
+        except:
             bot.reply_to(message, "❗️ Bạn cần nhập đúng định dạng: /lxmanga <url chương truyện>", parse_mode="Markdown")
             return
 
-        chap_url = args[1].strip()
         sent_msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
 
         try:
@@ -47,7 +48,7 @@ def register_lxmanga(bot):
             "User-Agent": "Mozilla/5.0",
         }
 
-        response = requests.get(chap_url, headers=headers)
+        response = requests.get(chap_url, headers=headers, timeout=10)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
 
@@ -64,7 +65,7 @@ def register_lxmanga(bot):
                 ext = img_url.split(".")[-1].split("?")[0]
                 filename = f"{idx+1:03d}.{ext}"
 
-                img_data = requests.get(img_url, headers=headers).content
+                img_data = requests.get(img_url, headers=headers, timeout=10).content
 
                 # Ghi file theo cấu trúc thư mục trong zip
                 zip_path = f"{story_name}/{chapter_name}/{filename}"
@@ -73,14 +74,11 @@ def register_lxmanga(bot):
         return zip_buffer, len(img_urls)
 
     def get_story_name_from_url(url):
-        path_parts = urlparse(url).path.strip("/").split("/")
-        # Giả sử URL kiểu /truyen/one-piece/chap-1084/
+        path = urlparse(url).path.strip("/")
+        path_parts = path.split("/")
         if len(path_parts) >= 2 and path_parts[0].lower() == "truyen":
-            # Thay dấu "-" bằng dấu cách
             return path_parts[1].replace("-", " ")
-        else:
-            # Fallback, thay "/" bằng "_"
-            return urlparse(url).path.strip("/").replace("/", "_")
+        return path.replace("/", "_")
 
     def get_chapter_name_from_url(url):
         path_parts = urlparse(url).path.strip("/").split("/")
