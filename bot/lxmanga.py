@@ -1,6 +1,7 @@
 import zipfile
 import requests
 from io import BytesIO
+import concurrent.futures
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
@@ -47,32 +48,41 @@ def register_lxmanga(bot):
             "Referer": chap_url,
             "User-Agent": "Mozilla/5.0",
         }
-
+    
         response = requests.get(chap_url, headers=headers, timeout=10)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
-
+    
         img_divs = soup.select("div.text-center div.lazy")
         img_urls = [div.get("data-src") for div in img_divs if div.get("data-src")]
-
+    
         zip_buffer = BytesIO()
-
         story_name = get_story_name_from_url(chap_url)
         chapter_name = get_chapter_name_from_url(chap_url)
-
-        with zipfile.ZipFile(zip_buffer, "w") as zipf:
-            for idx, img_url in enumerate(img_urls):
-                ext = img_url.split(".")[-1].split("?")[0]
+    
+        def download_image(url_idx_tuple):
+            url, idx = url_idx_tuple
+            try:
+                img_data = requests.get(url, headers=headers, timeout=10).content
+                ext = url.split(".")[-1].split("?")[0]
                 filename = f"{idx+1:03d}.{ext}"
-
-                img_data = requests.get(img_url, headers=headers, timeout=10).content
-
-                # Ghi file theo cấu trúc thư mục trong zip
                 zip_path = f"{story_name}/{chapter_name}/{filename}"
-                zipf.writestr(zip_path, img_data)
-
-        return zip_buffer, len(img_urls)
-
+                return (zip_path, img_data)
+            except Exception:
+                return None  # Bỏ qua ảnh lỗi
+    
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            results = executor.map(download_image, [(url, i) for i, url in enumerate(img_urls)])
+    
+        with zipfile.ZipFile(zip_buffer, "w") as zipf:
+            count = 0
+            for item in results:
+                if item:
+                    zipf.writestr(item[0], item[1])
+                    count += 1
+    
+        return zip_buffer, count
+    
     def get_story_name_from_url(url):
         path = urlparse(url).path.strip("/")
         path_parts = path.split("/")
