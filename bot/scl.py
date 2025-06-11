@@ -13,7 +13,6 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
 }
 
-
 def get_client_id():
     # Đọc config sẵn
     config = {}
@@ -33,8 +32,7 @@ def get_client_id():
         with open(CONFIG_PATH, 'w') as f:
             json.dump({"client_id": cid}, f, indent=2)
         return cid
-    except Exception as e:
-        print(f"[ERROR] Lấy client_id thất bại: {e}")
+    except:
         return "vjvE4M9RytEg9W09NH1ge2VyrZPUSKo5"
 
 def get_music_info(question, limit=10):
@@ -51,8 +49,7 @@ def get_music_info(question, limit=10):
         )
         response.raise_for_status()
         return response.json()
-    except Exception as e:
-        print(f"Error fetching music info: {e}")
+    except:
         return None
 
 def get_music_stream_url(track):
@@ -74,8 +71,7 @@ def get_music_stream_url(track):
         )
         stream_response.raise_for_status()
         return stream_response.json()['url']
-    except Exception as e:
-        print(f"Error getting music stream URL: {e}")
+    except:
         return None
 
 def register_scl(bot):
@@ -212,6 +208,17 @@ def register_scl(bot):
             try:
                 resp = requests.get(audio_url, stream=True)
                 resp.raise_for_status()
+
+                content_length = int(resp.headers.get('Content-Length', 0))
+                if content_length > 50 * 1024 * 1024:  # Giới hạn 50MB
+                    bot.edit_message_text(
+                        chat_id=call.message.chat.id,
+                        message_id=call.message.message_id,
+                        text="🚫 File nhạc quá lớn (>50MB) nên không thể gửi qua Telegram.",
+                        parse_mode='HTML'
+                    )
+                    return
+
                 audio_bytes = resp.content
                 audio_buffer = io.BytesIO(audio_bytes)
                 audio_buffer.name = f"{track['title']}.mp3"
@@ -233,7 +240,7 @@ def register_scl(bot):
                 # Xóa tin nhắn kết quả tìm kiếm
                 try:
                     bot.delete_message(call.message.chat.id, call.message.message_id)
-                except Exception:
+                except:
                     pass
 
             except Exception as e:
@@ -249,4 +256,3 @@ def register_scl(bot):
                 f"❌ Có lỗi xảy ra: {str(e)}",
                 show_alert=True
             )
-            print(f"Error in callback handler: {e}")
