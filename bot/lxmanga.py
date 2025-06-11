@@ -3,7 +3,6 @@ import zipfile
 import requests
 from io import BytesIO
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse
 
 def register_lxmanga(bot):
     @bot.message_handler(commands=['lxmanga'])
@@ -17,14 +16,14 @@ def register_lxmanga(bot):
         sent_msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
 
         try:
-            zip_data, total = get_zip_from_chapter(chap_url)
+            zip_data, total, story_name = get_zip_from_chapter(chap_url)
 
             if total == 0:
                 bot.edit_message_text(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id, text="❌ Không tìm thấy ảnh nào trong trang.")
                 return
 
             zip_data.seek(0)
-            file_name = get_story_name_from_url(chap_url) + ".zip"
+            file_name = story_name + ".zip"
 
             # Xóa tin nhắn "đang xử lý"
             bot.delete_message(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id)
@@ -51,13 +50,19 @@ def register_lxmanga(bot):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
 
+        # Lấy tên truyện từ <h1 class="story-title">
+        story_tag = soup.select_one("h1.story-title")
+        story_name = story_tag.text.strip() if story_tag else "Truyen khong ro ten"
+
+        # Lấy tên chương từ <h2 class="chapter-title">
+        chapter_tag = soup.select_one("h2.chapter-title")
+        chapter_name = chapter_tag.text.strip() if chapter_tag else "Chuong khong ro ten"
+
+        # Lấy danh sách ảnh
         img_divs = soup.select("div.text-center div.lazy")
         img_urls = [div.get("data-src") for div in img_divs if div.get("data-src")]
 
         zip_buffer = BytesIO()
-
-        story_name = get_story_name_from_url(chap_url)
-        chapter_name = get_chapter_name_from_url(chap_url)
 
         with zipfile.ZipFile(zip_buffer, "w") as zipf:
             for idx, img_url in enumerate(img_urls):
@@ -70,21 +75,4 @@ def register_lxmanga(bot):
                 zip_path = f"{story_name}/{chapter_name}/{filename}"
                 zipf.writestr(zip_path, img_data)
 
-        return zip_buffer, len(img_urls)
-
-    def get_story_name_from_url(url):
-        path_parts = urlparse(url).path.strip("/").split("/")
-        # Giả sử URL kiểu /truyen/one-piece/chap-1084/
-        if len(path_parts) >= 2 and path_parts[0].lower() == "truyen":
-            # Thay dấu "-" bằng dấu cách
-            return path_parts[1].replace("-", " ")
-        else:
-            # Fallback, thay "/" bằng "_"
-            return urlparse(url).path.strip("/").replace("/", "_")
-
-    def get_chapter_name_from_url(url):
-        path_parts = urlparse(url).path.strip("/").split("/")
-        for part in path_parts:
-            if part.lower().startswith("chap"):
-                return part.replace("-", " ")
-        return "chapter"  # fallback
+        return zip_buffer, len(img_urls), story_name
