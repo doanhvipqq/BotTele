@@ -9,11 +9,10 @@ scl_data = {}
 API_BASE = "https://api-v2.soundcloud.com"
 CONFIG_PATH = "config.json"
 
-def get_headers():
-    return {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Referer": "https://soundcloud.com/"
-    }
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+}
+
 
 def get_client_id():
     # Đọc config sẵn
@@ -26,18 +25,17 @@ def get_client_id():
 
     # Nếu chưa có trong config, fetch script để lấy
     try:
-        resp = requests.get("https://soundcloud.com/", headers=get_headers())
+        resp = requests.get("https://soundcloud.com/", headers=HEADERS)
         resp.raise_for_status()
         urls = re.findall(r'<script crossorigin src="(https[^"]+)"', resp.text)
-        script = requests.get(urls[-1], headers=get_headers()).text
+        script = requests.get(urls[-1], headers=HEADERS).text
         cid = re.search(r',client_id:"([^"]+)"', script).group(1)
-        config['client_id'] = cid
         with open(CONFIG_PATH, 'w') as f:
-            json.dump(config, f, indent=2)
+            json.dump({"client_id": cid}, f, indent=2)
         return cid
-    except:
-        # fallback default
-        return config.get('client_id', 'vjvE4M9RytEg9W09NH1ge2VyrZPUSKo5')
+    except Exception as e:
+        print(f"[ERROR] Lấy client_id thất bại: {e}")
+        return "vjvE4M9RytEg9W09NH1ge2VyrZPUSKo5"
 
 def get_music_info(question, limit=10):
     try:
@@ -49,7 +47,7 @@ def get_music_info(question, limit=10):
                 "client_id": client_id,
                 "limit": limit
             },
-            headers=get_headers()
+            headers=HEADERS
         )
         response.raise_for_status()
         return response.json()
@@ -61,7 +59,7 @@ def get_music_stream_url(track):
     try:
         client_id = get_client_id()
         api_url = f"{API_BASE}/resolve?url={track['permalink_url']}&client_id={client_id}"
-        response = requests.get(api_url, headers=get_headers())
+        response = requests.get(api_url, headers=HEADERS)
         response.raise_for_status()
         data = response.json()
         progressive_url = next(
@@ -71,8 +69,8 @@ def get_music_stream_url(track):
         if not progressive_url:
             raise ValueError("No progressive transcoding URL found")
         stream_response = requests.get(
-            f"{progressive_url}?client_id={client_id}&track_authorization={data.get('track_authorization', '')}",
-            headers=get_headers()
+            f"{progressive_url}?client_id={client_id}",
+            headers=HEADERS
         )
         stream_response.raise_for_status()
         return stream_response.json()['url']
@@ -112,12 +110,13 @@ def register_scl(bot):
             return
 
         # Tạo response text
-        response_text = "<b>🎵 Kết quả tìm kiếm trên SoundCloud</b>\n\n"
+        lines = ["<b>🎵 Kết quả tìm kiếm trên SoundCloud</b>\n"]
         for i, track in enumerate(tracks):
-            response_text += f"<b>{i + 1}. {track['title']}</b>\n"
-            response_text += f"👤 Nghệ sĩ: {track['user']['username']}\n"
-            response_text += f"📊 Lượt nghe: {track['playback_count']:,} | Thích: {track['likes_count']:,}\n\n"
-        response_text += "<b>💡 Chọn số bài hát bạn muốn tải!</b>"
+            lines.append(f"<b>{i + 1}. {track['title']}</b>")
+            lines.append(f"👤 Nghệ sĩ: {track['user']['username']}")
+            lines.append(f"📊 Lượt nghe: {track['playback_count']:,} | Thích: {track['likes_count']:,}\n")
+        lines.append("<b>💡 Chọn số bài hát bạn muốn tải!</b>")
+        response_text = "\n".join(lines)
 
         # Tạo inline keyboard
         markup = types.InlineKeyboardMarkup(row_width=5)
@@ -160,16 +159,14 @@ def register_scl(bot):
                 )
                 return
             
-            # Kiểm tra dữ liệu tồn tại
-            if str(user_id) not in scl_data:
+            data = scl_data.pop(str(user_id), None)
+            if not data:
                 bot.answer_callback_query(
                     call.id,
-                    "❌ Dữ liệu đã hết hạn!",
+                    "❌ Dữ liệu đã hết hạn hoặc đã dùng rồi!",
                     show_alert=True
                 )
                 return
-            
-            data = scl_data[str(user_id)]
             tracks = data["tracks"]
             
             # Kiểm tra index hợp lệ
@@ -238,10 +235,7 @@ def register_scl(bot):
                     bot.delete_message(call.message.chat.id, call.message.message_id)
                 except Exception:
                     pass
-                
-                # Dọn dẹp dữ liệu lưu trữ
-                if str(user_id) in scl_data:
-                    del scl_data[str(user_id)]
+
             except Exception as e:
                 bot.edit_message_text(
                     chat_id=call.message.chat.id,
