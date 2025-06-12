@@ -39,10 +39,7 @@ COMMANDS = [
 ]
 
 def register_random(bot):
-    for command, file_path, media_type in COMMANDS:
-        # Hàm handler cần đóng gói đúng giá trị tại thời điểm lặp
-        def make_handler(path=file_path, mtype=media_type):
-            @bot.message_handler(commands=[command])
-            def handler(message):
-                send_random_media(bot, message, path, mtype)
-        make_handler()
+    for command, path, media_type in COMMANDS:
+        @bot.message_handler(commands=[command])
+        def handler(message, path=path, mtype=media_type):
+            send_random_media(bot, message, path, mtype)
