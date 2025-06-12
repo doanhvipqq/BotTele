@@ -14,6 +14,8 @@ from bot.search import register_search
 from bot.thongtin import register_thongtin
 from bot.sourceweb import register_sourceweb
 
+from bot.spamsms import register_spamsms
+
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 bot = telebot.TeleBot(TOKEN)
 
@@ -33,6 +35,8 @@ register_random(bot)
 #############################
 register_images(bot)
 register_github(bot)
+
+register_spamsms(bot)
 
 if __name__ == '__main__':
     print("Bot đang chạy...")
