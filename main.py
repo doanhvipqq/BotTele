@@ -11,6 +11,7 @@ from bot.tiktok import register_tiktok
 from bot.images import register_images
 from bot.github import register_github
 from bot.search import register_search
+from bot.reaction import register_reaction
 from bot.thongtin import register_thongtin
 from bot.sourceweb import register_sourceweb
 
@@ -27,6 +28,7 @@ register_help(bot)
 register_lxmanga(bot)
 register_tiktok(bot)
 register_search(bot)
+register_reaction(bot)
 register_thongtin(bot)
 register_sourceweb(bot)
 
