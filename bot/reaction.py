@@ -12,7 +12,7 @@ allowed_chat_ids = [-1002408191237, 6379209139, 5900948782, 7944440933, 76059365
 
 def register_reaction(bot):
     # 🎯 Xử lý mọi tin nhắn (mọi loại content)
-    @bot.message_handler(func=lambda message: True, content_types=["*"])
+    @bot.message_handler(func=lambda message: True, content_types=["text", "photo", "video", "document", "sticker", "audio", "voice", "animation"])
     def handle_all_messages(message):
         chat_id = message.chat.id
         message_id = message.message_id
