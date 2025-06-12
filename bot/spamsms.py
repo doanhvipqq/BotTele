@@ -19,7 +19,7 @@ def is_vip(user_id):
         vip_ids = [line.strip() for line in f.readlines()]
     return str(user_id) in vip_ids
 
-def register_spammsms(bot):
+def register_spamsms(bot):
     @bot.message_handler(commands=['add'])
     async def add(message):
         if message.chat.id != GROUP_ID or message.from_user.id != ADMIN_ID:
