@@ -5,7 +5,7 @@ from bot.nct import register_nct
 from bot.scl import register_scl
 from bot.time import register_time
 from bot.help import register_help
-from bot.random import *
+from bot.random import register_random
 from bot.lxmanga import register_lxmanga
 from bot.tiktok import register_tiktok
 from bot.images import register_images
@@ -27,15 +27,7 @@ register_search(bot)
 register_thongtin(bot)
 
 # Random
-register_girl(bot)
-register_anime(bot)
-register_imganime(bot)
-register_butt(bot)
-register_squeeze(bot)
-register_cosplay(bot)
-register_pussy(bot)
-register_nude(bot)
-register_girlsexy(bot)
+register_random(bot)
 #############################
 register_images(bot)
 register_github(bot)
