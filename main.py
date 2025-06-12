@@ -12,6 +12,7 @@ from bot.images import register_images
 from bot.github import register_github
 from bot.search import register_search
 from bot.thongtin import register_thongtin
+from bot.sourceweb import register_sourceweb
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 bot = telebot.TeleBot(TOKEN)
@@ -25,6 +26,7 @@ register_lxmanga(bot)
 register_tiktok(bot)
 register_search(bot)
 register_thongtin(bot)
+register_sourceweb(bot)
 
 # Random
 register_random(bot)
