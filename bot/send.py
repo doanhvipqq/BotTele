@@ -4,6 +4,17 @@ import yt_dlp
 
 MAX_FILE_SIZE_MB = 50
 
+# === HÀM KIỂM TRA LINK CÓ HỖ TRỢ KHÔNG ===
+def is_url_supported(url: str) -> bool:
+    try:
+        with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
+            ydl.extract_info(url, download=False)
+            return True
+    except yt_dlp.utils.DownloadError:
+        return False
+    except Exception:
+        return False
+
 # === HÀM TẢI VIDEO ===
 def download_video(url: str, tmpdir: str) -> str:
     """Tải video từ mạng xã hội vào thư mục tạm, trả về đường dẫn file."""
@@ -29,6 +40,11 @@ def register_send(bot):
             return
     
         url = args[1]
+        
+        if not is_url_supported(url):
+            bot.reply_to(message, "🚫 Nền tảng không được hỗ trợ hoặc link không hợp lệ.")
+            return
+        
         msg = bot.reply_to(message, "⏳ Đang tải video, vui lòng chờ...")
     
         try:
@@ -44,10 +60,8 @@ def register_send(bot):
                     )
                 else:
                     with open(video_path, 'rb') as video_file:
-                        bot.send_video(message.chat.id, video_file)
+                        bot.send_video(message.chat.id, video_file, reply_to_message_id=message.message_id)
                     bot.delete_message(msg.chat.id, msg.message_id)
     
         except Exception as e:
             bot.edit_message_text(f"❌ Lỗi: {str(e)}", chat_id=msg.chat.id, message_id=msg.message_id)
-    
-    
