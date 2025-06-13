@@ -1,5 +1,6 @@
 import os
 import requests
+from concurrent.futures import ThreadPoolExecutor
 
 # 📦 Nguồn proxy theo loại
 proxy_sources = {
@@ -61,20 +62,41 @@ def fetch_proxies(url):
     return []
 
 
+# ✅ Kiểm tra proxy có hoạt động không
+def check_proxy(proxy, proxy_type="http", timeout=5):
+    proxies = {
+        "http": f"{proxy_type}://{proxy}",
+        "https": f"{proxy_type}://{proxy}"
+    }
+    try:
+        res = requests.get("http://httpbin.org/ip", proxies=proxies, timeout=timeout)
+        if res.status_code == 200:
+            return proxy
+    except:
+        return None
+
 # 🔄 Tổng hợp proxy và lưu vào file
 def update_proxies():
     all_proxies = []
 
     for proxy_type, source in proxy_sources.items():
-        proxies = []
+        raw_proxies = []
         for url in source["urls"]:
-            proxies += fetch_proxies(url)
-        proxies = list(set(proxies))  # Xoá trùng
-        with open(source["filename"], "w") as f:
-            f.write("\n".join(proxies))
-        all_proxies += proxies
+            raw_proxies += fetch_proxies(url)
 
-    # Lưu tổng vào file chung
+        raw_proxies = list(set(raw_proxies))  # ❗Sửa lại biến đúng
+
+        # 🔍 Lọc proxy sống bằng đa luồng
+        with ThreadPoolExecutor(max_workers=50) as executor:
+            futures = [executor.submit(check_proxy, p, proxy_type) for p in raw_proxies]
+            filtered = [f.result() for f in futures if f.result()]
+
+        # 📁 Ghi vào file riêng
+        with open(source["filename"], "w") as f:
+            f.write("\n".join(filtered))
+        all_proxies += filtered
+
+    # 📦 Ghi file tổng
     all_proxies = list(set(all_proxies))
     with open("PROXY_FREE.txt", "w") as f:
         f.write("\n".join(all_proxies))
@@ -93,5 +115,6 @@ def register_proxy(bot):
                 chat_id=msg.chat.id,
                 document=f,
                 caption=f"🚀 *FREE PROXY* 🚀\n📌 *Total:* {total} proxies\n\n",
-                parse_mode="Markdown"
+                parse_mode="Markdown",
+                reply_to_message_id=msg.message_id  # 👈 Gửi dạng reply
             )
