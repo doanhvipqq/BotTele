@@ -3,6 +3,7 @@ import os
 import telebot
 from bot.nct import register_nct
 from bot.scl import register_scl
+from bot.info import register_info
 from bot.time import register_time
 from bot.help import register_help
 from bot.proxy import register_proxy
@@ -14,7 +15,6 @@ from bot.search import register_search
 from bot.spamsms import register_spamsms
 from bot.lxmanga import register_lxmanga
 from bot.reaction import register_reaction
-from bot.thongtin import register_thongtin
 from bot.sourceweb import register_sourceweb
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -22,6 +22,7 @@ bot = telebot.TeleBot(TOKEN)
 
 register_nct(bot)
 register_scl(bot)
+register_info(bot)
 register_time(bot)
 register_help(bot)
 register_proxy(bot)
@@ -33,7 +34,6 @@ register_search(bot)
 register_spamsms(bot)
 register_lxmanga(bot)
 register_reaction(bot)
-register_thongtin(bot)
 register_sourceweb(bot)
 
 if __name__ == '__main__':
