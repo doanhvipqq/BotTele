@@ -1,5 +1,3 @@
-
-    
 import re
 import random
 import logging
@@ -74,61 +72,34 @@ def search_nhaccuatui(keyword, limit=10):
 
 # 2. Lấy URL audio từ trang chi tiết qua XML API
 def get_download_url(track):
-    detail_url = track.get('detail_url')
-    if not detail_url:
-        return None
-    # Khởi tạo thumbnail mặc định
-    track['thumbnail'] = None
-    try:
-        resp = requests.get(detail_url, headers=get_headers())
-        resp.raise_for_status()
-        html = resp.text
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Lỗi request đến trang chi tiết ({detail_url}): {e}")
+    song_id = track.get("id")
+    if not song_id:
         return None
 
-    # --- BỔ SUNG: Trích thumbnail từ meta og:image ---
+    api_url = f"https://www.nhaccuatui.com/ajax/get-media-info?key1={song_id}"
+    headers = get_headers()
+    headers["X-Requested-With"] = "XMLHttpRequest"
+    headers["Referer"] = track.get("detail_url", BASE_URL)
+
     try:
-        soup = BeautifulSoup(html, 'html.parser')
-        og_image = soup.select_one('meta[property="og:image"]')
-        if og_image and og_image.has_attr('content'):
-            thumb_url = og_image['content'].strip()
-            # Chuẩn hóa URL nếu cần
-            if thumb_url.startswith('//'):
-                thumb_url = 'https:' + thumb_url
-            track['thumbnail'] = thumb_url
+        r = requests.get(api_url, headers=headers, timeout=10)
+        r.raise_for_status()
+        data = r.json()
     except Exception as e:
-        logging.warning(f"Không lấy được thumbnail từ {detail_url}: {e}")
-        track['thumbnail'] = None
-
-    # Trích xmlURL trong JS
-    xml_match = re.search(r"peConfig\.xmlURL\s*=\s*['\"](https://www\.nhaccuatui\.com/flash/xml\?html5=true&key1=[^'\"]+)['\"]", html)
-    if not xml_match:
-        logging.warning(f"Không tìm thấy xmlURL trong trang: {detail_url}")
+        logging.error(f"❌ Không gọi được API mới: {e}")
         return None
-    xml_url = xml_match.group(1)
 
+    # Trích xuất audio URL
     try:
-        xml_resp = requests.get(xml_url, headers={**get_headers(), 'Referer': detail_url})
-        xml_resp.raise_for_status()
-        xml_content = xml_resp.text
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Lỗi request đến XML API ({xml_url}): {e}")
+        list_sources = data.get("data", {}).get("stream_url", {})
+        for quality in ["128", "320"]:
+            url = list_sources.get(quality)
+            if url:
+                return url
+    except Exception as e:
+        logging.error(f"❌ Lỗi khi parse JSON stream_url: {e}")
         return None
 
-    try:
-        root = ET.fromstring(xml_content)
-        loc = root.find('.//location')
-        if loc is not None and loc.text:
-            audio_url = loc.text.strip()
-            if audio_url.startswith('//'):
-                audio_url = 'https:' + audio_url
-            elif audio_url.startswith('http://'):
-                audio_url = 'https://' + audio_url[len('http://'):]
-            return audio_url
-    except ET.ParseError as e:
-        logging.error(f"Lỗi parse XML từ ({xml_url}): {e}\nNội dung XML: {xml_content}")
-        return None
     return None
 
 def register_nct(bot):
