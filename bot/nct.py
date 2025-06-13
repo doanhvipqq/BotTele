@@ -1,4 +1,5 @@
 import re
+import json
 import random
 import logging
 import requests
@@ -97,30 +98,26 @@ def get_download_url(track):
         logging.warning(f"Không lấy được thumbnail từ {detail_url}: {e}")
         track['thumbnail'] = None
 
-    # Trích flashData từ JS
+    # Tìm flashData qua regex thay vì find()
     try:
-        start = html.find('var flashData = "') + len('var flashData = "')
-        end = html.find('";', start)
-        if start == -1 or end == -1:
+        match = re.search(r'var\s+flashData\s*=\s*"(.+?)";', html)
+        if not match:
             logging.warning(f"Không tìm thấy flashData trong trang: {detail_url}")
             return None
-        flash_data_raw = html[start:end].encode('utf-8').decode('unicode_escape')
+
+        flash_data_raw = match.group(1).encode('utf-8').decode('unicode_escape')
         flash_data = json.loads(flash_data_raw)
 
         # Lấy URL bài hát
-        streams = flash_data.get('stream_url')
-        if isinstance(streams, str):
-            audio_url = streams.strip()
-            if audio_url.startswith('//'):
-                audio_url = 'https:' + audio_url
-            elif audio_url.startswith('http://'):
-                audio_url = 'https://' + audio_url[len('http://'):]
-            return audio_url
+        audio_url = flash_data.get('stream_url', '').strip()
+        if audio_url.startswith('//'):
+            audio_url = 'https:' + audio_url
+        elif audio_url.startswith('http://'):
+            audio_url = 'https://' + audio_url[len('http://'):]
+        return audio_url if audio_url else None
     except Exception as e:
         logging.error(f"Lỗi khi xử lý flashData từ {detail_url}: {e}")
         return None
-
-    return None
 
 def register_nct(bot):
     # /nct command
