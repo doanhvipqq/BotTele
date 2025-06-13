@@ -4,7 +4,7 @@ import yt_dlp
 
 MAX_FILE_SIZE_MB = 50
 
-# === HÀM KIỂM TRA LINK CÓ HỖ TRỢ KHÔNG ===
+# === HÀM KIỂM TRA LINK CÓ HỖ TRỢ HAY KHÔNG ===
 def is_url_supported(url: str) -> bool:
     try:
         with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
@@ -30,28 +30,40 @@ def download_video(url: str, tmpdir: str) -> str:
         info = ydl.extract_info(url, download=True)
         return ydl.prepare_filename(info)
 
+# === ĐĂNG KÝ LỆNH /send ===
 def register_send(bot):
-    # === XỬ LÝ LỆNH /send <url> ===
     @bot.message_handler(commands=['send'])
     def handle_send(message):
         args = message.text.split(maxsplit=1)
         if len(args) < 2:
             bot.reply_to(message, "❗ Vui lòng dùng đúng cú pháp: /send <link>")
             return
-    
+
         url = args[1]
-        
+
+        # Gửi phản hồi trung gian trước khi kiểm tra URL
+        msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
+
         if not is_url_supported(url):
-            bot.reply_to(message, "🚫 Nền tảng không được hỗ trợ hoặc link không hợp lệ.")
+            bot.edit_message_text(
+                "🚫 Nền tảng không được hỗ trợ hoặc link không hợp lệ.",
+                chat_id=msg.chat.id,
+                message_id=msg.message_id
+            )
             return
-        
-        msg = bot.reply_to(message, "⏳ Đang tải video, vui lòng chờ...")
-    
+
+        # Gửi thông báo tiếp theo trước khi bắt đầu tải
+        bot.edit_message_text(
+            "⏳ Đang tải video, vui lòng chờ...",
+            chat_id=msg.chat.id,
+            message_id=msg.message_id
+        )
+
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
                 video_path = download_video(url, tmpdir)
                 file_size_mb = os.path.getsize(video_path) / (1024 * 1024)
-    
+
                 if file_size_mb > MAX_FILE_SIZE_MB:
                     bot.edit_message_text(
                         "🚫 File quá lớn (>50MB), không thể gửi qua Telegram.",
@@ -62,6 +74,10 @@ def register_send(bot):
                     with open(video_path, 'rb') as video_file:
                         bot.send_video(message.chat.id, video_file, reply_to_message_id=message.message_id)
                     bot.delete_message(msg.chat.id, msg.message_id)
-    
+
         except Exception as e:
-            bot.edit_message_text(f"❌ Lỗi: {str(e)}", chat_id=msg.chat.id, message_id=msg.message_id)
+            bot.edit_message_text(
+                f"❌ Lỗi khi xử lý video: {str(e)}",
+                chat_id=msg.chat.id,
+                message_id=msg.message_id
+            )
