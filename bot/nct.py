@@ -75,7 +75,7 @@ def get_download_url(track):
     detail_url = track.get('detail_url')
     if not detail_url:
         return None
-    track['thumbnail'] = None
+
     try:
         resp = requests.get(detail_url, headers=get_headers())
         resp.raise_for_status()
@@ -84,7 +84,7 @@ def get_download_url(track):
         logging.error(f"Lỗi request đến trang chi tiết ({detail_url}): {e}")
         return None
 
-    # Lấy thumbnail
+    # Trích thumbnail
     try:
         soup = BeautifulSoup(html, 'html.parser')
         og_image = soup.select_one('meta[property="og:image"]')
@@ -93,30 +93,33 @@ def get_download_url(track):
             if thumb_url.startswith('//'):
                 thumb_url = 'https:' + thumb_url
             track['thumbnail'] = thumb_url
-    except Exception:
-        pass
+    except Exception as e:
+        logging.warning(f"Không lấy được thumbnail từ {detail_url}: {e}")
+        track['thumbnail'] = None
 
-    # Tìm xmlURL
-    xml_match = re.search(r"xmlURL\s*[:=]\s*['\"](https?://www\.nhaccuatui\.com/flash/xml[^'\"]+)", html)
-    if not xml_match:
-        logging.warning(f"Không tìm thấy xmlURL trong trang: {detail_url}")
-        return None
-    xml_url = xml_match.group(1)
-
+    # Trích flashData từ JS
     try:
-        xml_resp = requests.get(xml_url, headers={**get_headers(), 'Referer': detail_url})
-        xml_resp.raise_for_status()
-        root = ET.fromstring(xml_resp.text)
-        loc = root.find('.//location') or root.find('.//fileURL')
-        if loc is not None and loc.text:
-            audio_url = loc.text.strip()
+        start = html.find('var flashData = "') + len('var flashData = "')
+        end = html.find('";', start)
+        if start == -1 or end == -1:
+            logging.warning(f"Không tìm thấy flashData trong trang: {detail_url}")
+            return None
+        flash_data_raw = html[start:end].encode('utf-8').decode('unicode_escape')
+        flash_data = json.loads(flash_data_raw)
+
+        # Lấy URL bài hát
+        streams = flash_data.get('stream_url')
+        if isinstance(streams, str):
+            audio_url = streams.strip()
             if audio_url.startswith('//'):
-                return 'https:' + audio_url
-            if audio_url.startswith('http://'):
-                return 'https://' + audio_url[7:]
+                audio_url = 'https:' + audio_url
+            elif audio_url.startswith('http://'):
+                audio_url = 'https://' + audio_url[len('http://'):]
             return audio_url
     except Exception as e:
-        logging.error(f"Lỗi khi xử lý XML: {e}")
+        logging.error(f"Lỗi khi xử lý flashData từ {detail_url}: {e}")
+        return None
+
     return None
 
 def register_nct(bot):
