@@ -1,8 +1,9 @@
 import os
-import tempfile
 import yt_dlp
+import tempfile
 
 MAX_FILE_SIZE_MB = 50
+MAX_SENDABLE_SIZE_MB = 2000  # Telegram tối đa cho bot gửi file là 2GB
 
 # === HÀM KIỂM TRA LINK CÓ HỖ TRỢ HAY KHÔNG ===
 def is_url_supported(url: str) -> bool:
@@ -64,12 +65,21 @@ def register_send(bot):
                 video_path = download_video(url, tmpdir)
                 file_size_mb = os.path.getsize(video_path) / (1024 * 1024)
 
+                # Nếu vượt quá giới hạn Telegram cho phép
+                if file_size_mb > MAX_SENDABLE_SIZE_MB:
+                    bot.edit_message_text(
+                        "🚫 Video quá lớn (>2GB), Telegram không cho phép gửi file này.",
+                        chat_id=msg.chat.id,
+                        message_id=msg.message_id
+                    )
+                    return
+
                 with open(video_path, 'rb') as video_file:
                     if file_size_mb > MAX_FILE_SIZE_MB:
                         bot.send_document(
                             chat_id=message.chat.id,
                             document=video_file,
-                            caption="📦 File lớn được gửi dưới dạng tài liệu",
+                            caption="📦 Video lớn được gửi dưới dạng tài liệu",
                             reply_to_message_id=message.message_id
                         )
                     else:
@@ -79,6 +89,7 @@ def register_send(bot):
                             reply_to_message_id=message.message_id
                         )
 
+                # Xoá tin nhắn "đang xử lý"
                 bot.delete_message(msg.chat.id, msg.message_id)
 
         except Exception as e:
