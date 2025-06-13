@@ -91,7 +91,7 @@ def register_proxy(bot):
         with open("PROXY_FREE.txt", "rb") as f:
             bot.send_document(
                 chat_id=msg.chat.id,
-                data=f,
+                document=f,
                 caption=f"🚀 *FREE PROXY* 🚀\n📌 *Total:* {total} proxies\n\n",
                 parse_mode="Markdown"
             )
