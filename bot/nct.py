@@ -1,5 +1,6 @@
+
+    
 import re
-import json
 import random
 import logging
 import requests
@@ -76,7 +77,8 @@ def get_download_url(track):
     detail_url = track.get('detail_url')
     if not detail_url:
         return None
-
+    # Khởi tạo thumbnail mặc định
+    track['thumbnail'] = None
     try:
         resp = requests.get(detail_url, headers=get_headers())
         resp.raise_for_status()
@@ -85,12 +87,13 @@ def get_download_url(track):
         logging.error(f"Lỗi request đến trang chi tiết ({detail_url}): {e}")
         return None
 
-    # Trích thumbnail
+    # --- BỔ SUNG: Trích thumbnail từ meta og:image ---
     try:
         soup = BeautifulSoup(html, 'html.parser')
         og_image = soup.select_one('meta[property="og:image"]')
         if og_image and og_image.has_attr('content'):
             thumb_url = og_image['content'].strip()
+            # Chuẩn hóa URL nếu cần
             if thumb_url.startswith('//'):
                 thumb_url = 'https:' + thumb_url
             track['thumbnail'] = thumb_url
@@ -98,26 +101,35 @@ def get_download_url(track):
         logging.warning(f"Không lấy được thumbnail từ {detail_url}: {e}")
         track['thumbnail'] = None
 
-    # Tìm flashData qua regex thay vì find()
-    try:
-        match = re.search(r'var\s+flashData\s*=\s*"(.+?)";', html)
-        if not match:
-            logging.warning(f"Không tìm thấy flashData trong trang: {detail_url}")
-            return None
-
-        flash_data_raw = match.group(1).encode('utf-8').decode('unicode_escape')
-        flash_data = json.loads(flash_data_raw)
-
-        # Lấy URL bài hát
-        audio_url = flash_data.get('stream_url', '').strip()
-        if audio_url.startswith('//'):
-            audio_url = 'https:' + audio_url
-        elif audio_url.startswith('http://'):
-            audio_url = 'https://' + audio_url[len('http://'):]
-        return audio_url if audio_url else None
-    except Exception as e:
-        logging.error(f"Lỗi khi xử lý flashData từ {detail_url}: {e}")
+    # Trích xmlURL trong JS
+    xml_match = re.search(r"peConfig\.xmlURL\s*=\s*['\"](https://www\.nhaccuatui\.com/flash/xml\?html5=true&key1=[^'\"]+)['\"]", html)
+    if not xml_match:
+        logging.warning(f"Không tìm thấy xmlURL trong trang: {detail_url}")
         return None
+    xml_url = xml_match.group(1)
+
+    try:
+        xml_resp = requests.get(xml_url, headers={**get_headers(), 'Referer': detail_url})
+        xml_resp.raise_for_status()
+        xml_content = xml_resp.text
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Lỗi request đến XML API ({xml_url}): {e}")
+        return None
+
+    try:
+        root = ET.fromstring(xml_content)
+        loc = root.find('.//location')
+        if loc is not None and loc.text:
+            audio_url = loc.text.strip()
+            if audio_url.startswith('//'):
+                audio_url = 'https:' + audio_url
+            elif audio_url.startswith('http://'):
+                audio_url = 'https://' + audio_url[len('http://'):]
+            return audio_url
+    except ET.ParseError as e:
+        logging.error(f"Lỗi parse XML từ ({xml_url}): {e}\nNội dung XML: {xml_content}")
+        return None
+    return None
 
 def register_nct(bot):
     # /nct command
