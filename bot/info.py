@@ -1,8 +1,8 @@
 from datetime import datetime
 from telebot.types import Message
 
-def register_thongtin(bot):
-    @bot.message_handler(commands=['thongtin'])
+def register_info(bot):
+    @bot.message_handler(commands=['info'])
     def handle_check(message: Message):
         try:
             # Lấy thông tin người dùng mục tiêu
