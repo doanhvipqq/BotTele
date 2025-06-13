@@ -3,4 +3,5 @@ pillow
 telebot
 requests
 
+yt_dlp
 colorama
