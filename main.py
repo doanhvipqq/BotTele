@@ -1,4 +1,4 @@
-# main_bot.py
+# main.py
 import os
 import telebot
 from bot.nct import register_nct
@@ -23,17 +23,16 @@ register_nct(bot)
 register_scl(bot)
 register_time(bot)
 register_help(bot)
-register_images(bot)
-register_github(bot)
 register_random(bot)
 register_tiktok(bot)
+register_images(bot)
+register_github(bot)
 register_search(bot)
 register_spamsms(bot)
 register_lxmanga(bot)
+register_reaction(bot)
 register_thongtin(bot)
 register_sourceweb(bot)
-###########
-register_reaction(bot) # Luôn luôn đặt ở cuối
 
 if __name__ == '__main__':
     print("Bot đang chạy...")
