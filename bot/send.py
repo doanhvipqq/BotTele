@@ -40,8 +40,6 @@ def register_send(bot):
             return
 
         url = args[1]
-
-        # Gửi phản hồi trung gian trước khi kiểm tra URL
         msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
 
         if not is_url_supported(url):
@@ -52,7 +50,6 @@ def register_send(bot):
             )
             return
 
-        # Gửi thông báo tiếp theo trước khi bắt đầu tải
         bot.edit_message_text(
             "⏳ Đang tải video, vui lòng chờ...",
             chat_id=msg.chat.id,
