@@ -8,6 +8,7 @@ caption = """<blockquote expandable>┌─────────────�
 ├ /images: Lấy url ảnh web 👻
 ├ /scl: Tải nhạc SoundCloud 🎶
 ├ /sourceweb: Tải source web 🎃
+├ /send: Tải video đa nền tảng 🎬
 ├ /tiktok: Thông tin video TikTok 🫦
 ├ /info: Thông tin người dùng Tele 👾
 ├───────────────⭔
