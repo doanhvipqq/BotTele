@@ -28,7 +28,7 @@ register_help(bot)
 register_lxmanga(bot)
 register_tiktok(bot)
 register_search(bot)
-register_reaction(bot)
+
 register_thongtin(bot)
 register_sourceweb(bot)
 
@@ -39,6 +39,7 @@ register_images(bot)
 register_github(bot)
 
 register_spamsms(bot)
+register_reaction(bot) # Luôn luôn đặt ở cuối
 
 if __name__ == '__main__':
     print("Bot đang chạy...")
