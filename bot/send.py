@@ -1,9 +1,8 @@
 import os
-import yt_dlp
 import tempfile
+import yt_dlp
 
 MAX_FILE_SIZE_MB = 50
-MAX_SENDABLE_SIZE_MB = 2000  # Telegram tối đa cho bot gửi file là 2GB
 
 # === HÀM KIỂM TRA LINK CÓ HỖ TRỢ HAY KHÔNG ===
 def is_url_supported(url: str) -> bool:
@@ -65,32 +64,16 @@ def register_send(bot):
                 video_path = download_video(url, tmpdir)
                 file_size_mb = os.path.getsize(video_path) / (1024 * 1024)
 
-                # Nếu vượt quá giới hạn Telegram cho phép
-                if file_size_mb > MAX_SENDABLE_SIZE_MB:
+                if file_size_mb > MAX_FILE_SIZE_MB:
                     bot.edit_message_text(
-                        "🚫 Video quá lớn (>2GB), Telegram không cho phép gửi file này.",
+                        "🚫 File quá lớn (>50MB), không thể gửi qua Telegram.",
                         chat_id=msg.chat.id,
                         message_id=msg.message_id
                     )
-                    return
-
-                with open(video_path, 'rb') as video_file:
-                    if file_size_mb > MAX_FILE_SIZE_MB:
-                        bot.send_document(
-                            chat_id=message.chat.id,
-                            document=video_file,
-                            caption="📦 Video lớn được gửi dưới dạng tài liệu",
-                            reply_to_message_id=message.message_id
-                        )
-                    else:
-                        bot.send_video(
-                            chat_id=message.chat.id,
-                            video=video_file,
-                            reply_to_message_id=message.message_id
-                        )
-
-                # Xoá tin nhắn "đang xử lý"
-                bot.delete_message(msg.chat.id, msg.message_id)
+                else:
+                    with open(video_path, 'rb') as video_file:
+                        bot.send_video(message.chat.id, video_file, reply_to_message_id=message.message_id)
+                    bot.delete_message(msg.chat.id, msg.message_id)
 
         except Exception as e:
             bot.edit_message_text(
