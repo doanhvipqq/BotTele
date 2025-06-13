@@ -11,8 +11,8 @@ emoji_list = ['👍', '👎', '❤️', '🔥', '🥰', '👏', '😁', '🤔', 
 allowed_chat_ids = [-1002408191237, 6379209139, 5900948782, 7944440933, 7605936504]
 
 def register_reaction(bot):
-    # 🎯 Xử lý mọi tin nhắn (mọi loại content)
-    @bot.message_handler(func=lambda message: not (message.text or "").startswith('/'))
+    # 🎯 Xử lý mọi tin nhắn
+    @bot.message_handler(func=lambda message: not (message.text or "").startswith('/'), content_types=["text"])
     def handle_all_messages(message):
         chat_id = message.chat.id
         message_id = message.message_id
