@@ -5,6 +5,7 @@ from bot.nct import register_nct
 from bot.scl import register_scl
 from bot.time import register_time
 from bot.help import register_help
+from bot.proxy import register_proxy
 from bot.random import register_random
 from bot.tiktok import register_tiktok
 from bot.images import register_images
@@ -23,6 +24,7 @@ register_nct(bot)
 register_scl(bot)
 register_time(bot)
 register_help(bot)
+register_proxy(bot)
 register_random(bot)
 register_tiktok(bot)
 register_images(bot)
