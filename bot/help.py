@@ -2,13 +2,14 @@ caption = """<blockquote expandable>┌─────────────�
 ├ /help: Menu bot
 ├ /admin: Info admin
 ├ /time: Check time bot
-├ /tiktok: Lấy thông tin video TikTok
-├ /thongtin: Lấy thông tin người dùng
 ├───────────────⭔
+├ /proxy: Proxy free 📦
 ├ /github: Info github 🐈‍⬛
 ├ /images: Lấy url ảnh web 👻
 ├ /scl: Tải nhạc SoundCloud 🎶
 ├ /sourceweb: Tải source web 🎃
+├ /tiktok: Thông tin video TikTok 🫦
+├ /info: Thông tin người dùng Tele 👾
 ├───────────────⭔
 ├ /pussy: 🔞
 ├ /squeeze: Bóp 🌚
@@ -22,6 +23,6 @@ caption = """<blockquote expandable>┌─────────────�
 </blockquote>"""
 
 def register_help(bot):
-    @bot.message_handler(commands=['help'])
+    @bot.message_handler(commands=['help', 'start'])
     def send_help(message):
         bot.reply_to(message, caption, parse_mode='HTML')
