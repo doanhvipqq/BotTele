@@ -137,12 +137,12 @@ def register_nct(bot):
     def nhaccuatui(message):
         args = message.text.split(maxsplit=1)
         if len(args) < 2:
-            bot.reply_to(message, '🚫 Vui lòng nhập tên bài hát muốn tìm kiếm.\nVí dụ: /nct Tên bài hát', parse_mode='HTML')
+            bot.reply_to(message, '🚫 Vui lòng nhập tên bài hát muốn tìm kiếm.\nVí dụ: /nct Tên bài hát')
             return
         keyword = args[1].strip()
         results = search_nhaccuatui(keyword)
         if not results:
-            bot.reply_to(message, f'🚫 Không tìm thấy bài hát nào với từ khóa: {keyword}', parse_mode='HTML')
+            bot.reply_to(message, f'🚫 Không tìm thấy bài hát nào với từ khóa: {keyword}')
             return
         songs = results[:10]
         text = '<b>🎵 Kết quả tìm kiếm trên Nhaccuatui</b>\n\n'
@@ -151,7 +151,7 @@ def register_nct(bot):
             text += f"👤 Nghệ sĩ: {song['artist']}\n"
             text += f"🆔 ID: {song['id']}\n\n"
         text += '<b>💡 Trả lời tin nhắn này bằng số từ 1-10 để chọn bài hát!</b>'
-        sent = bot.reply_to(message, text, parse_mode='HTML')
+        sent = bot.reply_to(message, text)
         nct_data[sent.message_id] = {
             'user_id': message.from_user.id,
             'songs': songs
@@ -170,7 +170,7 @@ def register_nct(bot):
             return
         text = msg.text.strip()
         if not text.isdigit():
-            bot.reply_to(msg, '🚫 Vui lòng chỉ nhập số từ 1-10.', parse_mode='HTML')
+            bot.reply_to(msg, '🚫 Vui lòng chỉ nhập số từ 1-10.')
             return
         idx = int(text) - 1
         if idx < 0 or idx >= len(data['songs']):
@@ -194,13 +194,13 @@ def register_nct(bot):
         thumbnail_url = song.get("thumbnail")
         if thumbnail_url:
             try:
-                bot.send_photo(msg.chat.id, thumbnail_url, caption=caption, parse_mode='HTML')
+                bot.send_photo(msg.chat.id, thumbnail_url, caption=caption)
             except Exception:
-                bot.reply_to(msg, caption + "\n🚫 Không thể tải thumbnail.", parse_mode='HTML')
+                bot.reply_to(msg, caption + "\n🚫 Không thể tải thumbnail.")
         else:
-            bot.reply_to(msg, caption, parse_mode='HTML')
+            bot.reply_to(msg, caption)
         try:
             bot.send_audio(msg.chat.id, audio_url, title=song['title'], performer=song['artist'])
         except Exception:
-            bot.reply_to(msg, '🚫 Không thể gửi audio.', parse_mode='HTML')
+            bot.reply_to(msg, '🚫 Không thể gửi audio.')
         del nct_data[reply_id]
