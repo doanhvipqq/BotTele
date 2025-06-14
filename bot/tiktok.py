@@ -59,7 +59,7 @@ def register_tiktok(bot):
     ⭓───────────────⭔</blockquote>"""
             
             bot.send_photo(message.chat.id, avatar, caption=f"Người đăng: {author}")
-            bot.send_video(message.chat.id, video_url, caption=info_text, parse_mode='HTML')
+            bot.send_video(message.chat.id, video_url, caption=info_text)
 
         except Exception as e:
             bot.reply_to(message, f"⚠️ Lỗi: {e}")
