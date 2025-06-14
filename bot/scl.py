@@ -81,8 +81,7 @@ def register_scl(bot):
         if len(args) < 2:
             bot.reply_to(
                 message,
-                "🚫 Vui lòng nhập tên bài hát muốn tìm kiếm.\nVí dụ: /scl Tên bài hát",
-                parse_mode='HTML'
+                "🚫 Vui lòng nhập tên bài hát muốn tìm kiếm.\nVí dụ: /scl Tên bài hát"
             )
             return
 
@@ -91,8 +90,7 @@ def register_scl(bot):
         if not music_info or not music_info.get('collection') or len(music_info['collection']) == 0:
             bot.reply_to(
                 message,
-                "🚫 Không tìm thấy bài hát nào khớp với từ khóa.",
-                parse_mode='HTML'
+                "🚫 Không tìm thấy bài hát nào khớp với từ khóa."
             )
             return
 
@@ -100,8 +98,7 @@ def register_scl(bot):
         if not tracks:
             bot.reply_to(
                 message,
-                "🚫 Không tìm thấy bài hát nào có hình ảnh.",
-                parse_mode='HTML'
+                "🚫 Không tìm thấy bài hát nào có hình ảnh."
             )
             return
 
@@ -129,7 +126,6 @@ def register_scl(bot):
         sent = bot.reply_to(
             message,
             response_text,
-            parse_mode='HTML',
             reply_markup=markup
         )
         # Lưu data cho callback
@@ -181,8 +177,7 @@ def register_scl(bot):
             bot.edit_message_text(
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
-                text=f"🧭 Đang tải: <b>{track['title']}</b>\n👤 Nghệ sĩ: {track['user']['username']}\n\n⏳ Vui lòng chờ...",
-                parse_mode='HTML'
+                text=f"🧭 Đang tải: <b>{track['title']}</b>\n👤 Nghệ sĩ: {track['user']['username']}\n\n⏳ Vui lòng chờ..."
             )
             
             # Lấy audio URL và thumbnail
@@ -192,8 +187,7 @@ def register_scl(bot):
                 bot.edit_message_text(
                     chat_id=call.message.chat.id,
                     message_id=call.message.message_id,
-                    text="🚫 Không tìm thấy nguồn audio hoặc thumbnail.",
-                    parse_mode='HTML'
+                    text="🚫 Không tìm thấy nguồn audio hoặc thumbnail."
                 )
                 return
             
@@ -214,8 +208,7 @@ def register_scl(bot):
                     bot.edit_message_text(
                         chat_id=call.message.chat.id,
                         message_id=call.message.message_id,
-                        text="🚫 File nhạc quá lớn (>50MB) nên không thể gửi qua Telegram.",
-                        parse_mode='HTML'
+                        text="🚫 File nhạc quá lớn (>50MB) nên không thể gửi qua Telegram."
                     )
                     return
 
@@ -227,8 +220,7 @@ def register_scl(bot):
                 bot.send_photo(
                     call.message.chat.id,
                     thumbnail_url,
-                    caption=caption,
-                    parse_mode='HTML'
+                    caption=caption
                 )
                 bot.send_audio(
                     chat_id=call.message.chat.id,
@@ -247,8 +239,7 @@ def register_scl(bot):
                 bot.edit_message_text(
                     chat_id=call.message.chat.id,
                     message_id=call.message.message_id,
-                    text=f"🚫 Lỗi khi tải nhạc: {str(e)}",
-                    parse_mode='HTML'
+                    text=f"🚫 Lỗi khi tải nhạc: {str(e)}"
                 )
         except Exception as e:
             bot.answer_callback_query(
