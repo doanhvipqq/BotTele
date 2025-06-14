@@ -19,7 +19,7 @@ from bot.reaction import register_reaction
 from bot.sourceweb import register_sourceweb
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
-bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 
 register_nct(bot)
 register_scl(bot)
