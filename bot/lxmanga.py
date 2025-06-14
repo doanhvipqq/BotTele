@@ -9,7 +9,7 @@ def register_lxmanga(bot):
     def handle_lxmanga(message):
         try:
             chap_url = message.text.split(maxsplit=1)[1].strip()
-            if not chap_url.startswith("https://lxmanga"):
+            if not chap_url.startswith("https://lx"):
                 raise ValueError
         except:
             bot.reply_to(message, "❗️ Bạn cần nhập đúng định dạng: /lxmanga <url chương truyện>", parse_mode="Markdown")
