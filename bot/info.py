@@ -56,9 +56,9 @@ def register_info(bot):
             # Gửi ảnh đại diện nếu có
             if user_photos.total_count > 0:
                 avatar_file_id = user_photos.photos[0][-1].file_id
-                bot.send_photo(message.chat.id, avatar_file_id, caption=caption, parse_mode='HTML', reply_to_message_id=message.message_id)
+                bot.send_photo(message.chat.id, avatar_file_id, caption=caption, reply_to_message_id=message.message_id)
             else:
-                bot.reply_to(message, caption, parse_mode='HTML')
+                bot.reply_to(message, caption)
 
         except Exception as e:
             print(f"Đã xảy ra lỗi: {e}")
