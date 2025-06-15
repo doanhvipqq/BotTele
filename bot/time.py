@@ -3,7 +3,7 @@ import random
 from datetime import timedelta
 
 start_time = time.time()
-file_path = "bot/url/anime"
+file_path = "bot/url/anime.txt"
 
 def get_uptime():
     return str(timedelta(seconds=int(time.time() - start_time)))
