@@ -25,31 +25,24 @@ def send_random_media(bot, message, file_path, media_type):
         bot.reply_to(message, f"Lỗi: {e}")
 
 
-# Danh sách lệnh và loại media
 COMMANDS = [
-    # Video
     ("anime", "bot/url/anime.txt", "video"),
     ("girl",  "bot/url/girl.txt",  "video"),
-
-    # Photo
     ("imganime",  "bot/url/imganime.txt",  "photo"),
     ("butt",      "bot/url/butt.txt",      "photo"),
     ("cosplay",   "bot/url/cosplay.txt",   "photo"),
     ("pussy",     "bot/url/pussy.txt",     "photo"),
     ("nude",      "bot/url/nude.txt",      "photo"),
     ("girlsexy",  "bot/url/girlsexy.txt",  "photo"),
-
-    # Animation
     ("squeeze", "bot/url/squeeze.txt", "animation"),
 ]
-
 
 def create_handler(bot, path, mtype):
     def handler(message):
         send_random_media(bot, message, path, mtype)
     return handler
 
-
 def register_random(bot):
     for command, path, media_type in COMMANDS:
-        bot.message_handler(commands=[command])(create_handler(bot, path, media_type))
+        handler = create_handler(bot, path, media_type)
+        bot.register_message_handler(handler, commands=[command])
