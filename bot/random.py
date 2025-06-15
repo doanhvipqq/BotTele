@@ -1,6 +1,5 @@
 import random
 
-# Hàm gửi media ngẫu nhiên từ file
 def send_random_media(bot, message, file_path, media_type):
     try:
         with open(file_path, "r", encoding="utf-8") as file:
@@ -25,18 +24,29 @@ def send_random_media(bot, message, file_path, media_type):
     except Exception as e:
         bot.reply_to(message, f"Lỗi: {e}")
 
-# Danh sách lệnh và file tương ứng
-COMMANDS = [
+COMMANDS = []
+
+# Video
+COMMANDS += [
     ("anime", "bot/url/anime.txt", "video"),
-    ("girl", "bot/url/girl.txt", "video"),
-    ("imganime", "bot/url/imganime.txt", "photo"),
-    ("butt", "bot/url/butt.txt", "photo"),
-    ("squeeze", "bot/url/squeeze.txt", "animation"),
-    ("cosplay", "bot/url/cosplay.txt", "photo"),
-    ("pussy", "bot/url/pussy.txt", "photo"),
-    ("nude", "bot/url/nude.txt", "photo"),
-    ("girlsexy", "bot/url/girlsexy.txt", "photo"),
+    ("girl",  "bot/url/girl.txt",  "video"),
 ]
+
+# Photo
+COMMANDS += [
+    ("imganime",  "bot/url/imganime.txt",  "photo"),
+    ("butt",      "bot/url/butt.txt",      "photo"),
+    ("cosplay",   "bot/url/cosplay.txt",   "photo"),
+    ("pussy",     "bot/url/pussy.txt",     "photo"),
+    ("nude",      "bot/url/nude.txt",      "photo"),
+    ("girlsexy",  "bot/url/girlsexy.txt",  "photo"),
+]
+
+# Animation
+COMMANDS += [
+    ("squeeze", "bot/url/squeeze.txt", "animation"),
+]
+
 
 def register_random(bot):
     for command, path, media_type in COMMANDS:
