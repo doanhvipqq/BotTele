@@ -90,6 +90,5 @@ def register_proxy(bot):
             bot.send_document(
                 msg.chat.id, f,
                 caption = f"📌 <b>Tổng cộng:</b> {total} proxies",
-                parse_mode="HTML",
                 reply_to_message_id=msg.message_id
             )
