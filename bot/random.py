@@ -27,15 +27,15 @@ def send_random_media(bot, message, file_path, media_type):
 
 # Danh sách lệnh và file tương ứng
 COMMANDS = [
-    ("anime",     "bot/url/anime",     "video"),
-    ("girl",      "bot/url/girl",      "video"),
-    ("imganime",  "bot/url/imganime",  "photo"),
-    ("butt",      "bot/url/butt",      "photo"),
-    ("squeeze",   "bot/url/squeeze",   "animation"),
-    ("cosplay",   "bot/url/cosplay",   "photo"),
-    ("pussy",     "bot/url/pussy",     "photo"),
-    ("nude",      "bot/url/nude",      "photo"),
-    ("girlsexy",  "bot/url/girlsexy",  "photo"),
+    ("anime", "bot/url/anime.txt", "video"),
+    ("girl", "bot/url/girl.txt", "video"),
+    ("imganime", "bot/url/imganime.txt", "photo"),
+    ("butt", "bot/url/butt.txt", "photo"),
+    ("squeeze", "bot/url/squeeze.txt", "animation"),
+    ("cosplay", "bot/url/cosplay.txt", "photo"),
+    ("pussy", "bot/url/pussy.txt", "photo"),
+    ("nude", "bot/url/nude.txt", "photo"),
+    ("girlsexy", "bot/url/girlsexy.txt", "photo"),
 ]
 
 def register_random(bot):
