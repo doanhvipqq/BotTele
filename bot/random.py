@@ -48,8 +48,11 @@ COMMANDS += [
 ]
 
 
+def create_handler(path, mtype):
+    def handler(message):
+        send_random_media(bot, message, path, mtype)
+    return handler
+
 def register_random(bot):
     for command, path, media_type in COMMANDS:
-        @bot.message_handler(commands=[command])
-        def handler(message, path=path, mtype=media_type):
-            send_random_media(bot, message, path, mtype)
+        bot.message_handler(commands=[command])(create_handler(path, media_type))
