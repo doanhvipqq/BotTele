@@ -34,5 +34,6 @@ def register_time(bot):
         bot.send_video(
             message.chat.id,
             video_url,
-            caption = caption
+            caption = caption,
+            reply_to_message_id=message.message_id
         )
