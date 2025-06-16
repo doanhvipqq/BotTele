@@ -25,7 +25,7 @@ def send_random_media(bot, message, file_path, media_type):
     if not send_func:
         return bot.reply_to(message, "Không xác định kiểu media!")
 
-    for url in urls:
+    for url in urls[:5]: # 5 lần thử lại
         try:
             send_func(message.chat.id, url, reply_to_message_id=message.message_id)
             return
