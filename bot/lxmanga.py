@@ -66,10 +66,10 @@ def register_lxmanga(bot):
 
                 img_data = requests.get(img_url, headers=headers, timeout=10).content
 
-                zip_path = f"{story_name.strip()}/{chapter_name.strip()}/{filename}"
+                zip_path = f"{story_name}/{chapter_name}/{filename}"
                 zipf.writestr(zip_path, img_data)
 
-        file_name = f"{story_name} - {chapter_name}.zip"
+        file_name = f"{story_name}.zip"
         return zip_buffer, len(img_urls), file_name
 
     def get_names_from_title(soup):
