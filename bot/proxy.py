@@ -84,11 +84,17 @@ def update_proxies():
 def register_proxy(bot):
     @bot.message_handler(commands=["proxy"])
     def send_proxy(msg):
-        bot.send_chat_action(msg.chat.id, "upload_document")
-        total = update_proxies()
-        with open("PROXY_FREE.txt", "rb") as f:
-            bot.send_document(
-                msg.chat.id, f,
-                caption = f"📌 <b>Tổng cộng:</b> {total} proxies",
-                reply_to_message_id=msg.message_id
-            )
+        status_msg = bot.reply_to(msg, "🔍 Đang xử lý, vui lòng chờ...")
+
+        try:
+            bot.send_chat_action(msg.chat.id, "upload_document")
+            total = update_proxies()
+
+            with open("PROXY_FREE.txt", "rb") as f:
+                bot.send_document(
+                    msg.chat.id, f,
+                    caption = f"📌 <b>Tổng cộng:</b> {total} proxies",
+                    reply_to_message_id=msg.message_id
+                )
+        finally:
+            bot.delete_message(msg.chat.id, status_msg.message_id)
