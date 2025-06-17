@@ -66,7 +66,7 @@ def register_lxmanga(bot):
 
                 img_data = requests.get(img_url, headers=headers, timeout=10).content
 
-                zip_path = f"{story_name}/{chapter_name}/{filename}"
+                zip_path = f"{story_name.strip()}/{chapter_name.strip()}/{filename}"
                 zipf.writestr(zip_path, img_data)
 
         file_name = f"{story_name} - {chapter_name}.zip"
@@ -82,4 +82,4 @@ def register_lxmanga(bot):
                     chapter_name = parts[0]
                     story_name = parts[1]
                     return story_name, chapter_name
-        return "story", "chapter"
+        return "Unknown_Story", "Unknown_Chapter"
