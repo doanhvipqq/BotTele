@@ -51,10 +51,10 @@ def register_lxmanga(bot):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # ✅ Lấy tên truyện và chương từ <title>
+        # Lấy tên truyện và chương từ <title>
         story_name, chapter_name = get_names_from_title(soup)
 
-        # ✅ Cào ảnh từ div.lazy
+        # Cào ảnh từ div.lazy
         img_divs = soup.select("div.text-center div.lazy")
         img_urls = [div.get("data-src") for div in img_divs if div.get("data-src")]
 
