@@ -4,6 +4,9 @@ from io import BytesIO
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
+def safe_path(name):
+    return name.replace("/", "_").replace("\\", "_").strip()
+
 def register_lxmanga(bot):
     @bot.message_handler(commands=['lxmanga'])
     def handle_lxmanga(message):
@@ -66,7 +69,7 @@ def register_lxmanga(bot):
 
                 img_data = requests.get(img_url, headers=headers, timeout=10).content
 
-                zip_path = f"{story_name}/{chapter_name}/{filename}"
+                zip_path = f"{safe_path(story_name)}/{safe_path(chapter_name)}/{filename}"
                 zipf.writestr(zip_path, img_data)
 
         file_name = f"{story_name}.zip"
