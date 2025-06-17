@@ -1,8 +1,11 @@
+import os
+import re
 import zipfile
 import requests
 from io import BytesIO
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+from telebot.types import InputFile
 
 def register_lxmanga(bot):
     @bot.message_handler(commands=['lxmanga'])
@@ -11,9 +14,8 @@ def register_lxmanga(bot):
             chap_url = message.text.split(maxsplit=1)[1].strip()
             if not chap_url.startswith("https://lxmanga."):
                 raise ValueError
-        except (IndexError, ValueError):
-            bot.reply_to(message, "❗️Bạn cần nhập đúng định dạng: `/lxmanga <url chương>`", parse_mode="Markdown")
-            return
+        except:
+            return bot.reply_to(message, "❗️Bạn cần nhập đúng định dạng: `/lxmanga <url chương>`", parse_mode="Markdown")
 
         sent_msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
 
@@ -21,17 +23,15 @@ def register_lxmanga(bot):
             zip_data, total, file_name = get_zip_from_chapter(chap_url)
 
             if total == 0:
-                bot.edit_message_text(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id, text="❌ Không tìm thấy ảnh nào trong trang.")
-                return
+                return bot.edit_message_text(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id,
+                                             text="❌ Không tìm thấy ảnh nào trong trang.")
 
             zip_data.seek(0)
-
             bot.delete_message(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id)
 
             bot.send_document(
                 chat_id=message.chat.id,
-                document=zip_data,
-                visible_file_name=file_name,
+                document=InputFile(zip_data, file_name),
                 caption=f"Đã tải xong `{total}` ảnh từ chương truyện!",
                 reply_to_message_id=message.message_id,
                 parse_mode="Markdown"
@@ -51,38 +51,38 @@ def register_lxmanga(bot):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Lấy tên truyện và chương từ <title>
         story_name, chapter_name = get_names_from_title(soup)
 
-        # Cào ảnh từ div.lazy
         img_divs = soup.select("div.text-center div.lazy")
         img_urls = [div.get("data-src") for div in img_divs if div.get("data-src")]
 
         zip_buffer = BytesIO()
         with zipfile.ZipFile(zip_buffer, "w") as zipf:
             for idx, img_url in enumerate(img_urls):
-                ext = img_url.split(".")[-1].split("?")[0]
-                filename = f"{idx+1:03d}.{ext}"
+                try:
+                    ext = os.path.splitext(urlparse(img_url).path)[1].lstrip(".") or "jpg"
+                    filename = f"{idx+1:03d}.{ext}"
+                    zip_path = f"{sanitize_path(story_name)}/{chapter_name}/{filename}"
+                    img_data = requests.get(img_url, headers=headers, timeout=10).content
+                    zipf.writestr(zip_path, img_data)
+                except:
+                    continue
 
-                img_data = requests.get(img_url, headers=headers, timeout=10).content
-
-                clean_story_name = story_name.replace("(", "").replace(")", "")
-                zip_path = f"{clean_story_name}/{chapter_name}/{filename}"
-                zipf.writestr(zip_path, img_data)
-
-        file_name = f"{story_name}.zip"
-        return zip_buffer, len(img_urls), file_name
+        return zip_buffer, len(img_urls), f"{story_name}.zip"
 
     def get_names_from_title(soup):
-        for tag in reversed(soup.find_all("title")):
-            title_text = tag.get_text(strip=True)
-            if " - LXMANGA" in title_text:
-                # Bỏ phần cuối
-                title_text = title_text.replace(" - LXMANGA", "").strip()
-                if " - " in title_text:
-                    parts = title_text.split(" - ", maxsplit=1)  # chỉ tách 1 lần từ trái
-                    if len(parts) == 2:
-                        chapter_name = parts[0].strip()
-                        story_name = parts[1].strip()
-                        return story_name, chapter_name
-        return "Unknown_Story", "Unknown_Chapter"
+        title_tag = soup.find("title")
+        if not title_tag:
+            return "Unknown", "Unknown"
+
+        raw_title = title_tag.get_text(strip=True)
+        if "-" not in raw_title:
+            return raw_title, "Chapter"
+
+        split_idx = raw_title.rfind("-")
+        story_name = raw_title[:split_idx].strip()
+        chapter_name = raw_title[split_idx + 1:].strip()
+        return story_name, chapter_name
+
+    def sanitize_path(name):
+        return re.sub(r'[\\/:"*?<>|]', "_", name).strip()
