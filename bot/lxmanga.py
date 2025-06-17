@@ -75,13 +75,11 @@ def register_lxmanga(bot):
     def get_names_from_title(soup):
         for tag in reversed(soup.find_all("title")):
             title_text = tag.get_text(strip=True)
-            if " - LXMANGA" in title_text:
-                # Bỏ phần cuối
-                title_text = title_text.replace(" - LXMANGA", "").strip()
-                if " - " in title_text:
-                    parts = title_text.split(" - ", maxsplit=1)  # chỉ tách 1 lần từ trái
-                    if len(parts) == 2:
-                        chapter_name = parts[0].strip()
-                        story_name = parts[1].strip()
-                        return story_name, chapter_name
+            # Chuẩn hóa chuỗi: bỏ toàn bộ khoảng trắng thừa quanh dấu '-'
+            cleaned = [part.strip() for part in title_text.split(" - ")]
+            # Kiểm tra nếu phần cuối là 'LXMANGA'
+            if cleaned and cleaned[-1].upper() == "LXMANGA" and len(cleaned) >= 3:
+                chapter_name = cleaned[0]
+                story_name = " - ".join(cleaned[1:-1])  # Ghép phần còn lại làm tên truyện
+                return story_name, chapter_name
         return "Unknown_Story", "Unknown_Chapter"
