@@ -1,4 +1,3 @@
-import os
 import re
 import zipfile
 import requests
@@ -14,25 +13,26 @@ def register_lxmanga(bot):
             chap_url = message.text.split(maxsplit=1)[1].strip()
             if not chap_url.startswith("https://lxmanga."):
                 raise ValueError
-        except:
+        except Exception:
             return bot.reply_to(message, "❗️Bạn cần nhập đúng định dạng: `/lxmanga <url chương>`", parse_mode="Markdown")
 
         sent_msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
 
         try:
-            zip_data, total, file_name = get_zip_from_chapter(chap_url)
+            zip_data, total, story_name, chapter_name = get_zip_from_chapter(chap_url)
 
             if total == 0:
                 return bot.edit_message_text(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id,
                                              text="❌ Không tìm thấy ảnh nào trong trang.")
 
-            zip_data.seek(0)
             bot.delete_message(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id)
+
+            safe_file_name = make_safe_filename(story_name) + ".zip"
 
             bot.send_document(
                 chat_id=message.chat.id,
-                document=InputFile(zip_data, file_name),
-                caption=f"Đã tải xong `{total}` ảnh từ chương truyện!",
+                document=InputFile(zip_data, safe_file_name),
+                caption=f"📦 `{total}` ảnh từ chương `{chapter_name}` của truyện:\n*{story_name}*",
                 reply_to_message_id=message.message_id,
                 parse_mode="Markdown"
             )
@@ -60,15 +60,16 @@ def register_lxmanga(bot):
         with zipfile.ZipFile(zip_buffer, "w") as zipf:
             for idx, img_url in enumerate(img_urls):
                 try:
-                    ext = os.path.splitext(urlparse(img_url).path)[1].lstrip(".") or "jpg"
+                    ext = urlparse(img_url).path.split(".")[-1].split("?")[0] or "jpg"
                     filename = f"{idx+1:03d}.{ext}"
-                    zip_path = f"{sanitize_path(story_name)}/{chapter_name}/{filename}"
+                    zip_path = f"{sanitize_zip_part(story_name)}/{sanitize_zip_part(chapter_name)}/{filename}"
                     img_data = requests.get(img_url, headers=headers, timeout=10).content
                     zipf.writestr(zip_path, img_data)
-                except:
+                except Exception:
                     continue
 
-        return zip_buffer, len(img_urls), f"{story_name}.zip"
+        zip_buffer.seek(0)
+        return zip_buffer, len(img_urls), story_name, chapter_name
 
     def get_names_from_title(soup):
         title_tag = soup.find("title")
@@ -76,13 +77,16 @@ def register_lxmanga(bot):
             return "Unknown", "Unknown"
 
         raw_title = title_tag.get_text(strip=True)
-        if "-" not in raw_title:
-            return raw_title, "Chapter"
+        if "-" in raw_title:
+            split_idx = raw_title.rfind("-")
+            story_name = raw_title[:split_idx].strip()
+            chapter_name = raw_title[split_idx + 1:].strip()
+            return story_name, chapter_name
 
-        split_idx = raw_title.rfind("-")
-        story_name = raw_title[:split_idx].strip()
-        chapter_name = raw_title[split_idx + 1:].strip()
-        return story_name, chapter_name
+        return raw_title.strip(), "Chapter"
 
-    def sanitize_path(name):
+    def make_safe_filename(name):
         return re.sub(r'[\\/:"*?<>|]', "_", name).strip()
+
+    def sanitize_zip_part(name):
+        return re.sub(r'[\\:*?"<>|]', "_", name).strip()
