@@ -4,9 +4,6 @@ from io import BytesIO
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
-def safe_path(name):
-    return name.replace("/", "_").replace("\\", "_").strip()
-
 def register_lxmanga(bot):
     @bot.message_handler(commands=['lxmanga'])
     def handle_lxmanga(message):
@@ -69,20 +66,22 @@ def register_lxmanga(bot):
 
                 img_data = requests.get(img_url, headers=headers, timeout=10).content
 
-                zip_path = f"{safe_path(story_name)}/{safe_path(chapter_name)}/{filename}"
+                zip_path = f"{story_name}/{chapter_name}/{filename}"
                 zipf.writestr(zip_path, img_data)
 
-        file_name = f"{story_name}.zip"
+        file_name = f"{story_name} - {chapter_name}.zip"
         return zip_buffer, len(img_urls), file_name
 
     def get_names_from_title(soup):
         for tag in reversed(soup.find_all("title")):
             title_text = tag.get_text(strip=True)
-            # Chuẩn hóa chuỗi: bỏ toàn bộ khoảng trắng thừa quanh dấu '-'
-            cleaned = [part.strip() for part in title_text.split(" - ")]
-            # Kiểm tra nếu phần cuối là 'LXMANGA'
-            if cleaned and cleaned[-1].upper() == "LXMANGA" and len(cleaned) >= 3:
-                chapter_name = cleaned[0]
-                story_name = " - ".join(cleaned[1:-1])  # Ghép phần còn lại làm tên truyện
-                return story_name, chapter_name
+            if " - LXMANGA" in title_text:
+                # Bỏ phần cuối
+                title_text = title_text.replace(" - LXMANGA", "").strip()
+                if " - " in title_text:
+                    parts = title_text.split(" - ", maxsplit=1)  # chỉ tách 1 lần từ trái
+                    if len(parts) == 2:
+                        chapter_name = parts[0].strip()
+                        story_name = parts[1].strip()
+                        return story_name, chapter_name
         return "Unknown_Story", "Unknown_Chapter"
