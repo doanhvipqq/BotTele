@@ -1,3 +1,4 @@
+import os
 import re
 import yt_dlp
 import tempfile
@@ -34,15 +35,16 @@ def download(url, tmpdir):
 def register_send(bot):
     @bot.message_handler(commands=['send'])
     def handle_send(message):
-        parts = message.text.strip().split(maxsplit=1)
-        if len(parts) < 2 or not parts[1].strip():
-            return bot.reply_to(message, "❗️ Vui lòng dùng đúng cú pháp: /send <link>")
+        args = message.text.split()
+        if len(args) < 2:
+            bot.reply_to(message, "Vui lòng cung cấp URL. Ví dụ: /send https://example.com/abc.mp4")
+            return
 
         url = parts[1].strip()
         msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
 
         # Kiểm tra link hợp lệ
-        if not is_supported(url):
+        if not is_url_supported(url):
             return bot.edit_message_text(
                 "🚫 Nền tảng không được hỗ trợ hoặc link không hợp lệ.",
                 chat_id=msg.chat.id,
@@ -53,7 +55,7 @@ def register_send(bot):
 
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
-                video_path = download(url, tmpdir)
+                video_path = download_video(url, tmpdir)
                 file_size_mb = os.path.getsize(video_path) / (1024 * 1024)
 
                 if file_size_mb > 50:
