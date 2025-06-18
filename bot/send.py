@@ -35,10 +35,9 @@ def download(url, tmpdir):
 def register_send(bot):
     @bot.message_handler(commands=['send'])
     def handle_send(message):
-        args = message.text.split()
-        if len(args) < 2:
-            bot.reply_to(message, "❗️ Vui lòng dùng đúng cú pháp: /send <link>")
-            return
+        parts = message.text.strip().split(maxsplit=1)
+        if len(parts) < 2 or not parts[1].strip():
+            return bot.reply_to(message, "❗️ Vui lòng dùng đúng cú pháp: /send <link>")
 
         # Cắt phần link
         parts = message.text.strip().split(maxsplit=1)
