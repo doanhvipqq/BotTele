@@ -35,32 +35,41 @@ def download(url, tmpdir):
 def register_send(bot):
     @bot.message_handler(commands=['send'])
     def handle_send(message):
-        if not message.text:
+        # Kiểm tra nếu người dùng không nhập gì sau lệnh /send
+        if not message.text or not message.text.strip() or message.text.strip() == '/send':
             return bot.reply_to(message, "❗️ Vui lòng dùng đúng cú pháp: /send <link>")
 
-        parts = message.text.split(maxsplit=1)
+        # Cắt phần link
+        parts = message.text.strip().split(maxsplit=1)
         if len(parts) < 2 or not parts[1].strip():
             return bot.reply_to(message, "❗️ Vui lòng dùng đúng cú pháp: /send <link>")
 
         url = parts[1].strip()
-        notice = bot.reply_to(message, "🔍 Đang xử lý...")
+        msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
 
-        if not is_supported(url):
-            return bot.edit_message_text("🚫 Link không hợp lệ hoặc không được hỗ trợ.",
-                                         notice.chat.id, notice.message_id)
+        # Kiểm tra link hợp lệ
+        if not is_url_supported(url):
+            return bot.edit_message_text(
+                "🚫 Nền tảng không được hỗ trợ hoặc link không hợp lệ.",
+                chat_id=msg.chat.id,
+                message_id=msg.message_id
+            )
 
-        bot.edit_message_text("⏳ Đang tải video...", notice.chat.id, notice.message_id)
+        bot.edit_message_text("⏳ Đang tải video, vui lòng chờ...", msg.chat.id, msg.message_id)
 
         try:
-            with tempfile.TemporaryDirectory() as tmp:
-                path = download(url, tmp)
-                size = os.path.getsize(path) / 1024 / 1024
-                if size > MAX_MB:
-                    bot.edit_message_text("🚫 File quá lớn (>50MB), không thể gửi qua Telegram.",
-                                          notice.chat.id, notice.message_id)
-                else:
-                    with open(path, 'rb') as f:
-                        bot.send_video(message.chat.id, f, reply_to_message_id=message.message_id)
-                    bot.delete_message(notice.chat.id, notice.message_id)
-        except Exception as e:
-            bot.edit_message_text(f"❌ Lỗi khi xử lý video: {e}", notice.chat.id, notice.message_id)
+            with tempfile.TemporaryDirectory() as tmpdir:
+                video_path = download_video(url, tmpdir)
+                file_size_mb = os.path.getsize(video_path) / (1024 * 1024)
+
+                if file_size_mb > 50:
+                    return bot.edit_message_text(
+                        "🚫 File quá lớn (>50MB), không thể gửi qua Telegram.",
+                        msg.chat.id, msg.message_id
+                    )
+
+                with open(video_path, 'rb') as f:
+                    bot.send_video(message.chat.id, f, reply_to_message_id=message.message_id)
+                bot.delete_message(msg.chat.id, msg.message_id)
+
+        except Excepti
