@@ -7,6 +7,7 @@ caption = """<blockquote expandable>┌─────────────�
 ├ /github: Info github 🐈‍⬛
 ├ /images: Lấy url ảnh web 👻
 ├ /scl: Tải nhạc SoundCloud 🎶
+├ /thumb: Thêm thumnail file 🌃
 ├ /sourceweb: Tải source web 🎃
 ├ /send: Tải video đa nền tảng 🎬
 ├ /tiktok: Thông tin video TikTok 🫦
