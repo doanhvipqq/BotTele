@@ -4,7 +4,7 @@ from datetime import datetime
 import threading
 
 ADMIN_ID = 6379209139
-GROUP_ID = -1002408191237
+GROUP_ID = -1002408191237, 5900948782, 5457864537
 VIP_FILE = "vip.txt"
 
 last_sms_time = {}
