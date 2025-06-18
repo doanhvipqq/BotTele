@@ -44,7 +44,7 @@ def register_send(bot):
         msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
 
         # Kiểm tra link hợp lệ
-        if not is_url_supported(url):
+        if not is_supported(url):
             return bot.edit_message_text(
                 "🚫 Nền tảng không được hỗ trợ hoặc link không hợp lệ.",
                 chat_id=msg.chat.id,
@@ -55,7 +55,7 @@ def register_send(bot):
 
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
-                video_path = download_video(url, tmpdir)
+                video_path = download(url, tmpdir)
                 file_size_mb = os.path.getsize(video_path) / (1024 * 1024)
 
                 if file_size_mb > 50:
