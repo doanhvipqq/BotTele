@@ -27,10 +27,11 @@ def download_video(url: str, tmpdir: str) -> str:
 def register_send(bot):
     @bot.message_handler(commands=['send'])
     def handle_send(message):
-        if not message.text or len(message.text.split()) < 2:
+        args = message.text.split(maxsplit=1)
+        if len(args) < 2 or not args[1].strip():
             return bot.reply_to(message, "❗️ Vui lòng dùng đúng cú pháp: /send <link>")
 
-        url = message.text.split(maxsplit=1)[1].strip()
+        url = args[1].strip()
         msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
 
         if not is_url_supported(url):
