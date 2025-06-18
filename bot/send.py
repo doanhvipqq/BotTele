@@ -34,16 +34,19 @@ def download(url, tmpdir):
 
 def register_send(bot):
     @bot.message_handler(commands=['send'])
-    def handle_send(msg):
-        parts = msg.text.strip().split(maxsplit=1)
+    def handle_send(message):
+        if not message.text:
+            return bot.reply_to(message, "❗️ Vui lòng dùng đúng cú pháp: /send <link>")
+
+        parts = message.text.split(maxsplit=1)
         if len(parts) < 2 or not parts[1].strip():
-            return bot.reply_to(msg, "❗️ Dùng đúng cú pháp: /send <link>")
+            return bot.reply_to(message, "❗️ Vui lòng dùng đúng cú pháp: /send <link>")
 
         url = parts[1].strip()
-        notice = bot.reply_to(msg, "🔍 Đang xử lý...")
+        notice = bot.reply_to(message, "🔍 Đang xử lý...")
 
         if not is_supported(url):
-            return bot.edit_message_text("🚫 Link không hợp lệ hoặc không hỗ trợ.",
+            return bot.edit_message_text("🚫 Link không hợp lệ hoặc không được hỗ trợ.",
                                          notice.chat.id, notice.message_id)
 
         bot.edit_message_text("⏳ Đang tải video...", notice.chat.id, notice.message_id)
@@ -53,10 +56,11 @@ def register_send(bot):
                 path = download(url, tmp)
                 size = os.path.getsize(path) / 1024 / 1024
                 if size > MAX_MB:
-                    bot.edit_message_text("🚫 File quá lớn (>50MB).", notice.chat.id, notice.message_id)
+                    bot.edit_message_text("🚫 File quá lớn (>50MB), không thể gửi qua Telegram.",
+                                          notice.chat.id, notice.message_id)
                 else:
                     with open(path, 'rb') as f:
-                        bot.send_video(msg.chat.id, f, reply_to_message_id=msg.message_id)
+                        bot.send_video(message.chat.id, f, reply_to_message_id=message.message_id)
                     bot.delete_message(notice.chat.id, notice.message_id)
         except Exception as e:
-            bot.edit_message_text(f"❌ Lỗi: {e}", notice.chat.id, notice.message_id)
+            bot.edit_message_text(f"❌ Lỗi khi xử lý video: {e}", notice.chat.id, notice.message_id)
