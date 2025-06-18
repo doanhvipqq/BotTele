@@ -1,56 +1,56 @@
-import os
-import zipfile
-import tempfile
-from PIL import Image
 
 def register_document(bot):
+
+    user_sessions = {}
+    
+    @bot.message_handler(commands=['send'])
+    def handle_send(message):
+        user_id = message.from_user.id
+        user_sessions[user_id] = {"state": "waiting", "thumb": None, "file": None}
+        bot.reply_to(message, "📥 Gửi ảnh thumbnail và file bất kỳ (ảnh trước, file sau).")
+    
+    @bot.message_handler(content_types=['photo'])
+    def handle_photo(message):
+        user_id = message.from_user.id
+        session = user_sessions.get(user_id)
+    
+        if session and session["state"] == "waiting":
+            file_id = message.photo[-1].file_id
+            session["thumb"] = file_id
+            check_and_send(message, session)
+    
     @bot.message_handler(content_types=['document'])
-    def convert_zip_to_pdfs(message):
-        if not message.document.file_name.lower().endswith(".zip"):
-            return bot.reply_to(message, "❗ Vui lòng gửi file .zip chứa ảnh trong các thư mục!")
+    def handle_document(message):
+        user_id = message.from_user.id
+        session = user_sessions.get(user_id)
     
-        try:
-            file_info = bot.get_file(message.document.file_id)
-            downloaded = bot.download_file(file_info.file_path)
-        except Exception:
-            return bot.reply_to(message, "❌ Không thể tải file từ Telegram.")
+        if session and session["state"] == "waiting":
+            file_id = message.document.file_id
+            file_name = message.document.file_name
+            session["file"] = {"file_id": file_id, "file_name": file_name}
+            check_and_send(message, session)
     
-        with tempfile.TemporaryDirectory() as temp_dir:
-            zip_path = os.path.join(temp_dir, "input.zip")
-            with open(zip_path, "wb") as f:
-                f.write(downloaded)
+    def check_and_send(message, session):
+        user_id = message.from_user.id
+        if session["thumb"] and session["file"]:
+            # Tải thumbnail
+            thumb_info = bot.get_file(session["thumb"])
+            thumb_data = bot.download_file(thumb_info.file_path)
     
-            try:
-                with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                    zip_ref.extractall(temp_dir)
-            except zipfile.BadZipFile:
-                return bot.reply_to(message, "❌ File không phải định dạng .zip hợp lệ.")
+            # Tải file document
+            doc_info = bot.get_file(session["file"]["file_id"])
+            doc_data = bot.download_file(doc_info.file_path)
     
-            sent = False
-            for name in sorted(os.listdir(temp_dir)):
-                folder = os.path.join(temp_dir, name)
-                if not os.path.isdir(folder):
-                    continue
+            # Gửi lại file kèm thumbnail
+            bot.send_document(
+                message.chat.id,
+                document=doc_data,
+                thumb=thumb_data,
+                visible_file_name=session["file"]["file_name"]
+            )
     
-                images = sorted(
-                    os.path.join(folder, f)
-                    for f in os.listdir(folder)
-                    if f.lower().endswith(('.jpg', '.jpeg', '.png'))
-                )
+            bot.send_message(message.chat.id, "✅ Đã gửi lại file kèm thumbnail.")
     
-                if not images:
-                    continue
+            # Reset session
+            user_sessions.pop(user_id, None)
     
-                try:
-                    pdf_path = os.path.join(temp_dir, f"{name}.pdf")
-                    imgs = [Image.open(p).convert("RGB") for p in images]
-                    imgs[0].save(pdf_path, save_all=True, append_images=imgs[1:])
-    
-                    with open(pdf_path, "rb") as pdf_file:
-                        bot.send_document(message.chat.id, pdf_file, caption=f"📖 {name}")
-                        sent = True
-                except Exception:
-                    bot.reply_to(message, f"⚠️ Lỗi tạo PDF chương: {name}")
-    
-            if not sent:
-                bot.reply_to(message, "❌ Không tìm thấy ảnh hợp lệ để tạo PDF.")
