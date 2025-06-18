@@ -22,7 +22,7 @@ def is_vip(user_id):
 def register_spamsms(bot):
     @bot.message_handler(commands=['add'])
     def add(message):
-        if message.chat.id != GROUP_ID or message.from_user.id != ADMIN_ID:
+        if message.chat.id not in GROUP_ID or message.from_user.id != ADMIN_ID:
             bot.reply_to(message, "❌ Bạn không có quyền sử dụng lệnh này.")
             return
 
@@ -47,7 +47,7 @@ def register_spamsms(bot):
 
     @bot.message_handler(commands=['sms'])
     def sms(message):
-        if message.chat.id != GROUP_ID:
+        if message.chat.id not in GROUP_ID:
             return
 
         user_id = message.from_user.id
@@ -86,7 +86,7 @@ def register_spamsms(bot):
 
     @bot.message_handler(commands=['smsvip'])
     def smsvip(message):
-        if message.chat.id != GROUP_ID:
+        if message.chat.id not in GROUP_ID:
             return
 
         user_id = message.from_user.id
