@@ -72,4 +72,8 @@ def register_send(bot):
                     bot.send_video(message.chat.id, f, reply_to_message_id=message.message_id)
                 bot.delete_message(msg.chat.id, msg.message_id)
 
-        except Excepti
+        except Exception as e:
+            bot.edit_message_text(
+                f"❌ Lỗi khi xử lý video: {e}",
+                msg.chat.id, msg.message_id
+            )
