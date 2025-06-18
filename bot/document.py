@@ -3,7 +3,7 @@ def register_document(bot):
 
     user_sessions = {}
     
-    @bot.message_handler(commands=['send'])
+    @bot.message_handler(commands=['sendfile'])
     def handle_send(message):
         user_id = message.from_user.id
         user_sessions[user_id] = {"state": "waiting", "thumb": None, "file": None}
