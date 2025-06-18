@@ -10,7 +10,7 @@ def safe_name(name):
 
 def is_supported(url):
     try:
-        with yt_dlp.YoutubeDL({'quiet': True, 'cachedir': False}) as ydl:
+        with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
             ydl.extract_info(url, download=False)
             return True
     except:
@@ -22,8 +22,7 @@ def download(url, tmpdir):
         'outtmpl': out,
         'quiet': True,
         'format': 'bestvideo+bestaudio/best',
-        'merge_output_format': 'mp4',
-        'cachedir': False
+        'merge_output_format': 'mp4'
     }
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=True)
@@ -36,39 +35,41 @@ def download(url, tmpdir):
 def register_send(bot):
     @bot.message_handler(commands=['send'])
     def handle_send(message):
-        parts = message.text.strip().split(maxsplit=1)
-        if len(parts) < 2:
-            return bot.reply_to(message, "❗️ Vui lòng dùng đúng cú pháp:\n`/send <link>`", parse_mode="Markdown")
-
-        url = parts[1].strip()
+        args = message.text.split()
+        if len(args) < 2:
+            bot.reply_to(message, "Vui lòng cung cấp URL. Ví dụ: /send https://example.com/abc.mp4")
+            return
+        
+        url = args[1].strip()
         msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
-
+        
+        # Kiểm tra link hợp lệ
         if not is_supported(url):
             return bot.edit_message_text(
-                "🚫 Link không hợp lệ hoặc không được hỗ trợ.",
-                msg.chat.id, msg.message_id
+                "🚫 Nền tảng không được hỗ trợ hoặc link không hợp lệ.",
+                chat_id=msg.chat.id,
+                message_id=msg.message_id
             )
-
+        
         bot.edit_message_text("⏳ Đang tải video, vui lòng chờ...", msg.chat.id, msg.message_id)
-
+        
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
                 video_path = download(url, tmpdir)
-                size_mb = os.path.getsize(video_path) / (1024 * 1024)
-
-                if size_mb > MAX_MB:
+                file_size_mb = os.path.getsize(video_path) / (1024 * 1024)
+                
+                if file_size_mb > MAX_MB:
                     return bot.edit_message_text(
-                        f"🚫 File quá lớn ({size_mb:.1f}MB > {MAX_MB}MB), không thể gửi qua Telegram.",
+                        f"🚫 File quá lớn (>{MAX_MB}MB), không thể gửi qua Telegram.",
                         msg.chat.id, msg.message_id
                     )
-
+                
                 with open(video_path, 'rb') as f:
                     bot.send_video(message.chat.id, f, reply_to_message_id=message.message_id)
                 bot.delete_message(msg.chat.id, msg.message_id)
-
+                
         except Exception as e:
             bot.edit_message_text(
-                f"❌ Lỗi khi xử lý video:\n`{e}`",
-                msg.chat.id, msg.message_id,
-                parse_mode="Markdown"
+                f"❌ Lỗi khi xử lý video: {e}",
+                msg.chat.id, msg.message_id
             )
