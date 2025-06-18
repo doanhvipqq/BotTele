@@ -37,7 +37,7 @@ def register_send(bot):
     def handle_send(message):
         args = message.text.split()
         if len(args) < 2:
-            bot.reply_to(message, "Vui lòng cung cấp URL. Ví dụ: /send https://example.com/abc.mp4")
+            bot.reply_to(message, "Vui lòng cung cấp URL video muốn tải. \n Ví dụ: /send https://example.com/abc.mp4")
             return
         
         url = args[1].strip()
