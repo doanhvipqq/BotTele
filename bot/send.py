@@ -13,7 +13,7 @@ def is_supported(url):
         with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
             ydl.extract_info(url, download=False)
             return True
-    except:
+    except Exception:
         return False
 
 def download(url, tmpdir):
@@ -26,7 +26,7 @@ def download(url, tmpdir):
     }
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=True)
-        path = ydl.prepare_filename(info)
+        path = info.get('_filename') or ydl.prepare_filename(info)
         safe_path = os.path.join(tmpdir, safe_name(os.path.basename(path)))
         if path != safe_path:
             os.rename(path, safe_path)
