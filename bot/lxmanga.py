@@ -48,7 +48,7 @@ def register_lxmanga(bot):
             "User-Agent": "Mozilla/5.0",
         }
 
-        response = requests.get(chap_url, headers=headers, timeout=10)
+        response = requests.get(chap_url, headers=headers, timeout=20)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
 
@@ -65,7 +65,7 @@ def register_lxmanga(bot):
                 ext = img_url.split(".")[-1].split("?")[0]
                 filename = f"{idx+1:03d}.{ext}"
 
-                img_data = requests.get(img_url, headers=headers, timeout=10).content
+                img_data = requests.get(img_url, headers=headers, timeout=20).content
 
                 # Ghi file theo cấu trúc thư mục trong zip
                 zip_path = f"{story_name}/{chapter_name}/{filename}"
