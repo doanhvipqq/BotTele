@@ -1,9 +1,9 @@
-import os
 import re
 import zipfile
 import requests
 from io import BytesIO
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 from telebot.types import InputFile
 
 def register_lxmanga(bot):
@@ -45,23 +45,51 @@ def register_lxmanga(bot):
             "User-Agent": "Mozilla/5.0",
         }
 
-        response = requests.get(chap_url, headers=headers, timeout=10)
+        response = requests.get(chap_url, headers=headers, timeout=15)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
 
         story_name, chapter_name = get_names_from_title(soup)
+        safe_story = clean_filename(story_name)
+        safe_chap = clean_filename(chapter_name)
+
+        # Dựng URL trang truyện để lấy ảnh bìa
+        path_parts = urlparse(chap_url).path.strip("/").split("/")
+        slug = path_parts[1] if len(path_parts) >= 2 and path_parts[0] == "truyen" else None
+        story_url = f"https://{urlparse(chap_url).netloc}/truyen/{slug}" if slug else chap_url
+
+        # Lấy ảnh bìa
+        cover_url = None
+        try:
+            story_page = requests.get(story_url, headers=headers, timeout=15)
+            story_page.raise_for_status()
+            soup_story = BeautifulSoup(story_page.text, "html.parser")
+            style = soup_story.select_one(".cover")["style"]
+            match = re.search(r"url\('([^']+)", style)
+            cover_url = match.group(1) if match else None
+        except Exception:
+            pass
 
         img_divs = soup.select("div.text-center div.lazy")
         img_urls = [div.get("data-src") for div in img_divs if div.get("data-src")]
 
         zip_buffer = BytesIO()
         with zipfile.ZipFile(zip_buffer, "w", compression=zipfile.ZIP_DEFLATED) as zipf:
+            # Ghi ảnh bìa nếu có
+            if cover_url:
+                try:
+                    ext = urlparse(cover_url).path.split(".")[-1].split("?")[0] or "jpg"
+                    cover_data = requests.get(cover_url, headers=headers, timeout=15).content
+                    zipf.writestr(f"{safe_story}/cover.{ext}", cover_data)
+                except Exception:
+                    pass
+
             for idx, img_url in enumerate(img_urls):
                 try:
-                    ext = os.path.splitext(img_url.split("?")[0])[1].lstrip(".") or "jpg"
+                    ext = urlparse(img_url).path.split(".")[-1].split("?")[0] or "jpg"
                     filename = f"{idx+1:03d}.{ext}"
-                    zip_path = f"{clean_filename(story_name)}/{clean_filename(chapter_name)}/{filename}"
-                    img_data = requests.get(img_url, headers=headers, timeout=10).content
+                    zip_path = f"{safe_story}/{safe_chap}/{filename}"
+                    img_data = requests.get(img_url, headers=headers, timeout=15).content
                     zipf.writestr(zip_path, img_data)
                 except Exception:
                     continue
