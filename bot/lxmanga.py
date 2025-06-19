@@ -1,20 +1,18 @@
+import os
 import re
 import zipfile
 import requests
 from io import BytesIO
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse
 from telebot.types import InputFile
 
 def register_lxmanga(bot):
     @bot.message_handler(commands=['lxmanga'])
     def handle_lxmanga(message):
-        try:
-            chap_url = message.text.split(maxsplit=1)[1].strip()
-            if not chap_url.startswith("https://lxmanga."):
-                raise ValueError
-        except Exception:
-            return bot.reply_to(message, "❗️Bạn cần nhập đúng định dạng: `/lxmanga <url chương>`", parse_mode="Markdown")
+        args = message.text.split(maxsplit=1)
+        if len(args) < 2 or not args[1].strip().startswith("https://lxmanga."):
+            return bot.reply_to(message, "❗️Bạn cần nhập đúng định dạng: `/lxmanga [url chương]`", parse_mode="Markdown")
+        chap_url = args[1].strip()
 
         sent_msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
 
@@ -27,7 +25,7 @@ def register_lxmanga(bot):
 
             bot.delete_message(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id)
 
-            safe_file_name = make_safe_filename(story_name) + ".zip"
+            safe_file_name = clean_filename(story_name) + ".zip"
 
             bot.send_document(
                 chat_id=message.chat.id,
@@ -57,12 +55,12 @@ def register_lxmanga(bot):
         img_urls = [div.get("data-src") for div in img_divs if div.get("data-src")]
 
         zip_buffer = BytesIO()
-        with zipfile.ZipFile(zip_buffer, "w") as zipf:
+        with zipfile.ZipFile(zip_buffer, "w", compression=zipfile.ZIP_DEFLATED) as zipf:
             for idx, img_url in enumerate(img_urls):
                 try:
-                    ext = urlparse(img_url).path.split(".")[-1].split("?")[0] or "jpg"
+                    ext = os.path.splitext(img_url.split("?")[0])[1].lstrip(".") or "jpg"
                     filename = f"{idx+1:03d}.{ext}"
-                    zip_path = f"{sanitize_zip_part(story_name)}/{sanitize_zip_part(chapter_name)}/{filename}"
+                    zip_path = f"{clean_filename(story_name)}/{clean_filename(chapter_name)}/{filename}"
                     img_data = requests.get(img_url, headers=headers, timeout=10).content
                     zipf.writestr(zip_path, img_data)
                 except Exception:
@@ -85,8 +83,5 @@ def register_lxmanga(bot):
 
         return raw_title.strip(), "Chapter"
 
-    def make_safe_filename(name):
-        return re.sub(r'[\\/:"*?<>|]', "_", name).strip()
-
-    def sanitize_zip_part(name):
-        return re.sub(r'[\\:*?"<>|]', "_", name).strip()
+    def clean_filename(name):
+        return re.sub(r'[\\/*?:"<>|]', "_", name).strip()
