@@ -52,14 +52,14 @@ def register_images(bot):
             bot.reply_to(message, 'Không tìm thấy url ảnh nào trên trang.')
             return
 
-        # Tạo nội dung file txt
         txt_content = "\n".join(image_urls)
         
-        # Tạo file trong bộ nhớ
         txt_file = BytesIO()
         txt_file.write(txt_content.encode('utf-8'))
         txt_file.seek(0)  # Đưa con trỏ về đầu file
         
-        # Gửi file txt
         bot.send_document(message.chat.id, txt_file, visible_file_name="image_urls.txt", caption=f'📄 Tìm thấy {len(image_urls)} URL ảnh.', reply_to_message_id=message.message_id)
-        bot.delete_message(message.chat.id, loading_msg.message_id)
+        try:
+            bot.delete_message(message.chat.id, loading_msg.message_id)
+        except Exception:
+            pass
