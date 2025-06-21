@@ -86,7 +86,7 @@ def register_scl(bot):
             return
 
         keyword = args[1].strip()
-        music_info = get_music_info(keyword, limit=10)
+        music_info = get_music_info(keyword)
         if not music_info or not music_info.get('collection') or len(music_info['collection']) == 0:
             bot.reply_to(
                 message,
@@ -94,12 +94,11 @@ def register_scl(bot):
             )
             return
 
-        # Lấy 10 bài hát đầu tiên từ kết quả tìm kiếm
-        tracks = music_info['collection'][:10]
-        if len(tracks) < 10:
+        tracks = [track for track in music_info['collection'] if track.get('artwork_url')]
+        if not tracks:
             bot.reply_to(
                 message,
-                f"🚫 Chỉ tìm thấy {len(tracks)} bài hát khớp với từ khóa."
+                "🚫 Không tìm thấy bài hát nào có hình ảnh."
             )
             return
 
@@ -183,12 +182,12 @@ def register_scl(bot):
             
             # Lấy audio URL và thumbnail
             audio_url = get_music_stream_url(track)
-            thumbnail_url = track.get('artwork_url', '').replace("-large", "-t500x500") if track.get('artwork_url') else None
-            if not audio_url:
+            thumbnail_url = track.get('artwork_url', '').replace("-large", "-t500x500")
+            if not audio_url or not thumbnail_url:
                 bot.edit_message_text(
                     chat_id=call.message.chat.id,
                     message_id=call.message.message_id,
-                    text="🚫 Không tìm thấy nguồn audio."
+                    text="🚫 Không tìm thấy nguồn audio hoặc thumbnail."
                 )
                 return
             
@@ -218,18 +217,12 @@ def register_scl(bot):
                 audio_buffer = io.BytesIO(audio_bytes)
                 audio_buffer.name = f"{track['title']}.mp3"
                 
-                # Gửi ảnh thumbnail nếu có, sau đó gửi audio
-                if thumbnail_url:
-                    bot.send_photo(
-                        call.message.chat.id,
-                        thumbnail_url,
-                        caption=caption
-                    )
-                else:
-                    bot.send_message(
-                        call.message.chat.id,
-                        caption
-                    )
+                # Gửi ảnh thumbnail và audio
+                bot.send_photo(
+                    call.message.chat.id,
+                    thumbnail_url,
+                    caption=caption
+                )
                 bot.send_audio(
                     chat_id=call.message.chat.id,
                     audio=audio_buffer,
