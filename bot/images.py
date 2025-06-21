@@ -9,17 +9,16 @@ HEADERS = {
 def register_images(bot):
     @bot.message_handler(commands=['images'])
     def images(message):
-        args = message.text.split()[1:]
-        if not args:
-            bot.reply_to(message, 'Vui lòng cung cấp URL. Ví dụ: /images https://example.com')
+        args = message.text.split()
+        if len(args) < 2:
+            bot.reply_to(message, '🚫Vui lòng cung cấp URL.\n Ví dụ: /images https://example.com')
             return
 
-        url = args[0]
-        if not re.match(r'^https?://', url):
-            bot.reply_to(message, 'URL không hợp lệ. Hãy bắt đầu bằng http:// hoặc https://')
-            return
+        url = args[1]
+        if not url.startswith(('http://', 'https://')):
+            url = 'https://' + url
 
-        loading_msg = bot.reply_to(message, f'Đang tải trang: {url} ...')
+        loading_msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
 
         try:
             resp = requests.get(url, timeout=10, headers=HEADERS)
@@ -31,25 +30,27 @@ def register_images(bot):
         bot.delete_message(message.chat.id, loading_msg.message_id)
 
         soup = BeautifulSoup(resp.text, 'html.parser')
-        image_urls = set()
+        image_urls = []
 
         # Từ <img>
         for img in soup.find_all('img'):
             src = img.get('src') or img.get('data-src')
             if src:
                 full_url = requests.compat.urljoin(resp.url, src.strip('"\' '))
-                image_urls.add(full_url)
+                if full_url not in image_urls:
+                    image_urls.append(full_url)
 
         # Từ style="background-image: url(...)"
         for tag in soup.find_all(style=True):
             style = tag['style']
-            matches = re.findall(r'url["\']?(.*?)["\']?', style)
+            matches = re.findall(r'url\((["\']?)(.*?)\1\)', style)
             for match in matches:
                 full_url = requests.compat.urljoin(resp.url, match.strip('"\' '))
-                image_urls.add(full_url)
+                if full_url not in image_urls:
+                    image_urls.append(full_url)
 
         if not image_urls:
-            bot.reply_to(message, 'Không tìm thấy ảnh nào trên trang.')
+            bot.reply_to(message, 'Không tìm thấy url ảnh nào trên trang.')
             return
 
         numbered = [f"{i+1}. {img_url}" for i, img_url in enumerate(image_urls)]
