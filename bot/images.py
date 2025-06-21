@@ -1,5 +1,6 @@
 import re
 import requests
+from io import BytesIO
 from bs4 import BeautifulSoup
 
 HEADERS = {
@@ -27,8 +28,6 @@ def register_images(bot):
             bot.reply_to(message, f'Không thể tải trang: {e}')
             return
 
-        bot.delete_message(message.chat.id, loading_msg.message_id)
-
         soup = BeautifulSoup(resp.text, 'html.parser')
         image_urls = []
 
@@ -53,8 +52,14 @@ def register_images(bot):
             bot.reply_to(message, 'Không tìm thấy url ảnh nào trên trang.')
             return
 
-        numbered = [f"{i+1}. {img_url}" for i, img_url in enumerate(image_urls)]
-        batch_size = 30
-        for i in range(0, len(numbered), batch_size):
-            chunk = "\n".join(numbered[i:i+batch_size])
-            bot.reply_to(message, chunk, disable_web_page_preview=True)
+        # Tạo nội dung file txt
+        txt_content = "\n".join(image_urls)
+        
+        # Tạo file trong bộ nhớ
+        txt_file = BytesIO()
+        txt_file.write(txt_content.encode('utf-8'))
+        txt_file.seek(0)  # Đưa con trỏ về đầu file
+        
+        # Gửi file txt
+        bot.send_document(message.chat.id, txt_file, visible_file_name="image_urls.txt", caption=f'📄 Tìm thấy {len(image_urls)} URL ảnh.')
+        bot.delete_message(message.chat.id, loading_msg.message_id)
