@@ -34,7 +34,7 @@ def register_images(bot):
 
         # Từ <img>
         for img in soup.find_all('img'):
-            src = img.get('src') or img.get('data-src')
+            src = img.get('src') or img.get('data-src') or img.get('data-lazy-src') or img.get('data-original')
             if src:
                 full_url = requests.compat.urljoin(resp.url, src.strip('"\' '))
                 if full_url not in image_urls:
@@ -45,7 +45,7 @@ def register_images(bot):
             style = tag['style']
             matches = re.findall(r'url\((["\']?)(.*?)\1\)', style)
             for match in matches:
-                full_url = requests.compat.urljoin(resp.url, match.strip('"\' '))
+                full_url = requests.compat.urljoin(resp.url, match[1].strip('"\' '))
                 if full_url not in image_urls:
                     image_urls.append(full_url)
 
