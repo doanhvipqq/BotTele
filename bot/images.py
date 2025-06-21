@@ -61,5 +61,5 @@ def register_images(bot):
         txt_file.seek(0)  # Đưa con trỏ về đầu file
         
         # Gửi file txt
-        bot.send_document(message.chat.id, txt_file, visible_file_name="image_urls.txt", caption=f'📄 Tìm thấy {len(image_urls)} URL ảnh.')
+        bot.send_document(message.chat.id, txt_file, visible_file_name="image_urls.txt", caption=f'📄 Tìm thấy {len(image_urls)} URL ảnh.', reply_to_message_id=message.message_id)
         bot.delete_message(message.chat.id, loading_msg.message_id)
