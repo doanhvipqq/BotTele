@@ -6,13 +6,14 @@ import requests
 import threading
 from telebot import types
 
-scl_data = {}
 API_BASE = "https://api-v2.soundcloud.com"
 CONFIG_PATH = "config.json"
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
 }
+
+scl_data = {}
 
 def get_client_id():
     # Đọc config sẵn
@@ -30,10 +31,11 @@ def get_client_id():
         urls = re.findall(r'<script crossorigin src="(https[^"]+)"', resp.text)
         script = requests.get(urls[-1], headers=HEADERS).text
         cid = re.search(r',client_id:"([^"]+)"', script).group(1)
+        
         with open(CONFIG_PATH, 'w') as f:
             json.dump({"client_id": cid}, f, indent=2)
         return cid
-    except:
+    except Exception:
         return "vjvE4M9RytEg9W09NH1ge2VyrZPUSKo5"
 
 def get_music_info(question, limit=10):
@@ -50,7 +52,7 @@ def get_music_info(question, limit=10):
         )
         response.raise_for_status()
         return response.json()
-    except:
+    except Exception:
         return None
 
 def get_music_stream_url(track):
@@ -60,19 +62,19 @@ def get_music_stream_url(track):
         response = requests.get(api_url, headers=HEADERS)
         response.raise_for_status()
         data = response.json()
+        
         progressive_url = next(
-            (t['url'] for t in data.get('media', {}).get('transcodings', []) if t['format']['protocol'] == 'progressive'),
+            (t['url'] for t in data.get('media', {}).get('transcodings', [])
+             if t['format']['protocol'] == 'progressive'),
             None
         )
         if not progressive_url:
             raise ValueError("No progressive transcoding URL found")
-        stream_response = requests.get(
-            f"{progressive_url}?client_id={client_id}",
-            headers=HEADERS
-        )
+            
+        stream_response = requests.get(f"{progressive_url}?client_id={client_id}", headers=HEADERS)
         stream_response.raise_for_status()
         return stream_response.json()['url']
-    except:
+    except Exception:
         return None
 
 def register_scl(bot):
@@ -80,55 +82,40 @@ def register_scl(bot):
     def soundcloud(message):
         args = message.text.split(maxsplit=1)
         if len(args) < 2:
-            bot.reply_to(
-                message,
-                "🚫 Vui lòng nhập tên bài hát muốn tìm kiếm.\nVí dụ: /scl Tên bài hát"
-            )
+            bot.reply_to(message, "🚫 Vui lòng nhập tên bài hát muốn tìm kiếm.\nVí dụ: /scl Tên bài hát")
             return
 
         keyword = args[1].strip()
         music_info = get_music_info(keyword)
         if not music_info or not music_info.get('collection') or len(music_info['collection']) == 0:
-            bot.reply_to(
-                message,
-                "🚫 Không tìm thấy bài hát nào khớp với từ khóa."
-            )
+            bot.reply_to(message, "🚫 Không tìm thấy bài hát nào khớp với từ khóa.")
             return
 
         tracks = [track for track in music_info['collection'] if track.get('artwork_url')]
         if not tracks:
-            bot.reply_to(
-                message,
-                "🚫 Không tìm thấy bài hát nào có hình ảnh."
-            )
+            bot.reply_to(message, "🚫 Không tìm thấy bài hát nào có hình ảnh.")
             return
 
         # Tạo response text
         lines = ["<b>🎵 Kết quả tìm kiếm trên SoundCloud</b>\n"]
         for i, track in enumerate(tracks):
-            lines.append(f"<b>{i + 1}. {track['title']}</b>")
-            lines.append(f" <b>» Nghệ sĩ:</b> {track['user']['username']}")
-            lines.append(f" <b>» Lượt nghe:</b> {track['playback_count']:,} | <b>Thích:</b> {track['likes_count']:,}\n")
+            lines.append(
+                f"<b>{i + 1}. {track['title']}</b>\n"
+                f" <b>» Nghệ sĩ:</b> {track['user']['username']}\n"
+                f" <b>» Lượt nghe:</b> {track['playback_count']:,} | <b>Thích:</b> {track['likes_count']:,}\n"
+            )
         lines.append("<b>💡 Chọn số bài hát bạn muốn tải!</b>")
         response_text = "\n".join(lines)
 
         # Tạo inline keyboard
         markup = types.InlineKeyboardMarkup(row_width=5)
-        buttons = []
-        for i in range(len(tracks)):
-            button = types.InlineKeyboardButton(
-                text=str(i + 1),
-                callback_data=f"scl_{message.from_user.id}_{i}"
-            )
-            buttons.append(button)
-        markup.add(*buttons)
+        markup.add(*[
+            types.InlineKeyboardButton(str(i + 1), callback_data=f"scl_{message.from_user.id}_{i}")
+            for i in range(len(tracks))
+        ])
 
         # Gửi message với inline keyboard
-        sent = bot.reply_to(
-            message,
-            response_text,
-            reply_markup=markup
-        )
+        sent = bot.reply_to(message, response_text, reply_markup=markup)
         # Lưu data cho callback
         key = f"{message.from_user.id}_{sent.message_id}"
         scl_data[key] = {
@@ -159,42 +146,27 @@ def register_scl(bot):
             
             # Kiểm tra quyền truy cập
             if call.from_user.id != user_id:
-                bot.answer_callback_query(
-                    call.id,
-                    "❌ Bạn không có quyền sử dụng nút này!",
-                    show_alert=True
-                )
+                bot.answer_callback_query(call.id, "❌ Bạn không có quyền sử dụng nút này!", show_alert=True)
                 return
             
             key = f"{user_id}_{call.message.message_id}"
             data = scl_data.pop(key, None)
-            
             if not data:
-                bot.answer_callback_query(
-                    call.id,
-                    "❌ Dữ liệu đã hết hạn hoặc đã dùng rồi!",
-                    show_alert=True
-                )
+                bot.answer_callback_query(call.id, "❌ Dữ liệu đã hết hạn hoặc đã dùng rồi!", show_alert=True)
                 return
+                
             tracks = data["tracks"]
-            
             # Kiểm tra index hợp lệ
             if track_index >= len(tracks):
-                bot.answer_callback_query(
-                    call.id,
-                    "❌ Lựa chọn không hợp lệ!",
-                    show_alert=True
-                )
+                bot.answer_callback_query(call.id, "❌ Lựa chọn không hợp lệ!", show_alert=True)
                 return
             
             track = tracks[track_index]
-            # Answer callback query
             bot.answer_callback_query(call.id, f"🎵 Đang tải: {track['title']}")
-            # Edit message để hiển thị loading
             bot.edit_message_text(
+                f"🧭 Đang tải: <b>{track['title']}</b>\n👤 Nghệ sĩ: {track['user']['username']}\n\n⏳ Vui lòng chờ...",
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
-                text=f"🧭 Đang tải: <b>{track['title']}</b>\n👤 Nghệ sĩ: {track['user']['username']}\n\n⏳ Vui lòng chờ..."
             )
             
             # Lấy audio URL và thumbnail
@@ -202,9 +174,9 @@ def register_scl(bot):
             thumbnail_url = track.get('artwork_url', '').replace("-large", "-t500x500")
             if not audio_url or not thumbnail_url:
                 bot.edit_message_text(
+                    "🚫 Không tìm thấy nguồn audio hoặc thumbnail.",
                     chat_id=call.message.chat.id,
                     message_id=call.message.message_id,
-                    text="🚫 Không tìm thấy nguồn audio hoặc thumbnail."
                 )
                 return
             
@@ -216,52 +188,35 @@ def register_scl(bot):
  » <b>Nguồn:</b> SoundCloud 🎶 
 ⭓───────────────⭔</blockquote>"""
             
-            # Tải audio về buffer và gửi về user
-            try:
-                resp = requests.get(audio_url, stream=True)
-                resp.raise_for_status()
+            resp = requests.get(audio_url, stream=True)
+            resp.raise_for_status()
 
-                content_length = int(resp.headers.get('Content-Length', 0))
-                if content_length > 50 * 1024 * 1024:  # Giới hạn 50MB
-                    bot.edit_message_text(
-                        chat_id=call.message.chat.id,
-                        message_id=call.message.message_id,
-                        text="🚫 File nhạc quá lớn (>50MB) nên không thể gửi qua Telegram."
-                    )
-                    return
-
-                audio_bytes = resp.content
-                audio_buffer = io.BytesIO(audio_bytes)
-                audio_buffer.name = f"{track['title']}.mp3"
-                
-                # Gửi ảnh thumbnail và audio
-                bot.send_photo(
-                    call.message.chat.id,
-                    thumbnail_url,
-                    caption=caption
-                )
-                bot.send_audio(
-                    chat_id=call.message.chat.id,
-                    audio=audio_buffer,
-                    title=track['title'],
-                    performer=track['user']['username']
-                )
-                
-                # Xóa tin nhắn kết quả tìm kiếm
-                try:
-                    bot.delete_message(call.message.chat.id, call.message.message_id)
-                except:
-                    pass
-
-            except Exception as e:
+            content_length = int(resp.headers.get('Content-Length', 0))
+            if content_length > 50 * 1024 * 1024:  # Giới hạn 50MB
                 bot.edit_message_text(
+                    "🚫 File nhạc quá lớn (>50MB) nên không thể gửi qua Telegram.",
                     chat_id=call.message.chat.id,
                     message_id=call.message.message_id,
-                    text=f"🚫 Lỗi khi tải nhạc: {str(e)}"
                 )
-        except Exception as e:
-            bot.answer_callback_query(
-                call.id,
-                f"❌ Có lỗi xảy ra: {str(e)}",
-                show_alert=True
+                return
+
+            audio = io.BytesIO(resp.content)
+            audio.name = f"{track['title']}.mp3"
+            
+            # Gửi ảnh thumbnail và audio
+            bot.send_photo(call.message.chat.id, thumbnail_url, caption=caption)
+            bot.send_audio(
+                call.message.chat.id,
+                audio,
+                title=track['title'],
+                performer=track['user']['username']
             )
+            
+            # Xóa tin nhắn kết quả tìm kiếm
+            try:
+                bot.delete_message(call.message.chat.id, call.message.message_id)
+            except Exception:
+                pass
+
+        except Exception as e:
+            bot.answer_callback_query(call.id, f"❌ Có lỗi xảy ra: {str(e)}", show_alert=True)
