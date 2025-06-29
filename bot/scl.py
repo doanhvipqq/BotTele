@@ -133,7 +133,8 @@ def register_scl(bot):
         key = f"{message.from_user.id}_{sent.message_id}"
         scl_data[key] = {
             "tracks": tracks,
-            "chat_id": sent.chat.id
+            "chat_id": sent.chat.id,
+            "command_msg_id": message.message_id,
         }
 
         # Tự động xóa sau 3 phút nếu chưa chọn
@@ -141,6 +142,7 @@ def register_scl(bot):
             if key in scl_data:
                 try:
                     bot.delete_message(sent.chat.id, sent.message_id)
+                    bot.delete_message(sent.chat.id, scl_data[key]["command_msg_id"])
                 except:
                     pass
                 scl_data.pop(key, None)
