@@ -3,6 +3,7 @@ import os
 import re
 import json
 import requests
+import threading
 from telebot import types
 
 scl_data = {}
@@ -129,10 +130,22 @@ def register_scl(bot):
             reply_markup=markup
         )
         # Lưu data cho callback
-        scl_data[str(message.from_user.id)] = {
+        key = f"{message.from_user.id}_{sent.message_id}"
+        scl_data[key] = {
             "tracks": tracks,
-            "message_id": sent.message_id,
+            "chat_id": sent.chat.id
         }
+
+        # Tự động xóa sau 3 phút nếu chưa chọn
+        def delete_if_not_used():
+            if key in scl_data:
+                try:
+                    bot.delete_message(sent.chat.id, sent.message_id)
+                except:
+                    pass
+                scl_data.pop(key, None)
+
+        threading.Timer(180, delete_if_not_used).start()
 
     @bot.callback_query_handler(func=lambda call: call.data.startswith('scl_'))
     def handle_soundcloud_callback(call):
@@ -151,7 +164,9 @@ def register_scl(bot):
                 )
                 return
             
-            data = scl_data.pop(str(user_id), None)
+            key = f"{user_id}_{call.message.message_id}"
+            data = scl_data.pop(key, None)
+            
             if not data:
                 bot.answer_callback_query(
                     call.id,
