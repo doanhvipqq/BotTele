@@ -1,7 +1,7 @@
 import os
+import threading
 import subprocess
 from datetime import datetime
-import threading
 
 ADMIN_ID = 6379209139
 GROUP_ID = [6379209139, -1002408191237, 5900948782, 7605936504, 7944440933]
@@ -23,12 +23,12 @@ def register_spamsms(bot):
     @bot.message_handler(commands=['add'])
     def add(message):
         if message.chat.id not in GROUP_ID or message.from_user.id != ADMIN_ID:
-            bot.reply_to(message, "❌ Bạn không có quyền sử dụng lệnh này.")
+            bot.reply_to(message, "⚠️ Bạn không có quyền sử dụng lệnh này.")
             return
 
         args = message.text.split()
         if len(args) < 2 or not args[1].isdigit():
-            bot.reply_to(message, "❌ Dùng đúng cú pháp: /add [user_id]")
+            bot.reply_to(message, "⚠️ Dùng đúng cú pháp: /add [user_id]")
             return
 
         user_id = args[1].strip()
@@ -43,7 +43,7 @@ def register_spamsms(bot):
         with open(VIP_FILE, "a") as f:
             f.write(f"{user_id}\n")
 
-        bot.reply_to(message, f"✅ Đã thêm ID {user_id} vào danh sách VIP.")
+        bot.reply_to(message, f"🤑 Đã thêm ID {user_id} vào danh sách VIP.")
 
     @bot.message_handler(commands=['sms'])
     def sms(message):
@@ -54,21 +54,21 @@ def register_spamsms(bot):
         now = datetime.now()
 
         if user_id in last_sms_time and (now - last_sms_time[user_id]).total_seconds() < 100:
-            bot.reply_to(message, "❌ Vui lòng đợi 100s trước khi dùng lại.")
+            bot.reply_to(message, "🚫 Vui lòng đợi 100s trước khi dùng lại.")
             return
 
         args = message.text.split()
         if len(args) != 3 or not args[1].isdigit() or not args[2].isdigit():
-            bot.reply_to(message, "❌ Dùng đúng cú pháp: /sms [sđt] [vòng lặp]")
+            bot.reply_to(message, "🚫 Dùng đúng cú pháp: /sms [sđt] [vòng lặp]")
             return
 
         phone, loops = args[1], int(args[2])
         if len(phone) != 10 or not phone.startswith("0") or loops > 100:
-            bot.reply_to(message, "❌ Số điện thoại không hợp lệ hoặc vòng lặp quá giới hạn.")
+            bot.reply_to(message, "🚫 Số điện thoại không hợp lệ hoặc vòng lặp quá giới hạn.")
             return
 
         last_sms_time[user_id] = now
-        bot.reply_to(message, f"⚡*Bắt đầu tấn công SEVER1*\n📱*SĐT:* {phone}\n🌩️*Vòng lặp:* {loops}", parse_mode="Markdown")
+        bot.reply_to(message, f"<b>Bắt đầu tấn công SEVER 1</b>\n🌱 <b>SĐT:</b> {phone}\n🌩️ <b>Vòng lặp:</b> {loops}")
 
         global sms_process
         if sms_process and sms_process.poll() is None:
@@ -93,25 +93,25 @@ def register_spamsms(bot):
         now = datetime.now()
 
         if not is_vip(user_id):
-            bot.reply_to(message, "❌ Bạn chưa mua VIP. Liên hệ /admin để mua.")
+            bot.reply_to(message, "⚠️ Bạn chưa mua VIP. Liên hệ /admin để mua.")
             return
 
         if user_id in last_smsvip_time and (now - last_smsvip_time[user_id]).total_seconds() < 60:
-            bot.reply_to(message, "❌ Vui lòng đợi 60s trước khi dùng lại.")
+            bot.reply_to(message, "🚫 Vui lòng đợi 60s trước khi dùng lại.")
             return
 
         args = message.text.split()
         if len(args) != 3 or not args[1].isdigit() or not args[2].isdigit():
-            bot.reply_to(message, "❌ Dùng đúng cú pháp: /smsvip [sđt] [vòng lặp]")
+            bot.reply_to(message, "🚫 Dùng đúng cú pháp: /smsvip [sđt] [vòng lặp]")
             return
 
         phone, loops = args[1], int(args[2])
         if len(phone) != 10 or not phone.startswith("0") or loops > 100:
-            bot.reply_to(message, "❌ Số điện thoại không hợp lệ hoặc vòng lặp quá giới hạn.")
+            bot.reply_to(message, "🚫 Số điện thoại không hợp lệ hoặc vòng lặp quá giới hạn.")
             return
 
         last_smsvip_time[user_id] = now
-        bot.reply_to(message, f"**smsvip Server 1**\n📱 **Mục tiêu:** {phone}\n🍃 **Vòng lặp:** {loops}", parse_mode="Markdown")
+        bot.reply_to(message, f"<b>Bắt đầu tấn công SEVER 2</b>\n🍃 <b>SĐT:</b> {phone}\n🌸 <b>Vòng lặp:</b> {loops}")
 
         global smsvip_process
         if smsvip_process and smsvip_process.poll() is None:
