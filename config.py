@@ -1,4 +1,7 @@
 # config.py
 
-# ID Telegram của admin để nhận báo lỗi
+# ID Telegram của admin
 ADMIN_ID = 6379209139
+
+# 📌 Danh sách các nhóm được phép
+ALLOWED_CHAT_IDS = [-1002408191237, 6379209139, 5900948782, 7944440933, 7605936504]
