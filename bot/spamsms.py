@@ -5,7 +5,7 @@ import threading
 
 ADMIN_ID = 6379209139
 GROUP_ID = [6379209139, -1002408191237, 5900948782, 7605936504, 7944440933]
-VIP_FILE = "vip.txt"
+VIP_FILE = "bot/spamsms/vip.txt"
 
 last_sms_time = {}
 last_smsvip_time = {}
