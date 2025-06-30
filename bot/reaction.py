@@ -7,7 +7,7 @@ emoji_list = ['👍', '👎', '❤️', '🔥', '🥰', '👏', '😁', '🤔', 
               '🎅', '🎄', '☃️', '💅', '🤪', '🗿', '🆒', '💘', '🙉', '🦄', '😘', '💊', '🙊', '😎', '👾', '🤷‍♂️', '🤷', '🤷‍♀️', '😡']
 
 # 📌 Danh sách các nhóm được phép
-ALLOWED_CHAT_IDS = [-1002408191237, 6379209139, 5900948782, 7944440933, 7605936504]
+GROUP_ID = [-1002408191237, 6379209139, 5900948782, 7944440933, 7605936504]
 
 def register_reaction(bot):
     # 🎯 Xử lý mọi tin nhắn
@@ -16,7 +16,7 @@ def register_reaction(bot):
         chat_id = message.chat.id
         message_id = message.message_id
     
-        if chat_id not in ALLOWED_CHAT_IDS:
+        if chat_id not in GROUP_ID:
             return
 
         emoji = random.choice(emoji_list)
