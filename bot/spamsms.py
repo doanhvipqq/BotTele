@@ -1,10 +1,9 @@
 import os
 import threading
 import subprocess
-from config import ADMIN_ID
 from datetime import datetime
+from config import ADMIN_ID, GROUP_ID
 
-GROUP_ID = [6379209139, -1002408191237, 5900948782, 7605936504, 7944440933]
 VIP_FILE = "bot/spamsms/vip.txt"
 
 last_sms_time = {}
