@@ -37,7 +37,11 @@ def register_funlink(bot):
         }
 
         # Gửi tin nhắn ban đầu
-        wait_msg = bot.send_message(message.chat.id, "⏳ Đang gửi yêu cầu bước 1...")
+        wait_msg = bot.send_message(
+            message.chat.id,
+            "⏳ Đang gửi yêu cầu bước 1...",
+            reply_to_message_id=message.message_id
+        )
 
         fresponse = requests.options('https://public.funlink.io/api/code/ch', headers=fheaders)
         if fresponse.status_code != 200:
@@ -80,11 +84,13 @@ def register_funlink(bot):
                         f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>",
                         message.chat.id,
                         wait_msg.message_id,
-                        parse_mode="HTML"
                     )
                 else:
                     bot.edit_message_text("❌ Không tìm thấy mã trong phản hồi.", message.chat.id, wait_msg.message_id)
             except Exception as e:
                 bot.edit_message_text(f"❌ Lỗi xử lý JSON: {e}", message.chat.id, wait_msg.message_id)
         else:
-            bot.edit_message_text(f"❌ Thất bại bước 2: {response.status_code}", message.chat.id, wait_msg.message_id)\n⚠️ Vui lòng đợi 75s mới nhập mã để tránh lỗi.
+            bot.edit_message_text(
+                f"❌ Thất bại bước 2: {response.status_code}",
+                message.chat.id, wait_msg.message_id)
+            )
