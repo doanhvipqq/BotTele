@@ -77,7 +77,7 @@ def register_funlink(bot):
                 code = dat.get('code')
                 if code:
                     bot.edit_message_text(
-                        f"✅ Mã của bạn là: <blockquote>{code}</blockquote>\n⚠️ Vui lòng đợi 75s mới nhập mã để tránh lỗi.",
+                        f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>",
                         message.chat.id,
                         wait_msg.message_id,
                         parse_mode="HTML"
@@ -87,4 +87,4 @@ def register_funlink(bot):
             except Exception as e:
                 bot.edit_message_text(f"❌ Lỗi xử lý JSON: {e}", message.chat.id, wait_msg.message_id)
         else:
-            bot.edit_message_text(f"❌ Thất bại bước 2: {response.status_code}", message.chat.id, wait_msg.message_id)
+            bot.edit_message_text(f"❌ Thất bại bước 2: {response.status_code}", message.chat.id, wait_msg.message_id)\n⚠️ Vui lòng đợi 75s mới nhập mã để tránh lỗi.
