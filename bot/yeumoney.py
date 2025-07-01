@@ -59,7 +59,7 @@ def register_yeumoney(bot):
                 code = match.group(1)
                 bot.reply_to(
                     message,
-                    f" » Mã của bạn là: <blockquote>{code}</blockquote>\n⚠️ Vui lòng đợi 75s mới nhập mã để tránh lỗi",
+                    f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>\n⚠️ Vui lòng đợi 75s mới nhập mã để tránh lỗi",
                 )
             else:
                 bot.reply_to(message, "⚠️ Không tìm thấy mã.")
