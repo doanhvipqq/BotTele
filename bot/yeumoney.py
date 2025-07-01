@@ -32,8 +32,8 @@ def register_yeumoney(bot):
             bot.reply_to(message, "🚫 Vui lòng nhập từ khoá muốn lấy mã.\nVí dụ: /ymn m88")
             return
 
-        quest_type = args[1].strip().lower()
-        info = QUEST_INFO.get(quest_type)
+        type = args[1].strip().lower()
+        info = QUEST_INFO.get(type)
 
         if not info:
             bot.reply_to(message, "🚫 Loại quest không hợp lệ.")
