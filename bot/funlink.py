@@ -18,14 +18,14 @@ def register_funlink(bot):
             bot.reply_to(message, "🚫 Vui lòng nhập từ khoá muốn lấy mã.\nVí dụ: /fl 188bet")
             return
 
-        type = args[1].strip().lower()
-        origin = SOURCES.get(type)
+        key = args[1].strip().lower()
+        origin = SOURCES.get(key)
         if not origin:
             bot.reply_to(message, "🚫 Loại quest không hợp lệ. Dùng: 188bet, w88, fun88, daga")
             return
 
         rad = str(random.randint(100000, 999999))
-        fheaders = {
+        headers = {
             'accept': '*/*',
             'accept-language': 'en-US,en;q=0.9',
             'cache-control': 'max-age=0',
@@ -43,7 +43,7 @@ def register_funlink(bot):
             reply_to_message_id=message.message_id
         )
 
-        fresponse = requests.options('https://public.funlink.io/api/code/ch', headers=fheaders)
+        fresponse = requests.options('https://public.funlink.io/api/code/ch', headers=headers)
         if fresponse.status_code != 200:
             bot.edit_message_text(f"❌ Thất bại bước 1: {fresponse.status_code}", message.chat.id, wait_msg.message_id)
             return
@@ -57,7 +57,6 @@ def register_funlink(bot):
             )
             time.sleep(5)
 
-        headers = fheaders.copy()
         headers['content-type'] = 'application/json'
 
         json_data = {
@@ -92,5 +91,5 @@ def register_funlink(bot):
         else:
             bot.edit_message_text(
                 f"❌ Thất bại bước 2: {response.status_code}",
-                message.chat.id, wait_msg.message_id)
+                message.chat.id, wait_msg.message_id
             )
