@@ -60,13 +60,13 @@ def register_yeumoney(bot):
                 code = match.group(1)
                 sent_msg = bot.send_message(
                     message.chat.id,
-                    f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>\n",
+                    f"⏳ Đang xử lý...",
                     reply_to_message_id=message.message_id
                 )
 
                 for remaining in range(75, 0, -5):
                     bot.edit_message_text(
-                        f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>\n⚠️ Vui lòng đợi {remaining}s mới nhập mã để tránh lỗi.",
+                        f"⏳ Đang xử lý... vui lòng chờ {remaining} giây.",
                         message.chat.id,
                         sent_msg.message_id,
                     )
