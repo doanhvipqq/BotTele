@@ -22,6 +22,11 @@ QUEST_INFO = {
         "url": "https://188.166.185.213/tim-hieu-khai-niem-3-bet-trong-poker-la-gi",
         "traffic": "https://188.166.185.213/",
         "codexn": "taodeptrai"
+    },
+    "v9bet": {
+        "url": "https://v9betse.com/ca-cuoc-dua-cho",
+        "traffic": "https://v9betse.com/",
+        "codexn": "taodeptrai"
     }
 }
 
@@ -37,7 +42,7 @@ def register_yeumoney(bot):
         info = QUEST_INFO.get(key)
 
         if not info:
-            bot.reply_to(message, "🚫 Từ khoá này hiện chưa được hỗ trợ.\nCác từ khoá đang hỗ trợ gồm: m88, fb88, 188bet, w88")
+            bot.reply_to(message, "🚫 Từ khoá này hiện chưa được hỗ trợ.\nCác từ khoá đang hỗ trợ gồm: m88, fb88, 188bet, w88, v9bet")
             return
 
         try:
