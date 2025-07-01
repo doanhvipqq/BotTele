@@ -1,0 +1,63 @@
+import re
+import time
+import requests
+
+# Mapping các loại quest sang URL tương ứng
+QUEST_INFO = {
+    "m88": {
+        "url": "https://bet88ec.com/cach-danh-bai-sam-loc",
+        "traffic": "https://bet88ec.com/",
+        "codexn": "taodeptrai"
+    },
+    "fb88": {
+        "url": "https://fb88mg.com/ty-le-cuoc-hong-kong-la-gi",
+        "traffic": "https://fb88mg.com/",
+        "codexn": "taodeptrai"
+    },
+    "188bet": {
+        "url": "https://88betag.com/cach-choi-game-bai-pok-deng",
+        "traffic": "https://88betag.com/",
+        "codexn": "taodeptrailamnhe"
+    },
+    "w88": {
+        "url": "https://188.166.185.213/tim-hieu-khai-niem-3-bet-trong-poker-la-gi",
+        "traffic": "https://188.166.185.213/",
+        "codexn": "taodeptrai"
+    }
+}
+
+def register_yeumoney(bot):
+    @bot.message_handler(commands=['ymn'])
+    def handle_getcode(message):
+        args = message.text.split(maxsplit=1)
+        if len(args) < 2:
+            bot.reply_to(message, "🚫 Vui lòng nhập từ khoá muốn lấy mã.\nVí dụ: /ymn m88")
+            return
+
+        quest_type = args[1].strip().lower()
+        if quest_type not in QUEST_INFO:
+            bot.reply_to(message, "🚫 Loại quest không hợp lệ.")
+            return
+
+        info = QUEST_INFO[quest_type]
+        bot.reply_to(message, "⏳ Đang lấy mã... vui lòng đợi khoảng 70s.")
+
+        try:
+            response = requests.post(
+                f"https://traffic-user.net/GET_MA.php",
+                params={
+                    "codexn": info["codexn"],
+                    "url": info["url"],
+                    "loai_traffic": info["traffic"],
+                    "clk": 1000
+                }
+            )
+            html = response.text
+            match = re.search(r'<span id="layma_me_vuatraffic"[^>]*>\s*(\d+)\s*</span>', html)
+            if match:
+                code = match.group(1)
+                bot.reply_to(message, f" » <b>Mã:</b> {code}")
+            else:
+                bot.reply_to(message, "⚠️ Không tìm thấy mã.")
+        except Exception as e:
+            bot.reply_to(message, f"⚠️ Lỗi: {e}")
