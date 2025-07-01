@@ -1,4 +1,5 @@
 import re
+import time
 import requests
 
 QUEST_INFO = {
@@ -57,10 +58,27 @@ def register_yeumoney(bot):
 
             if match:
                 code = match.group(1)
-                bot.reply_to(
-                    message,
+                sent_msg = bot.send_message(
+                    message.chat.id,
                     f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>\n⚠️ Vui lòng đợi 75s mới nhập mã để tránh lỗi",
+                    reply_to_message_id=message.message_id
                 )
+
+                for remaining in range(75, 0, -5):
+                    time.sleep(5)
+                    bot.edit_message_text(
+                        f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>\n⚠️ Vui lòng đợi {remaining}s mới nhập mã để tránh lỗi",
+                        message.chat.id,
+                        sent_msg.message_id,
+                    )
+
+                # Kết thúc đếm ngược
+                bot.edit_message_text(
+                    f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>\n🎉 Hãy nhập mã để lấy link đích.",
+                    message.chat.id,
+                    sent_msg.message_id,
+                )
+
             else:
                 bot.reply_to(message, "⚠️ Không tìm thấy mã.")
         except Exception as e:
