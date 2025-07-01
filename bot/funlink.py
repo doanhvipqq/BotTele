@@ -80,7 +80,7 @@ def register_funlink(bot):
                 code = dat.get('code')
                 if code:
                     bot.edit_message_text(
-                        f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>",
+                        f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>\n🎉 Hãy nhập mã để lấy link đích.",
                         message.chat.id,
                         wait_msg.message_id,
                     )
