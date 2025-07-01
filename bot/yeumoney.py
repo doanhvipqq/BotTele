@@ -1,6 +1,7 @@
 import re
 import time
 import requests
+import threading
 
 QUEST_INFO = {
     "m88": {
@@ -29,6 +30,24 @@ QUEST_INFO = {
         "codexn": "taodeptrai"
     }
 }
+
+def process_yeumoney_step(bot, message, sent_msg, code):
+    for remaining in range(75, 0, -5):
+        try:
+            bot.edit_message_text(
+                f"⏳ Đang xử lý... vui lòng chờ {remaining} giây.",
+                message.chat.id,
+                sent_msg.message_id
+            )
+        except:
+            pass
+        time.sleep(5)
+
+    bot.edit_message_text(
+        f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>\n🎉 Hãy nhập mã để lấy link đích.",
+        message.chat.id,
+        sent_msg.message_id,
+    )
 
 def register_yeumoney(bot):
     @bot.message_handler(commands=['ymn'])
@@ -69,20 +88,11 @@ def register_yeumoney(bot):
                     reply_to_message_id=message.message_id
                 )
 
-                for remaining in range(75, 0, -5):
-                    bot.edit_message_text(
-                        f"⏳ Đang xử lý... vui lòng chờ {remaining} giây.",
-                        message.chat.id,
-                        sent_msg.message_id,
-                    )
-                    time.sleep(5)
-
-                # Kết thúc đếm ngược
-                bot.edit_message_text(
-                    f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>\n🎉 Hãy nhập mã để lấy link đích.",
-                    message.chat.id,
-                    sent_msg.message_id,
-                )
+                threading.Thread(
+                    target=process_yeumoney_step,
+                    args=(bot, message, sent_msg, code),
+                    daemon=True
+                ).start()
 
             else:
                 bot.reply_to(message, "⚠️ Không tìm thấy mã.")
