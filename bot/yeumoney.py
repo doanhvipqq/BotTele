@@ -1,7 +1,6 @@
 import re
 import requests
 
-# Danh sách các loại quest và thông tin tương ứng
 QUEST_INFO = {
     "m88": {
         "url": "https://bet88ec.com/cach-danh-bai-sam-loc",
@@ -24,7 +23,6 @@ QUEST_INFO = {
         "codexn": "taodeptrai"
     }
 }
-
 
 def register_yeumoney(bot):
     @bot.message_handler(commands=['ymn'])
@@ -65,7 +63,7 @@ def register_yeumoney(bot):
                 code = match.group(1)
                 bot.reply_to(
                     message,
-                    f"» Mã: <blockquote>{code}</blockquote>\nVui lòng đợi 75s mới nhập mã để tránh lỗi",
+                    f" » Mã của bạn là: <blockquote>{code}</blockquote>\n⚠️ Vui lòng đợi 75s mới nhập mã để tránh lỗi",
                     parse_mode='HTML'
                 )
             else:
