@@ -28,12 +28,8 @@ def register_yeumoney(bot):
     @bot.message_handler(commands=['ymn'])
     def handle_get_code(message):
         args = message.text.split(maxsplit=1)
-
         if len(args) < 2:
-            bot.reply_to(
-                message,
-                "🚫 Vui lòng nhập từ khoá muốn lấy mã.\nVí dụ: /ymn m88"
-            )
+            bot.reply_to(message, "🚫 Vui lòng nhập từ khoá muốn lấy mã.\nVí dụ: /ymn m88")
             return
 
         quest_type = args[1].strip().lower()
@@ -64,7 +60,6 @@ def register_yeumoney(bot):
                 bot.reply_to(
                     message,
                     f" » Mã của bạn là: <blockquote>{code}</blockquote>\n⚠️ Vui lòng đợi 75s mới nhập mã để tránh lỗi",
-                    parse_mode='HTML'
                 )
             else:
                 bot.reply_to(message, "⚠️ Không tìm thấy mã.")
