@@ -11,8 +11,7 @@ SOURCES = {
     'daga': 'https://stelizabeth.co.uk',
 }
 
-def process_code_step(bot, message, wait_msg, origin, headers):
-    # Đếm ngược 60s (cập nhật mỗi 5s)
+def process_funlink_step(bot, message, wait_msg, origin, headers):
     for remaining in range(60, 0, -5):
         try:
             bot.edit_message_text(
@@ -100,7 +99,7 @@ def register_funlink(bot):
             return
             
         threading.Thread(
-            target=process_code_step,
+            target=process_funlink_step,
             args=(bot, message, wait_msg, origin, headers),
             daemon=True
         ).start()
