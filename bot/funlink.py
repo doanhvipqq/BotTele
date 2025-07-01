@@ -1,6 +1,7 @@
+import time
 import random
 import requests
-import time
+import threading
 from telebot.types import Message
 
 SOURCES = {
@@ -9,6 +10,56 @@ SOURCES = {
     'fun88': 'https://fun88kyc.com',
     'daga': 'https://stelizabeth.co.uk',
 }
+
+def process_code_step(bot, message, wait_msg, origin, headers):
+    # Đếm ngược 60s (cập nhật mỗi 5s)
+    for remaining in range(60, 0, -5):
+        try:
+            bot.edit_message_text(
+                f"⏳ Đang xử lý... vui lòng chờ {remaining} giây.",
+                message.chat.id,
+                wait_msg.message_id
+            )
+        except:
+            pass
+        time.sleep(5)
+
+    headers['content-type'] = 'application/json'
+    json_data = {
+        'screen': '1000 x 800',
+        'browser_name': 'Safari',
+        'browser_version': '100.0.0.0',
+        'browser_major_version': '137',
+        'is_mobile': False,
+        'os_name': 'skibidiOS',
+        'os_version': '10000000',
+        'is_cookies': True,
+        'href': origin + '/',
+        'user_agent': headers['user-agent'],
+        'hostname': origin,
+    }
+
+    try:
+        response = requests.post('https://public.funlink.io/api/code/code', headers=headers, json=json_data)
+        if response.status_code == 200:
+            try:
+                dat = response.json()
+                code = dat.get('code')
+                if code:
+                    bot.edit_message_text(
+                        f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>\n🎉 Hãy nhập mã để lấy link đích.",
+                        message.chat.id,
+                        wait_msg.message_id,
+                    )
+                else:
+                    bot.edit_message_text("❌ Không tìm thấy mã trong phản hồi.", message.chat.id, wait_msg.message_id)
+            except Exception as e:
+                bot.edit_message_text(f"❌ Lỗi xử lý JSON: {e}", message.chat.id, wait_msg.message_id)
+        else:
+            bot.edit_message_text(f"❌ Thất bại bước 2: {response.status_code}", message.chat.id, wait_msg.message_id)
+    except Exception as e:
+        bot.edit_message_text(f"❌ Lỗi gửi request bước 2: {e}", message.chat.id, wait_msg.message_id)
+
 
 def register_funlink(bot):
     @bot.message_handler(commands=['fl'])
@@ -47,49 +98,9 @@ def register_funlink(bot):
         if fresponse.status_code != 200:
             bot.edit_message_text(f"❌ Thất bại bước 1: {fresponse.status_code}", message.chat.id, wait_msg.message_id)
             return
-
-        # Đếm ngược 60 giây, mỗi 5 giây cập nhật
-        for remaining in range(60, 0, -5):
-            bot.edit_message_text(
-                f"⏳ Đang xử lý... vui lòng chờ {remaining} giây.",
-                message.chat.id,
-                wait_msg.message_id
-            )
-            time.sleep(5)
             
-        headers['content-type'] = 'application/json'
-
-        json_data = {
-            'screen': '1000 x 800',
-            'browser_name': 'Safari',
-            'browser_version': '100.0.0.0',
-            'browser_major_version': '137',
-            'is_mobile': False,
-            'os_name': 'skibidiOS',
-            'os_version': '10000000',
-            'is_cookies': True,
-            'href': origin + '/',
-            'user_agent': headers['user-agent'],
-            'hostname': origin,
-        }
-
-        response = requests.post('https://public.funlink.io/api/code/code', headers=headers, json=json_data)
-        if response.status_code == 200:
-            try:
-                dat = response.json()
-                code = dat.get('code')
-                if code:
-                    bot.edit_message_text(
-                        f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>\n🎉 Hãy nhập mã để lấy link đích.",
-                        message.chat.id,
-                        wait_msg.message_id,
-                    )
-                else:
-                    bot.edit_message_text("❌ Không tìm thấy mã trong phản hồi.", message.chat.id, wait_msg.message_id)
-            except Exception as e:
-                bot.edit_message_text(f"❌ Lỗi xử lý JSON: {e}", message.chat.id, wait_msg.message_id)
-        else:
-            bot.edit_message_text(
-                f"❌ Thất bại bước 2: {response.status_code}",
-                message.chat.id, wait_msg.message_id
-            )
+        threading.Thread(
+            target=process_code_step,
+            args=(bot, message, wait_msg, origin, headers),
+            daemon=True
+        ).start()
