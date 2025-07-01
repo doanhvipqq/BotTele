@@ -21,7 +21,7 @@ def register_funlink(bot):
         key = args[1].strip().lower()
         origin = SOURCES.get(key)
         if not origin:
-            bot.reply_to(message, "🚫 Loại quest không hợp lệ. Dùng: 188bet, w88, fun88, daga")
+            bot.reply_to(message, "🚫 Từ khoá này hiện chưa hỗ trợ.\nCác từ khoá đang hỗ trợ gồm: 188bet, w88, fun88, daga")
             return
 
         rad = str(random.randint(100000, 999999))
