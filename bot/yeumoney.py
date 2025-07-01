@@ -1,8 +1,7 @@
 import re
-import time
 import requests
 
-# Mapping các loại quest sang URL tương ứng
+# Danh sách các loại quest và thông tin tương ứng
 QUEST_INFO = {
     "m88": {
         "url": "https://bet88ec.com/cach-danh-bai-sam-loc",
@@ -26,25 +25,29 @@ QUEST_INFO = {
     }
 }
 
+
 def register_yeumoney(bot):
     @bot.message_handler(commands=['ymn'])
-    def handle_getcode(message):
+    def handle_get_code(message):
         args = message.text.split(maxsplit=1)
+
         if len(args) < 2:
-            bot.reply_to(message, "🚫 Vui lòng nhập từ khoá muốn lấy mã.\nVí dụ: /ymn m88")
+            bot.reply_to(
+                message,
+                "🚫 Vui lòng nhập từ khoá muốn lấy mã.\nVí dụ: /ymn m88"
+            )
             return
 
         quest_type = args[1].strip().lower()
-        if quest_type not in QUEST_INFO:
+        info = QUEST_INFO.get(quest_type)
+
+        if not info:
             bot.reply_to(message, "🚫 Loại quest không hợp lệ.")
             return
 
-        info = QUEST_INFO[quest_type]
-        bot.reply_to(message, "⏳ Đang lấy mã... vui lòng đợi khoảng 70s.")
-
         try:
             response = requests.post(
-                f"https://traffic-user.net/GET_MA.php",
+                "https://traffic-user.net/GET_MA.php",
                 params={
                     "codexn": info["codexn"],
                     "url": info["url"],
@@ -53,10 +56,18 @@ def register_yeumoney(bot):
                 }
             )
             html = response.text
-            match = re.search(r'<span id="layma_me_vuatraffic"[^>]*>\s*(\d+)\s*</span>', html)
+            match = re.search(
+                r'<span id="layma_me_vuatraffic"[^>]*>\s*(\d+)\s*</span>',
+                html
+            )
+
             if match:
                 code = match.group(1)
-                bot.reply_to(message, f" » <b>Mã:</b> {code}")
+                bot.reply_to(
+                    message,
+                    f"» Mã: <blockquote>{code}</blockquote>\nVui lòng đợi 75s mới nhập mã để tránh lỗi",
+                    parse_mode='HTML'
+                )
             else:
                 bot.reply_to(message, "⚠️ Không tìm thấy mã.")
         except Exception as e:
