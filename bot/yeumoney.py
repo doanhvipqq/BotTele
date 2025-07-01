@@ -1,5 +1,4 @@
 import re
-import time
 import requests
 
 QUEST_INFO = {
@@ -65,7 +64,6 @@ def register_yeumoney(bot):
                 )
 
                 for remaining in range(75, 0, -5):
-                    time.sleep(5)
                     bot.edit_message_text(
                         f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>\n⚠️ Vui lòng đợi {remaining}s mới nhập mã để tránh lỗi",
                         message.chat.id,
