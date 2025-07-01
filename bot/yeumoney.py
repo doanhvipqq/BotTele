@@ -37,7 +37,7 @@ def register_yeumoney(bot):
         info = QUEST_INFO.get(key)
 
         if not info:
-            bot.reply_to(message, "🚫 Loại quest không hợp lệ.")
+            bot.reply_to(message, "🚫 Từ khoá này hiện chưa được hỗ trợ.\nCác từ khoá đang hỗ trợ gồm: m88, fb88, 188bet, w88")
             return
 
         try:
