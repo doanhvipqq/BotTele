@@ -1,6 +1,6 @@
 import random
 import requests
-import threading
+import time
 from telebot.types import Message
 
 SOURCES = {
@@ -47,8 +47,6 @@ def register_funlink(bot):
         if fresponse.status_code != 200:
             bot.edit_message_text(f"❌ Thất bại bước 1: {fresponse.status_code}", message.chat.id, wait_msg.message_id)
             return
-        
-        threading.Thread(target=process_request, args=(bot, message, origin)).start()
 
         # Đếm ngược 60 giây, mỗi 5 giây cập nhật
         for remaining in range(60, 0, -5):
@@ -57,9 +55,8 @@ def register_funlink(bot):
                 message.chat.id,
                 wait_msg.message_id
             )
-            threading.Event().wait(5)
+            time.sleep(5)
             
-        # Tạo luồng riêng để xử lý
         headers['content-type'] = 'application/json'
 
         json_data = {
