@@ -63,7 +63,7 @@ def register_yeumoney(bot):
                     reply_to_message_id=message.message_id
                 )
 
-                for remaining in range(75, 0, -25):
+                for remaining in range(70, 0, -5):
                     bot.edit_message_text(
                         f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>\n⚠️ Vui lòng đợi {remaining}s mới nhập mã để tránh lỗi",
                         message.chat.id,
