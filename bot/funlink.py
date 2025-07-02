@@ -2,6 +2,7 @@ import re
 import time
 import random
 import requests
+import threading
 
 def register_funlink(bot):
     @bot.message_handler(commands=['fl'])
@@ -12,7 +13,20 @@ def register_funlink(bot):
             return
 
         nurl = args[1].strip()
-        sent_msg = bot.send_message(message.chat.id, "⏳ Đang xử lý nhiệm vụ... Vui lòng chờ ~60 giây.", reply_to_message_id=message.message_id)
+        sent_msg = bot.send_message(
+            message.chat.id,
+            "⏳ Đang xử lý nhiệm vụ... Vui lòng chờ ~60 giây.",
+            reply_to_message_id=message.message_id
+        )
+
+        # 👇 Khởi chạy bypass trong luồng riêng
+        threading.Thread(
+            target=process_bypass,
+            args=(bot, nurl, sent_msg),
+            daemon=True
+        ).start()
+
+    def process_bypass(bot, nurl, sent_msg):
         try:
             result = bypass_funlink(nurl)
             bot.edit_message_text(result, chat_id=sent_msg.chat.id, message_id=sent_msg.message_id)
@@ -55,8 +69,8 @@ def register_funlink(bot):
             'id': link_id,
         }
 
-        # 🔁 Lặp lại tối đa 20 lần để thử lấy nhiệm vụ hợp lệ
-        max_retry = 20
+        # 🔁 Lặp lại tối đa 10 lần để thử lấy nhiệm vụ hợp lệ
+        max_retry = 10
         for attempt in range(max_retry):
             r1 = requests.get('https://public.funlink.io/api/code/renew-key', params=params, headers=headers)
             if r1.status_code != 200:
