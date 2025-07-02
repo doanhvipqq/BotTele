@@ -4,8 +4,6 @@ import random
 import requests
 import threading
 from telebot.types import Message
-from urllib.parse import urlparse
-
 
 SOURCES = {
     '188bet': 'https://88bet.hiphop',
@@ -19,9 +17,7 @@ SOURCES = {
     'm88lu': 'https://m88lu.io',
 }
 
-def process_funlink_step(bot, message, wait_msg, origin, headers):
-    time.sleep(2)
-
+def process_funlink_step(bot, message, wait_msg, origin, headers, link_id, keyword, keyword_id):
     for remaining in range(60, 0, -5):
         try:
             bot.edit_message_text(
@@ -38,7 +34,6 @@ def process_funlink_step(bot, message, wait_msg, origin, headers):
         'screen': '1000 x 800',
         'browser_name': 'Safari',
         'browser_version': '100.0.0.0',
-        'browser_major_version': '137',
         'is_mobile': False,
         'os_name': 'skibidiOS',
         'os_version': '10000000',
@@ -66,12 +61,20 @@ def process_funlink_step(bot, message, wait_msg, origin, headers):
 
         # Bước 3: gửi mã lấy link đích
         json_verify = {
-            'code': code,
-            'hostname': urlparse(origin).netloc,
-            'user_agent': headers['user-agent']
+            'browser_name': 'skibidu',
+            'browser_version': '99999',
+            'os_name': 'SkibidiOS',
+            'os_version': '10000',
+            'keyword_answer': code,
+            'link_shorten_id': link_id,
+            'keyword': keyword,
+            'user_agent': headers['user-agent'],
+            'device_name': 'desktop',
+            'keyword_id': keyword_id,  # lấy từ response renew-key
         }
 
-        verify_res = requests.post('https://public.funlink.io/api/code/verify', headers=headers, json=json_verify)
+        verify_res = requests.post('https://public.funlink.io/api/url/tracking-url', headers=headers, json=json_verify)
+
         if verify_res.status_code != 200:
             bot.edit_message_text(f"❌ Bước 3 thất bại ({verify_res.status_code})", message.chat.id, wait_msg.message_id)
             return
@@ -106,7 +109,6 @@ def register_funlink(bot):
         link_id = match.group(1)
         rad = str(random.randint(100000, 999999))
         
-        # Gửi tin nhắn ban đầu
         wait_msg = bot.send_message(
             message.chat.id,
             "⏳ Đang xử lý, vui lòng chờ...",
@@ -116,6 +118,8 @@ def register_funlink(bot):
         # Dò keyword đến khi hợp lệ
         retry = 0
         keyword = ""
+        keyword_id = None
+
         while retry < 20:
             try:
                 r = requests.get(
@@ -131,15 +135,18 @@ def register_funlink(bot):
                     timeout=10
                 )
                 if r.status_code == 200:
-                    j = r.json()
-                    keyword = r.json().get('data_keyword', {}).get('keyword_text', '').lower()
-                    if keyword in SOURCES:
+                    data_keyword = r.json().get('data_keyword', {})
+                    keyword = data_keyword.get('keyword_text', '').lower()
+                    keyword_id = data_keyword.get('id')
+
+                    if keyword and keyword_id and keyword in SOURCES:
                         break
                     
             except Exception:
                 pass
-            retry += 1
-            time.sleep(2)
+            finally:
+                retry += 1
+                time.sleep(2)
 
         if keyword not in SOURCES:
             bot.edit_message_text(
@@ -155,7 +162,6 @@ def register_funlink(bot):
             'accept-language': 'en-US,en;q=0.9',
             'cache-control': 'max-age=0',
             'origin': origin,
-            'priority': 'u=1, i',
             'referer': origin + '/',
             'rid': rad,
             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15',
@@ -169,6 +175,6 @@ def register_funlink(bot):
 
         threading.Thread(
             target=process_funlink_step,
-            args=(bot, message, wait_msg, origin, headers),
+            args=(bot, message, wait_msg, origin, headers, link_id, keyword, keyword_id),
             daemon=True
         ).start()
