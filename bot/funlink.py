@@ -45,26 +45,45 @@ def process_funlink_step(bot, message, wait_msg, origin, headers):
     }
 
     try:
+        # Bước 2: lấy mã code
         response = requests.post('https://public.funlink.io/api/code/code', headers=headers, json=json_data)
-        if response.status_code == 200:
-            try:
-                dat = response.json()
-                code = dat.get('code')
-                if code:
-                    bot.edit_message_text(
-                        f" » <b>Mã của bạn là:</b> <blockquote>{code}</blockquote>\n🎉 Hãy nhập mã để lấy link đích.",
-                        message.chat.id,
-                        wait_msg.message_id,
-                    )
-                else:
-                    bot.edit_message_text("❌ Không tìm thấy mã trong phản hồi.", message.chat.id, wait_msg.message_id)
-            except Exception as e:
-                bot.edit_message_text(f"❌ Lỗi xử lý JSON: {e}", message.chat.id, wait_msg.message_id)
-        else:
-            bot.edit_message_text(f"❌ Thất bại bước 2: {response.status_code}", message.chat.id, wait_msg.message_id)
-    except Exception as e:
-        bot.edit_message_text(f"❌ Lỗi gửi request bước 2: {e}", message.chat.id, wait_msg.message_id)
+        if response.status_code != 200:
+            bot.edit_message_text(f"❌ Bước 2 thất bại ({response.status_code})", message.chat.id, wait_msg.message_id)
+            return
 
+        code = response.json().get('code')
+        if not code:
+            bot.edit_message_text(
+                f"⚠️ Không tìm thấy mã code trong phản hồi.",
+                message.chat.id,
+                wait_msg.message_id,
+            )
+            return
+
+        # Bước 3: gửi mã lấy link đích
+        json_verify = {
+            'code': code,
+            'hostname': origin,
+            'user_agent': headers['user-agent']
+        }
+
+        verify_res = requests.post('https://public.funlink.io/api/code/verify', headers=headers, json=json_verify)
+        if verify_res.status_code != 200:
+            bot.edit_message_text(f"❌ Bước 3 thất bại ({verify_res.status_code})", message.chat.id, wait_msg.message_id)
+            return
+
+        final_url = verify_res.json().get('url')
+        if final_url:
+            bot.edit_message_text(
+                f"🎯 <b>Link đích:</b> <code>{final_url}</code>",
+                message.chat.id,
+                wait_msg.message_id,
+            )
+
+        else:
+            bot.edit_message_text("❌ Không lấy được link đích.", message.chat.id, wait_msg.message_id)
+    except Exception as e:
+        bot.edit_message_text(f"⚠️ Lỗi xử lý: {e}", message.chat.id, wait_msg.message_id)
 
 def register_funlink(bot):
     @bot.message_handler(commands=['fl'])
@@ -86,18 +105,14 @@ def register_funlink(bot):
         # Gửi tin nhắn ban đầu
         wait_msg = bot.send_message(
             message.chat.id,
-            "⏳ Đang dò nhiệm vụ hỗ trợ cho link `{link_id}`...",
+            "⏳ Đang xử lý, vui lòng chờ...",
             reply_to_message_id=message.message_id
         )
 
-        # Lặp đến khi nhiệm vụ hợp lệ
+        # Dò keyword đến khi hợp lệ
         retry = 0
-        max_retry = 20
         keyword = ""
-        keyword_id = ""
-
-        while retry < max_retry:
-            retry += 1
+        while retry < 20:
             try:
                 r = requests.get(
                     'https://public.funlink.io/api/code/renew-key',
@@ -113,46 +128,22 @@ def register_funlink(bot):
                 )
                 if r.status_code == 200:
                     j = r.json()
-                    keyword = j['data_keyword']['keyword_text'].lower()
-                    keyword_id = j['data_keyword']['id']
+                    keyword = r.json().get('data_keyword', {}).get('keyword_text', '').lower()
                     if keyword in SOURCES:
                         break
-                    else:
-                        bot.edit_message_text(
-                            f"⏳ Nhiệm vụ hiện tại chưa hỗ trợ: `{keyword}`\nĐang thử lại... (lần {retry})",
-                            message.chat.id,
-                            wait_msg.message_id,
-                            parse_mode="Markdown"
-                        )
-                else:
-                    bot.edit_message_text(f"❌ Không lấy được nhiệm vụ. Thử lại... ({r.status_code})",
-                                          message.chat.id, wait_msg.message_id)
-            except Exception as e:
-                bot.edit_message_text(f"⚠️ Lỗi trong lúc lấy nhiệm vụ: {e}",
-                                      message.chat.id, wait_msg.message_id)
-            time.sleep(3)
-
+                    
+            except Exception:
+                pass
+            retry += 1
+            time.sleep(2)
 
         if keyword not in SOURCES:
             bot.edit_message_text(
-                f"🚫 Sau {max_retry} lần thử, nhiệm vụ vẫn chưa được hỗ trợ.\nLoại nhận được: `{keyword}`",
+                f"🚫 Không tìm thấy nhiệm vụ được hỗ trợ.",
                 message.chat.id,
                 wait_msg.message_id,
-                parse_mode="Markdown"
             )
             return
-
-        # fresponse = requests.options('https://public.funlink.io/api/code/ch', headers=headers)
-        # if fresponse.status_code != 200:
-        #     bot.edit_message_text(f"❌ Thất bại bước 1: {fresponse.status_code}", message.chat.id, wait_msg.message_id)
-        #     return
-            
-        # threading.Thread(
-        #     target=process_funlink_step,
-        #     args=(bot, message, wait_msg, origin, headers),
-        #     daemon=True
-        # ).start()
-
 
         origin = SOURCES[keyword]
         headers = {
@@ -166,13 +157,7 @@ def register_funlink(bot):
             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15',
         }
 
-        bot.edit_message_text(
-            f"✅ Đã tìm thấy nhiệm vụ `{keyword}`.\n⏳ Đang gửi yêu cầu bước 1...",
-            message.chat.id,
-            wait_msg.message_id,
-            parse_mode="Markdown"
-        )
-
+        # Gửi yêu cầu bước 1
         fresponse = requests.options('https://public.funlink.io/api/code/ch', headers=headers)
         if fresponse.status_code != 200:
             bot.edit_message_text(f"❌ Thất bại bước 1: {fresponse.status_code}", message.chat.id, wait_msg.message_id)
