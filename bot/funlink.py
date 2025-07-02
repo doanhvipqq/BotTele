@@ -13,6 +13,7 @@ def register_funlink(bot):
 
         nurl = args[1].strip()
         bot.send_chat_action(message.chat.id, 'typing')
+        bot.reply_to(message, "⏳ Đang xử lý nhiệm vụ... Vui lòng chờ ~60 giây.")
         try:
             result = bypass_funlink(nurl)
             bot.reply_to(message, result)
