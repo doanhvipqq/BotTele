@@ -12,13 +12,12 @@ def register_funlink(bot):
             return
 
         nurl = args[1].strip()
-        bot.send_chat_action(message.chat.id, 'typing')
-        bot.reply_to(message, "⏳ Đang xử lý nhiệm vụ... Vui lòng chờ ~60 giây.")
+        sent_msg = bot.send_message(message.chat.id, "⏳ Đang xử lý nhiệm vụ... Vui lòng chờ ~60 giây.", reply_to_message_id=message.message_id)
         try:
             result = bypass_funlink(nurl)
-            bot.reply_to(message, result)
+            bot.edit_message_text(result, chat_id=sent_msg.chat.id, message_id=sent_msg.message_id)
         except Exception as e:
-            bot.reply_to(message, f"⚠️ Lỗi: {str(e)}")
+            bot.edit_message_text(f"⚠️ Lỗi: {str(e)}", chat_id=sent_msg.chat.id, message_id=sent_msg.message_id)
 
     def bypass_funlink(nurl):
         rod = random.randint(100000, 999999)
@@ -29,27 +28,6 @@ def register_funlink(bot):
             return "❌ Link không hợp lệ."
 
         link_id = urlmatch.group(1)
-
-        headers = {
-            'accept': '*/*',
-            'origin': 'https://funlink.io',
-            'referer': 'https://funlink.io/',
-            'rid': rad,
-            'user-agent': 'Mozilla/5.0',
-        }
-
-        params = {
-            'ignoreId': rad,
-            'id': link_id,
-        }
-
-        r1 = requests.get('https://public.funlink.io/api/code/renew-key', params=params, headers=headers)
-        if r1.status_code != 200:
-            return "❌ Không lấy được keyword."
-
-        dt = r1.json()
-        keyword = dt['data_keyword']['keyword_text']
-        keyword_id = dt['data_keyword']['id']
 
         # Tùy theo loại nhiệm vụ mà origin & href khác nhau
         DOMAIN_MAP = {
@@ -64,8 +42,36 @@ def register_funlink(bot):
             'm88lu': 'https://m88lu.io',
         }
 
-        if keyword not in DOMAIN_MAP:
-            return f"⚠️ Chưa hỗ trợ loại nhiệm vụ: {keyword}"
+        headers = {
+            'accept': '*/*',
+            'origin': 'https://funlink.io',
+            'referer': 'https://funlink.io/',
+            'rid': rad,
+            'user-agent': 'Mozilla/5.0',
+        }
+
+        params = {
+            'ignoreId': rad,
+            'id': link_id,
+        }
+
+        # 🔁 Lặp lại tối đa 10 lần để thử lấy nhiệm vụ hợp lệ
+        max_retry = 10
+        for attempt in range(max_retry):
+            r1 = requests.get('https://public.funlink.io/api/code/renew-key', params=params, headers=headers)
+            if r1.status_code != 200:
+                return "❌ Không lấy được keyword."
+
+            dt = r1.json()
+            keyword = dt['data_keyword']['keyword_text']
+            keyword_id = dt['data_keyword']['id']
+
+            if keyword in DOMAIN_MAP:
+                break  # ✅ Hợp lệ → thoát khỏi vòng lặp và xử lý tiếp
+            else:
+                time.sleep(3)  # ⏱ Đợi vài giây trước khi thử lại
+        else:
+            return f"⚠️ Đã thử {max_retry} lần nhưng không có nhiệm vụ được hỗ trợ."
 
         origin = DOMAIN_MAP[keyword]
         href_sample = f"{origin}/"
