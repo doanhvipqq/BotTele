@@ -2,179 +2,142 @@ import re
 import time
 import random
 import requests
-import threading
-from telebot.types import Message
 
-SOURCES = {
-    '188bet': 'https://88bet.hiphop',
-    'w88': 'https://w88vt.com',
-    'fun88': 'https://fun88kyc.com',
-    'daga': 'https://stelizabeth.co.uk',
-    'kubet': 'https://www.randalls.uk.com',
-    '8xbet 8xbetvina.com': 'https://8xbetvina.com',
-    'trang cá cược': 'https://chisholmunitedfc.com',
-    'lu88 vnco': 'https://lu88vn.co.uk',
-    'm88lu': 'https://m88lu.io',
-}
+def register_funlink(bot):
+    @bot.message_handler(commands=['fl'])
+    def handle_fl(message):
+        args = message.text.split(maxsplit=1)
+        if len(args) < 2:
+            bot.reply_to(message, "❗ Vui lòng nhập link Funlink. Ví dụ:\n`/fl https://funlink.io/PS3HIRn`", parse_mode="Markdown")
+            return
 
-def process_funlink_step(bot, message, wait_msg, origin, headers, link_id, keyword, keyword_id):
-    for remaining in range(60, 0, -5):
+        nurl = args[1].strip()
+        bot.send_chat_action(message.chat.id, 'typing')
         try:
-            bot.edit_message_text(
-                f"⏳ Đang xử lý... vui lòng chờ {remaining} giây.",
-                message.chat.id,
-                wait_msg.message_id
-            )
-        except:
-            pass
-        time.sleep(5)
+            result = bypass_funlink(nurl)
+            bot.reply_to(message, result)
+        except Exception as e:
+            bot.reply_to(message, f"⚠️ Lỗi: {str(e)}")
 
-    headers['content-type'] = 'application/json'
-    json_data = {
-        'screen': '1000 x 800',
-        'browser_name': 'Safari',
-        'browser_version': '100.0.0.0',
-        'is_mobile': False,
-        'os_name': 'skibidiOS',
-        'os_version': '10000000',
-        'is_cookies': True,
-        'href': origin + '/',
-        'user_agent': headers['user-agent'],
-        'hostname': origin,
-    }
+    def bypass_funlink(nurl):
+        rod = random.randint(100000, 999999)
+        rad = str(rod)
 
-    try:
-        # Bước 2: lấy mã code
-        response = requests.post('https://public.funlink.io/api/code/code', headers=headers, json=json_data)
-        if response.status_code != 200:
-            bot.edit_message_text(f"❌ Bước 2 thất bại ({response.status_code})", message.chat.id, wait_msg.message_id)
-            return
+        urlmatch = re.search(r"funlink\.io/([A-Za-z0-9]+)", nurl)
+        if not urlmatch:
+            return "❌ Link không hợp lệ."
 
-        code = response.json().get('code')
-        if not code:
-            bot.edit_message_text(
-                f"⚠️ Không tìm thấy mã code trong phản hồi.",
-                message.chat.id,
-                wait_msg.message_id,
-            )
-            return
+        link_id = urlmatch.group(1)
 
-        # Bước 3: gửi mã lấy link đích
-        json_verify = {
+        headers = {
+            'accept': '*/*',
+            'origin': 'https://funlink.io',
+            'referer': 'https://funlink.io/',
+            'rid': rad,
+            'user-agent': 'Mozilla/5.0',
+        }
+
+        params = {
+            'ignoreId': rad,
+            'id': link_id,
+        }
+
+        r1 = requests.get('https://public.funlink.io/api/code/renew-key', params=params, headers=headers)
+        if r1.status_code != 200:
+            return "❌ Không lấy được keyword."
+
+        dt = r1.json()
+        keyword = dt['data_keyword']['keyword_text']
+        keyword_id = dt['data_keyword']['id']
+
+        # Tùy theo loại nhiệm vụ mà origin & href khác nhau
+        DOMAIN_MAP = {
+            '188Bet': 'https://88bet.hiphop',
+            'w88': 'https://w88vt.com',
+            'fun88': 'https://fun88kyc.com',
+            'daga': 'https://stelizabeth.co.uk',
+            'kubet': 'https://www.randalls.uk.com',
+            '8xbet 8xbetvina.com': 'https://8xbetvina.com',
+            'trang cá cược': 'https://chisholmunitedfc.com',
+            'lu88 vnco': 'https://lu88vn.co.uk',
+            'm88lu': 'https://m88lu.io',
+        }
+
+        if keyword not in DOMAIN_MAP:
+            return f"⚠️ Chưa hỗ trợ loại nhiệm vụ: {keyword}"
+
+        origin = DOMAIN_MAP[keyword]
+        href_sample = f"{origin}/"
+
+        # Bước 1: options
+        fheaders = {
+            'origin': origin,
+            'referer': origin + '/',
+            'rid': rad,
+            'user-agent': 'Mozilla/5.0'
+        }
+        requests.options('https://public.funlink.io/api/code/ch', headers=fheaders)
+
+        # Bước 2: chờ và gửi thông tin
+        time.sleep(60)
+        json_data = {
+            'screen': '1000 x 800',
+            'browser_name': 'Safari',
+            'browser_version': '100.0.0.0',
+            'browser_major_version': '137',
+            'is_mobile': False,
+            'os_name': 'skibidiOS',
+            'os_version': '10000000',
+            'is_cookies': True,
+            'href': href_sample,
+            'user_agent': 'Mozilla/5.0',
+            'hostname': origin
+        }
+
+        r2 = requests.post('https://public.funlink.io/api/code/code', headers={
+            'origin': origin,
+            'referer': origin + '/',
+            'rid': rad,
+            'content-type': 'application/json',
+            'user-agent': 'Mozilla/5.0'
+        }, json=json_data)
+
+        if r2.status_code != 200:
+            return f"❌ Bước 2 thất bại ({r2.status_code})"
+
+        code_data = r2.json()
+        final_code = code_data.get('code')
+
+        if not final_code:
+            return "❌ Không lấy được code."
+
+        # Bước 3: gửi truy cập cuối để lấy link đích
+        final_payload = {
             'browser_name': 'skibidu',
             'browser_version': '99999',
             'os_name': 'SkibidiOS',
             'os_version': '10000',
-            'keyword_answer': code,
+            'os_version_name': '1000',
+            'keyword_answer': final_code,
             'link_shorten_id': link_id,
             'keyword': keyword,
-            'user_agent': headers['user-agent'],
+            'ip': '',
+            'user_agent': 'Mozilla/5.0',
             'device_name': 'desktop',
-            'keyword_id': keyword_id,  # lấy từ response renew-key
+            'token': '',
+            'keyword_id': keyword_id,
         }
 
-        verify_res = requests.post('https://public.funlink.io/api/url/tracking-url', headers=headers, json=json_verify)
-
-        if verify_res.status_code != 200:
-            bot.edit_message_text(f"❌ Bước 3 thất bại ({verify_res.status_code})", message.chat.id, wait_msg.message_id)
-            return
-
-        final_url = verify_res.json().get('url')
-        if final_url:
-            bot.edit_message_text(
-                f"🎯 <b>Link đích:</b> <code>{final_url}</code>",
-                message.chat.id,
-                wait_msg.message_id,
-            )
-
-        else:
-            bot.edit_message_text("❌ Không lấy được link đích.", message.chat.id, wait_msg.message_id)
-    except Exception as e:
-        bot.edit_message_text(f"⚠️ Lỗi xử lý: {e}", message.chat.id, wait_msg.message_id)
-
-def register_funlink(bot):
-    @bot.message_handler(commands=['fl'])
-    def handle_get_code(message: Message):
-        args = message.text.split(maxsplit=1)
-        if len(args) < 2:
-            bot.reply_to(message, "🚫 Vui lòng nhập link Funlink cần vượt.\nVí dụ: /fl https://funlink.io/PS3HIRn")
-            return
-
-        url = args[1].strip().lower()
-        match = re.search(r'funlink\.io/([a-zA-Z0-9]+)', url)
-        if not match:
-            bot.reply_to(message, "🚫 Link không hợp lệ.")
-            return
-
-        link_id = match.group(1)
-        rad = str(random.randint(100000, 999999))
-        
-        wait_msg = bot.send_message(
-            message.chat.id,
-            "⏳ Đang xử lý, vui lòng chờ...",
-            reply_to_message_id=message.message_id
-        )
-
-        # Dò keyword đến khi hợp lệ
-        retry = 0
-        keyword = ""
-        keyword_id = None
-
-        while retry < 20:
-            try:
-                r = requests.get(
-                    'https://public.funlink.io/api/code/renew-key',
-                    params={'ignoreId': rad, 'id': link_id},
-                    headers={
-                        'accept': '*/*',
-                        'origin': 'https://funlink.io',
-                        'referer': 'https://funlink.io/',
-                        'rid': rad,
-                        'user-agent': 'Mozilla/5.0'
-                    },
-                    timeout=10
-                )
-                if r.status_code == 200:
-                    data_keyword = r.json().get('data_keyword', {})
-                    keyword = data_keyword.get('keyword_text', '').lower()
-                    keyword_id = data_keyword.get('id')
-
-                    if keyword and keyword_id and keyword in SOURCES:
-                        break
-                    
-            except Exception:
-                pass
-            finally:
-                retry += 1
-                time.sleep(2)
-
-        if keyword not in SOURCES:
-            bot.edit_message_text(
-                f"🚫 Không tìm thấy nhiệm vụ được hỗ trợ.",
-                message.chat.id,
-                wait_msg.message_id,
-            )
-            return
-
-        origin = SOURCES[keyword]
-        headers = {
-            'accept': '*/*',
-            'accept-language': 'en-US,en;q=0.9',
-            'cache-control': 'max-age=0',
-            'origin': origin,
-            'referer': origin + '/',
+        r3 = requests.post('https://public.funlink.io/api/url/tracking-url', headers={
+            'accept': 'application/json',
+            'content-type': 'application/json',
+            'origin': 'https://funlink.io',
+            'referer': 'https://funlink.io/',
             'rid': rad,
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15',
-        }
+            'user-agent': 'Mozilla/5.0',
+        }, json=final_payload)
 
-        # Gửi yêu cầu bước 1
-        fresponse = requests.options('https://public.funlink.io/api/code/ch', headers=headers)
-        if fresponse.status_code != 200:
-            bot.edit_message_text(f"❌ Thất bại bước 1: {fresponse.status_code}", message.chat.id, wait_msg.message_id)
-            return
-
-        threading.Thread(
-            target=process_funlink_step,
-            args=(bot, message, wait_msg, origin, headers, link_id, keyword, keyword_id),
-            daemon=True
-        ).start()
+        if r3.status_code == 200:
+            dtt = r3.json()
+            return f"🔗 Link đích: {dtt['data_link']['url']}"
+        return "❌ Không lấy được link cuối."
