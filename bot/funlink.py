@@ -55,8 +55,8 @@ def register_funlink(bot):
             'id': link_id,
         }
 
-        # 🔁 Lặp lại tối đa 10 lần để thử lấy nhiệm vụ hợp lệ
-        max_retry = 10
+        # 🔁 Lặp lại tối đa 20 lần để thử lấy nhiệm vụ hợp lệ
+        max_retry = 20
         for attempt in range(max_retry):
             r1 = requests.get('https://public.funlink.io/api/code/renew-key', params=params, headers=headers)
             if r1.status_code != 200:
