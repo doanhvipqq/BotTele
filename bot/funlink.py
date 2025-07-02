@@ -63,7 +63,7 @@ def process_funlink_step(bot, message, wait_msg, origin, headers):
         # Bước 3: gửi mã lấy link đích
         json_verify = {
             'code': code,
-            'hostname': origin,
+            'hostname': origin.replace('https://', '').replace('http://', ''),
             'user_agent': headers['user-agent']
         }
 
