@@ -4,6 +4,8 @@ import random
 import requests
 import threading
 from telebot.types import Message
+from urllib.parse import urlparse
+
 
 SOURCES = {
     '188bet': 'https://88bet.hiphop',
@@ -18,6 +20,8 @@ SOURCES = {
 }
 
 def process_funlink_step(bot, message, wait_msg, origin, headers):
+    time.sleep(2)
+
     for remaining in range(60, 0, -5):
         try:
             bot.edit_message_text(
@@ -63,7 +67,7 @@ def process_funlink_step(bot, message, wait_msg, origin, headers):
         # Bước 3: gửi mã lấy link đích
         json_verify = {
             'code': code,
-            'hostname': origin.replace('https://', '').replace('http://', ''),
+            'hostname': urlparse(origin).netloc,
             'user_agent': headers['user-agent']
         }
 
