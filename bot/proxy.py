@@ -84,7 +84,7 @@ def update_proxies():
 def register_proxy(bot):
     @bot.message_handler(commands=["proxy"])
     def send_proxy(msg):
-        status_msg = bot.reply_to(msg, "🔍 Đang xử lý, vui lòng chờ...")
+        status_msg = bot.reply_to(msg, "⏳ Đang xử lý... Vui lòng chờ!")
 
         try:
             bot.send_chat_action(msg.chat.id, "upload_document")
