@@ -50,9 +50,7 @@ def register_send(bot):
                 chat_id=msg.chat.id,
                 message_id=msg.message_id
             )
-        
-        bot.edit_message_text("⏳ Đang tải video, vui lòng chờ...", msg.chat.id, msg.message_id)
-        
+                
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
                 video_path = download(url, tmpdir)
