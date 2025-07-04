@@ -18,7 +18,7 @@ def register_sourceweb(bot):
         if not url.startswith(('http://', 'https://')):
             url = 'https://' + url
 
-        msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
+        msg = bot.reply_to(message, "⏳ Đang xử lý... Vui lòng chờ!")
 
         try:
             domain = urllib.parse.urlparse(url).netloc
