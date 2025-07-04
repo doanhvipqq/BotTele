@@ -84,7 +84,7 @@ def register_yeumoney(bot):
                 code = match.group(1)
                 sent_msg = bot.send_message(
                     message.chat.id,
-                    f"⏳ Đang xử lý...",
+                    f"⏳ Đang xử lý... Vui lòng chờ!",
                     reply_to_message_id=message.message_id
                 )
 
