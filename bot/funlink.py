@@ -15,7 +15,7 @@ def register_funlink(bot):
         nurl = args[1].strip()
         sent_msg = bot.send_message(
             message.chat.id,
-            "⏳ Đang xử lý nhiệm vụ... Vui lòng chờ ~60 giây.",
+            "⏳ Đang xử lý... Vui lòng chờ ~60 giây.",
             reply_to_message_id=message.message_id
         )
 
