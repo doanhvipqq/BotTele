@@ -11,7 +11,7 @@ caption = """<blockquote expandable>┌─────────────�
 ├ /sourceweb: Tải source web 🎃
 ├ /send: Tải video đa nền tảng 🎬
 ├ /tiktok: Thông tin video TikTok 🫦
-├ /info: Thông tin người dùng Tele 👾
+├ /in4: Thông tin người dùng Tele 👾
 ├───────────────⭔
 ├ /pussy: 🔞
 ├ /squeeze: Bóp 🌚
