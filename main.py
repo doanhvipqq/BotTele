@@ -3,8 +3,8 @@ import os
 import telebot
 from bot.nct import register_nct
 from bot.scl import register_scl
+from bot.in4 import register_in4
 from bot.send import register_send
-from bot.info import register_info
 from bot.time import register_time
 from bot.help import register_help
 from bot.thumb import register_thumb
@@ -26,8 +26,8 @@ bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 
 register_nct(bot)
 register_scl(bot)
+register_in4(bot)
 register_send(bot)
-register_info(bot)
 register_time(bot)
 register_help(bot)
 register_thumb(bot)
