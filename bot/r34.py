@@ -18,14 +18,14 @@ def register_r34(bot):
 			img_tags = soup.find_all("img")
 
 			# Danh sách ảnh rác cần loại bỏ
-			exclude_keywords = [
-				"/r34chibi.png",
-				"/icame.png"
+			exclude_src = [
+				"/images/r34chibi.png",
+				"https://rule34.xxx/static/icame.png"
 			]
 
 			for img in img_tags:
 				src = img.get("src", "")
-				if any(key in src for key in exclude_keywords):
+				if src in exclude_src:
 					continue
 
 			# 	# Chuẩn hóa src thành URL đầy đủ
@@ -38,7 +38,7 @@ def register_r34(bot):
 				bot.send_photo(message.chat.id, src, reply_to_message_id=message.message_id)
 
 				# Gửi về cho admin (ảnh + link gốc)
-				bot.send_message(ADMIN_ID, f"🖼 Link ảnh: {src}\n🔗 Post: {response.url}")
+				# bot.send_message(ADMIN_ID, f"🖼 Link ảnh: {src}\n🔗 Post: {response.url}")
 				return
 
 			bot.reply_to(message, "❌ Không tìm thấy ảnh nào hợp lệ.")
