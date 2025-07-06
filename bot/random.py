@@ -1,8 +1,7 @@
 import random
-from config import ADMIN_ID
+from config import ADMIN_ID, ERROR_MSG
 
 MAX_ATTEMPTS = 5
-ERROR_MSG = "⚠️ Đã xảy ra lỗi nội bộ. Admin đang trong quá trình xử lý."
 
 def send_random_media(bot, message, file_path, media_type):
     try:
