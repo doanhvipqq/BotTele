@@ -15,18 +15,17 @@ caption = """˚₊· ͟͟͞͞➳❥ <b>Tiện ích</b>
 ├ /tiktok: Thông tin video TikTok 🫦
 ├ /in4: Thông tin người dùng Tele 👾
 ‎└───────────────⭓</blockquote>
-〡 <b>Random ảnh/video</b>
-<blockquote expandable>✧═════• ༺༻ •═════✧
  ‎‧₊˚✧[<b>hhhh Random ảnh/video</b>]✧˚₊‧
-  • /pussy: 🔞
-  • /r34: Ảnh r34 🔞
-  • /squeeze: Bóp 🌚
-  • /girl: Video gái 😳
-  • /butt: Ảnh mông gái 🙅‍♀️
-  • /anime: Video anime 🇯🇵
-  • /imganime: Ảnh anime 🦄
-  • /cosplay: Ảnh cosplay 🧝‍♀️
-  • /nude: Ảnh bán thoả thân 🔞
+<blockquote expandable>✧═════• ༺༻ •═════✧
+   • /pussy: 🔞
+   • /r34: Ảnh r34 🔞
+   • /squeeze: Bóp 🌚
+   • /girl: Video gái 😳
+   • /butt: Ảnh mông gái 🙅‍♀️
+   • /anime: Video anime 🇯🇵
+   • /imganime: Ảnh anime 🦄
+   • /cosplay: Ảnh cosplay 🧝‍♀️
+   • /nude: Ảnh bán thoả thân 🔞
 ✧═════• ༺༻ •═════✧
 </blockquote>"""
 
