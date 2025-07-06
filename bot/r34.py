@@ -41,8 +41,8 @@ def register_r34(bot):
 				# bot.send_message(ADMIN_ID, f"🖼 Link ảnh: {src}\n🔗 Post: {response.url}")
 				return
 
-			bot.reply_to(message, "❌ Không tìm thấy ảnh nào hợp lệ.")
+			bot.reply_to(message, "⚠️ Đã xảy ra lỗi nội bộ. Admin đang trong quá trình xử lý.")
 
 		except Exception as e:
-			bot.reply_to(message, "❌ Đã xảy ra lỗi nội bộ. Admin đang xử lý.")
+			bot.reply_to(message, "⚠️ Đã xảy ra lỗi nội bộ. Admin đang trong quá trình xử lý.")
 			bot.send_message(ADMIN_ID, f"⚠️ Lỗi khi xử lý /r34:\n{e}")
