@@ -23,16 +23,16 @@ def register_r34(bot):
 				"/icame.png"
 			]
 
-			for img in img_tags:
-				src = img.get("src", "")
-				if any(key in src for key in exclude_keywords):
-					continue
+			# for img in img_tags:
+			# 	src = img.get("src", "")
+			# 	if any(key in src for key in exclude_keywords):
+			# 		continue
 
-				# Chuẩn hóa src thành URL đầy đủ
-				if src.startswith("//"):
-					src = "https:" + src
-				elif src.startswith("/"):
-					src = "https://rule34.xxx" + src
+			# 	# Chuẩn hóa src thành URL đầy đủ
+			# 	if src.startswith("//"):
+			# 		src = "https:" + src
+			# 	elif src.startswith("/"):
+			# 		src = "https://rule34.xxx" + src
 
 				# Gửi ảnh cho người dùng
 				bot.send_photo(message.chat.id, src, reply_to_message_id=message.message_id)
