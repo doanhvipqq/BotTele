@@ -3,46 +3,36 @@ from bs4 import BeautifulSoup
 from config import ADMIN_ID, ERROR_MSG
 
 def register_r34(bot):
-	@bot.message_handler(commands=['r34'])
-	def handle_r34(message):
-		url = "https://rule34.xxx/index.php?page=post&s=random"
-		headers = {
-			"Referer": url,
-			"User-Agent": "Mozilla/5.0",
-		}
+    @bot.message_handler(commands=['r34'])
+    def handle_r34(message):
+        url = "https://rule34.xxx/index.php?page=post&s=random"
+        headers = {
+            "Referer": url,
+            "User-Agent": "Mozilla/5.0",
+        }
 
-		try:
-			response = requests.get(url, headers=headers, timeout=10)
-			soup = BeautifulSoup(response.text, "html.parser")
+        try:
+            response = requests.get(url, headers=headers, timeout=10)
+            soup = BeautifulSoup(response.text, "html.parser")
+            img_tags = soup.find_all("img")
 
-			img_tags = soup.find_all("img")
+            exclude_src = [
+                "/images/r34chibi.png",
+                "https://rule34.xxx/static/icame.png"
+            ]
 
-			# Danh sách ảnh rác cần loại bỏ
-			exclude_src = [
-				"/images/r34chibi.png",
-				"https://rule34.xxx/static/icame.png"
-			]
+            for img in img_tags:
+                src = img.get("src", "")
+                if not src or src in exclude_src:
+                    continue
 
-			for img in img_tags:
-				src = img.get("src", "")
-				if src in exclude_src:
-					continue
+                # Gửi ảnh cho người dùng
+                bot.send_photo(message.chat.id, src, reply_to_message_id=message.message_id)
+                return
 
-			# 	# Chuẩn hóa src thành URL đầy đủ
-			# 	if src.startswith("//"):
-			# 		src = "https:" + src
-			# 	elif src.startswith("/"):
-			# 		src = "https://rule34.xxx" + src
+            # Nếu không tìm thấy ảnh hợp lệ
+            bot.reply_to(message, ERROR_MSG)
 
-				# Gửi ảnh cho người dùng
-				bot.send_photo(message.chat.id, src, reply_to_message_id=message.message_id)
-
-				# Gửi về cho admin (ảnh + link gốc)
-				# bot.send_message(ADMIN_ID, f"🖼 Link ảnh: {src}\n🔗 Post: {response.url}")
-				return
-
-			bot.reply_to(message, ERROR_MSG)
-
-		except Exception as e:
-			bot.reply_to(message, ERROR_MSG)
-			bot.send_message(ADMIN_ID, f"⚠️ Lỗi khi xử lý /r34:\n{e}")
+        except Exception as e:
+            bot.reply_to(message, ERROR_MSG)
+            bot.send_message(ADMIN_ID, f"⚠️ Lỗi khi xử lý /r34:\n{e}")
