@@ -19,13 +19,13 @@ def register_r34(bot):
 
 			# Danh sách ảnh rác cần loại bỏ
 			exclude_src = [
-				"https://rule34.xxx/static/icame.png",
-				"https://rule34.xxx/images/r34chibi.png"
+				"/r34chibi.png",
+				"/icame.png"
 			]
 
 			for img in img_tags:
 				src = img.get("src", "")
-				if src in exclude_src:
+				if any(key in src for key in exclude_keywords):
 					continue
 
 				# Chuẩn hóa src thành URL đầy đủ
