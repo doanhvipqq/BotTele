@@ -26,13 +26,19 @@ def register_r34(bot):
 				src = img.get("src", "")
 				if src in exclude_src:
 					continue
+
+				# Fix đường dẫn nếu bị thiếu scheme
+				if src.startswith("//"):
+					src = "https:" + src
+				elif src.startswith("/"):
+					src = "https://rule34.xxx" + src
 	
 				bot.send_photo(message.chat.id, src, reply_to_message_id=message.message_id)
 				bot.send_message(ADMIN_ID, f"Link: {src}")
 				return
 	
-			# # Nếu không có ảnh phù hợp
-			# bot.reply_to(message, "❌ Không tìm thấy ảnh nào hợp lệ.")
+			# Nếu không có ảnh phù hợp
+			bot.reply_to(message, "❌ Không tìm thấy ảnh nào hợp lệ.")
 
 		except Exception:
 			bot.reply_to(message, "❌ Đã xảy ra lỗi nội bộ. Admin đang trong quá trình sửa chữa.")
