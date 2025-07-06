@@ -1,4 +1,5 @@
-caption = """<blockquote expandable>〡 <b>Tiện ích</b>
+caption = """〡 <b>Tiện ích</b>
+<blockquote expandable>
 ┌───────────────⭓
 ├ /help: Menu bot
 ├ /admin: Info admin
