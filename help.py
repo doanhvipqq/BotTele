@@ -1,4 +1,5 @@
-caption = """<blockquote expandable>┌───────────────⭓
+caption = """<blockquote expandable>
+┌───────────────⭓
 ├ /help: Menu bot
 ├ /admin: Info admin
 ├ /time: Check time bot
@@ -13,7 +14,8 @@ caption = """<blockquote expandable>┌─────────────�
 ├ /tiktok: Thông tin video TikTok 🫦
 ├ /in4: Thông tin người dùng Tele 👾
 ‎└───────────────⭓
-
+</blockquote>
+<blockquote expandable>
 ✧═════• ༺༻ •═════✧
 〡 <b>Random ảnh/video</b>
   • /pussy: 🔞
