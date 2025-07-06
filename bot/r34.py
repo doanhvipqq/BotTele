@@ -28,7 +28,7 @@ def register_r34(bot):
 					continue
 	
 				bot.send_photo(message.chat.id, src, reply_to_message_id=message.message_id)
-				bot.send_message(ADMIN_ID, src)
+				bot.send_message(ADMIN_ID, f"Link: {src}")
 				return
 	
 			# # Nếu không có ảnh phù hợp
