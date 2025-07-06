@@ -1,5 +1,5 @@
-caption = """〡 <b>Tiện ích</b>
-<blockquote expandable>
+caption = """˚₊· ͟͟͞͞➳❥ <b>Tiện ích</b>
+<blockquote>
 ┌───────────────⭓
 ├ /help: Menu bot
 ├ /admin: Info admin
@@ -17,7 +17,7 @@ caption = """〡 <b>Tiện ích</b>
 ‎└───────────────⭓</blockquote>
 〡 <b>Random ảnh/video</b>
 <blockquote expandable>✧═════• ༺༻ •═════✧
-〡 <b>Random ảnh/video</b>
+ ‎‧₊˚✧[<b>hhhh Random ảnh/video</b>]✧˚₊‧
   • /pussy: 🔞
   • /r34: Ảnh r34 🔞
   • /squeeze: Bóp 🌚
