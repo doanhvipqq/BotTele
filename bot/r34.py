@@ -14,34 +14,35 @@ def register_r34(bot):
 		try:
 			response = requests.get(url, headers=headers, timeout=10)
 			soup = BeautifulSoup(response.text, "html.parser")
-	
-			# Tìm tất cả thẻ <img>
+
 			img_tags = soup.find_all("img")
-	
-			# Link ảnh bạn muốn loại trừ
+
+			# Danh sách ảnh rác cần loại bỏ
 			exclude_src = [
 				"https://rule34.xxx/static/icame.png",
 				"https://rule34.xxx/images/r34chibi.png"
 			]
-	
-			# In ra các src của ảnh
+
 			for img in img_tags:
 				src = img.get("src", "")
 				if src in exclude_src:
 					continue
 
-				# Fix đường dẫn nếu bị thiếu scheme
+				# Chuẩn hóa src thành URL đầy đủ
 				if src.startswith("//"):
 					src = "https:" + src
 				elif src.startswith("/"):
 					src = "https://rule34.xxx" + src
-	
+
+				# Gửi ảnh cho người dùng
 				bot.send_photo(message.chat.id, src, reply_to_message_id=message.message_id)
-				bot.send_message(ADMIN_ID, f"Link: {src}")
+
+				# Gửi về cho admin (ảnh + link gốc)
+				bot.send_message(ADMIN_ID, f"🖼 Link ảnh: {src}\n🔗 Post: {response.url}")
 				return
-	
-			# Nếu không có ảnh phù hợp
+
 			bot.reply_to(message, "❌ Không tìm thấy ảnh nào hợp lệ.")
 
-		except Exception:
-			bot.reply_to(message, "❌ Đã xảy ra lỗi nội bộ. Admin đang trong quá trình sửa chữa.")
+		except Exception as e:
+			bot.reply_to(message, "❌ Đã xảy ra lỗi nội bộ. Admin đang xử lý.")
+			bot.send_message(ADMIN_ID, f"⚠️ Lỗi khi xử lý /r34:\n{e}")
