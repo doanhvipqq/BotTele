@@ -19,7 +19,10 @@ def register_r34(bot):
 			img_tags = soup.find_all("img")
 	
 			# Link ảnh bạn muốn loại trừ
-			exclude_src = ["https://rule34.xxx/static/icame.png"]
+			exclude_src = [
+				"https://rule34.xxx/static/icame.png",
+				"https://rule34.xxx/images/r34chibi.png"
+			]
 	
 			# In ra các src của ảnh
 			for img in img_tags:
