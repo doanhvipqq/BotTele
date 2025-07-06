@@ -1,6 +1,5 @@
-caption = """˚₊· ͟͟͞͞➳❥ <b>Tiện ích</b>
-<blockquote>
-┌───────────────⭓
+caption = """ ‎‧₊˚✧[<b>Tiện ích</b>]✧˚₊‧
+<blockquote>┌───────────────⭓
 ├ /help: Menu bot
 ├ /admin: Info admin
 ├ /time: Check time bot
@@ -15,6 +14,7 @@ caption = """˚₊· ͟͟͞͞➳❥ <b>Tiện ích</b>
 ├ /tiktok: Thông tin video TikTok 🫦
 ├ /in4: Thông tin người dùng Tele 👾
 ‎└───────────────⭓</blockquote>
+
  ‎‧₊˚✧[<b>Random ảnh/video</b>]✧˚₊‧
 <blockquote expandable>✧═════• ༺༻ •═════✧
    • /pussy: 🔞
