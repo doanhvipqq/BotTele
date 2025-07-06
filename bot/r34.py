@@ -18,7 +18,7 @@ def register_r34(bot):
 			img_tags = soup.find_all("img")
 
 			# Danh sách ảnh rác cần loại bỏ
-			exclude_src = [
+			exclude_keywords = [
 				"/r34chibi.png",
 				"/icame.png"
 			]
