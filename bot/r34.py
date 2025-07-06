@@ -23,10 +23,10 @@ def register_r34(bot):
 				"/icame.png"
 			]
 
-			# for img in img_tags:
-			# 	src = img.get("src", "")
-			# 	if any(key in src for key in exclude_keywords):
-			# 		continue
+			for img in img_tags:
+				src = img.get("src", "")
+				if any(key in src for key in exclude_keywords):
+					continue
 
 			# 	# Chuẩn hóa src thành URL đầy đủ
 			# 	if src.startswith("//"):
