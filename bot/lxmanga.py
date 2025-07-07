@@ -39,37 +39,7 @@ def register_lxmanga(bot):
 			bot.edit_message_text(chat_id=sent_msg.chat.id, message_id=sent_msg.message_id,
 								  text=f"❌ Đã xảy ra lỗi:\n`{str(e)}`", parse_mode="Markdown")
 
-	def get_zip_from_chapter(chap_url):
-		headers = {
-			"Referer": chap_url,
-			"User-Agent": "Mozilla/5.0",
-		}
-
-		response = requests.get(chap_url, headers=headers, timeout=10)
-		response.raise_for_status()
-		soup = BeautifulSoup(response.text, "html.parser")
-
-		story_name = get_names_from_title(soup)
-
-		img_divs = soup.select("div.text-center div.lazy")
-		img_urls = [div.get("data-src") for div in img_divs if div.get("data-src")]
-
-		zip_buffer = BytesIO()
-		with zipfile.ZipFile(zip_buffer, "w", compression=zipfile.ZIP_DEFLATED) as zipf:
-			for idx, img_url in enumerate(img_urls):
-				try:
-					ext = urlparse(img_url).path.split(".")[-1].split("?")[0] or "jpg"
-					filename = f"{idx+1:03d}.{ext}"
-					zip_path = f"{clean_filename(story_name)}/{filename}"
-					img_data = requests.get(img_url, headers=headers, timeout=10).content
-					zipf.writestr(zip_path, img_data)
-				except Exception:
-					continue
-
-		zip_buffer.seek(0)
-		return zip_buffer, len(img_urls), story_name
-
-	def get_names_from_title(soup):
+	def get_name_manga(soup):
 		a_tag = soup.find("a", class_="text-ellipsis font-semibold hover:text-blue-500")
 		if a_tag:
 			story_name = a_tag.get_text(strip=True)
@@ -79,3 +49,32 @@ def register_lxmanga(bot):
 
 	def clean_filename(name):
 		return re.sub(r'[\\/*?:"<>|]', " ", name).strip()
+
+	def get_zip_from_chapter(chap_url):
+		headers = {
+			"Referer": chap_url,
+			"User-Agent": "Mozilla/5.0",
+		}
+
+		response = requests.get(chap_url, headers=headers, timeout=10)
+		soup = BeautifulSoup(response.text, "html.parser")
+
+		story_name = get_name_manga(soup)
+
+		img_divs = soup.select("div.text-center div.lazy")
+		img_urls = [div.get("data-src") for div in img_divs if div.get("data-src")]
+
+		zip_buffer = BytesIO()
+		with zipfile.ZipFile(zip_buffer, "w", compression=zipfile.ZIP_DEFLATED) as zipf:
+			for idx, img_url in enumerate(img_urls):
+				try:
+					ext = urlparse(img_url).path.split(".")[-1].split("?")[0] or "jpg"
+					filename = f"{idx + 1}.{ext}"
+					zip_path = f"{clean_filename(story_name)}/{filename}"
+					img_data = requests.get(img_url, headers=headers, timeout=10).content
+					zipf.writestr(zip_path, img_data)
+				except Exception:
+					continue
+
+		zip_buffer.seek(0)
+		return zip_buffer, len(img_urls), story_name
