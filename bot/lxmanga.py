@@ -14,7 +14,7 @@ def register_lxmanga(bot):
             return bot.reply_to(message, "❗️Bạn cần nhập đúng định dạng: /lxmanga [url chương]", parse_mode="Markdown")
         chap_url = args[1].strip()
 
-        sent_msg = bot.reply_to(message, "🔍 Đang xử lý, vui lòng chờ...")
+        sent_msg = bot.reply_to(message, "⏳ Đang xử lý... Vui lòng chờ!")
 
         try:
             zip_data, total, story_name, chapter_name = get_zip_from_chapter(chap_url)
@@ -84,4 +84,4 @@ def register_lxmanga(bot):
         return raw_title.strip(), "Chapter"
 
     def clean_filename(name):
-        return re.sub(r'[\\/*?:"<>|]', "_", name).strip()
+        return re.sub(r'[\\/*?:"<>|]', " ", name).strip()
