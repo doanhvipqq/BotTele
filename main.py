@@ -17,6 +17,7 @@ from bot.images import register_images
 from bot.github import register_github
 from bot.search import register_search
 from bot.spamsms import register_spamsms
+from bot.lx import register_lx
 from bot.lxmanga import register_lxmanga
 from bot.funlink import register_funlink
 from bot.yeumoney import register_yeumoney
@@ -41,6 +42,7 @@ register_images(bot)
 register_github(bot)
 register_search(bot)
 register_spamsms(bot)
+register_lx(bot)
 register_lxmanga(bot)
 register_funlink(bot)
 register_yeumoney(bot)
