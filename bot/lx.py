@@ -9,7 +9,7 @@ def register_lx(bot):
 	@bot.message_handler(commands=['lx'])
 	def handle_lx(message):
 		args = message.text.split(maxsplit=1)
-		if len(args) < 2 or not args[1].strip().startswith("https://lx."):
+		if len(args) < 2 or not args[1].strip().startswith("https://lx"):
 			return bot.reply_to(message, "❗️Bạn cần nhập đúng định dạng: /lx [url chương]", parse_mode="Markdown")
 		chap_url = args[1].strip()
 
