@@ -27,4 +27,4 @@ def register_r34(bot):
 
 		except Exception as e:
 			bot.reply_to(message, ERROR_MSG)
-			bot.send_message(ADMIN_ID, f"⚠️ Lỗi khi xử lý /r34:\n{e}")
+			bot.send_message(ADMIN_ID, f"⚠️ Lỗi khi xử lý lệnh /r34:\n{e}\nURL: `{img}`")
