@@ -9,6 +9,7 @@ from bot.r34 import register_r34
 from bot.send import register_send
 from bot.time import register_time
 # from bot.help import register_help
+from bot.nekos import register_nekos
 from bot.thumb import register_thumb
 from bot.proxy import register_proxy
 from bot.random import register_random
@@ -34,6 +35,7 @@ register_r34(bot)
 register_send(bot)
 register_time(bot)
 register_help(bot)
+register_nekos(bot)
 register_thumb(bot)
 register_proxy(bot)
 register_random(bot)
