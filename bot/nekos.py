@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from config import ADMIN_ID, ERROR_MSG
 
 def register_nekos(bot):
-	@bot.message_handler(commands=['r34'])
+	@bot.message_handler(commands=['nekos'])
 	def handle_r34(message):
 		url = "https://nekos.life/"
 		headers = {
