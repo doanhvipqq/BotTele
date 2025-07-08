@@ -15,7 +15,7 @@ def register_r34(bot):
 			response = requests.get(url, headers=headers, timeout=10)
 			soup = BeautifulSoup(response.text, "html.parser")
 			
-			img_tags = soup.find('img', id='image')
+			img_tags = soup.find_all("img", id="image")
 			for src in img_tags:
 				img_url = src.get("src", "")
 				if img_url:
