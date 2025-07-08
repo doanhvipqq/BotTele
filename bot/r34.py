@@ -15,11 +15,11 @@ def register_r34(bot):
 			response = requests.get(url, headers=headers, timeout=10)
 			soup = BeautifulSoup(response.text, "html.parser")
 			
-			a_tags = soup.find_all("a", href=True)
-			for a in a_tags:
-				img = a.get("href", "")
+			img_tags = soup.find_all("img", alt=True)
+			for img in img_tags:
+				img_url = img.get("src", "")
 				if img.startswith("https://wimg.rule34.xxx"):
-					bot.send_photo(message.chat.id, img, reply_to_message_id=message.message_id)
+					bot.send_photo(message.chat.id, img_url, reply_to_message_id=message.message_id)
 					return  # Dừng ngay khi gửi được ảnh đầu tiên
 
 			# Nếu không tìm thấy ảnh hợp lệ
@@ -27,4 +27,4 @@ def register_r34(bot):
 
 		except Exception as e:
 			bot.reply_to(message, ERROR_MSG)
-			bot.send_message(ADMIN_ID, f"⚠️ Lỗi khi xử lý lệnh /r34:\n{e}\nURL: `{img}`")
+			bot.send_message(ADMIN_ID, f"⚠️ Lỗi khi xử lý lệnh /r34:\n{e}\nURL: {img_url}")
