@@ -15,10 +15,12 @@ def register_r34(bot):
 			response = requests.get(url, headers=headers, timeout=10)
 			soup = BeautifulSoup(response.text, "html.parser")
 			
-			img_url = soup.find('img', id='image')
-			if img_url:
-				bot.send_photo(message.chat.id, img_url, reply_to_message_id=message.message_id)
-				return  # Dừng ngay khi gửi được ảnh đầu tiên
+			img_tags = soup.find('img', id='image')
+			for src in img_tags:
+				img_url = src.get("src", "")
+				if img_url:
+					bot.send_photo(message.chat.id, img_url, reply_to_message_id=message.message_id)
+					return  # Dừng ngay khi gửi được ảnh đầu tiên
 
 			# Nếu không tìm thấy ảnh hợp lệ
 			bot.reply_to(message, ERROR_MSG)
