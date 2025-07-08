@@ -17,7 +17,7 @@ def register_r34(bot):
 			
 			img_tags = soup.find_all("img", id="image")
 			for src in img_tags:
-				img_url = src.get("data-cfsrc", "")
+				img_url = src.get("src", "")
 				if img_url:
 					bot.send_photo(message.chat.id, img_url, reply_to_message_id=message.message_id)
 					return  # Dừng ngay khi gửi được ảnh đầu tiên
