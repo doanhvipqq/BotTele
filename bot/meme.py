@@ -37,4 +37,4 @@ def register_meme(bot):
 
 		except Exception as e:
 			bot.reply_to(message, ERROR_MSG)
-			bot.send_message(ADMIN_ID, f"⚠️ Lỗi khi xử lý lệnh /catmeme:\n{e}")
+			bot.send_message(ADMIN_ID, f"⚠️ Lỗi khi xử lý lệnh /meme:\n{e}")
