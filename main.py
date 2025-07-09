@@ -1,54 +1,75 @@
 # main.py
 import os
 import telebot
-from help import register_help
-from bot.nct import register_nct
-from bot.scl import register_scl
-from bot.in4 import register_in4
-from bot.r34 import register_r34
-from bot.send import register_send
-from bot.time import register_time
-# from bot.help import register_help
-from bot.nekos import register_nekos
-from bot.thumb import register_thumb
-from bot.proxy import register_proxy
-from bot.random import register_random
-from bot.tiktok import register_tiktok
-from bot.images import register_images
-from bot.github import register_github
-from bot.search import register_search
-from bot.spamsms import register_spamsms
-from bot.lx import register_lx
-from bot.lxmanga import register_lxmanga
-from bot.funlink import register_funlink
-from bot.yeumoney import register_yeumoney
-from bot.sourceweb import register_sourceweb
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 
-register_nct(bot)
-register_scl(bot)
-register_in4(bot)
-register_r34(bot)
-register_send(bot)
-register_time(bot)
-register_help(bot)
-register_nekos(bot)
-register_thumb(bot)
-register_proxy(bot)
-register_random(bot)
-register_tiktok(bot)
-register_images(bot)
-register_github(bot)
-register_search(bot)
-register_spamsms(bot)
-register_lx(bot)
-register_lxmanga(bot)
-register_funlink(bot)
-register_yeumoney(bot)
 from reaction import register_reaction
 register_reaction(bot)
+
+# from bot.nct import register_nct
+# register_nct(bot)
+
+from bot.scl import register_scl
+register_scl(bot)
+
+from bot.in4 import register_in4
+register_in4(bot)
+
+from bot.r34 import register_r34
+register_r34(bot)
+
+from bot.send import register_send
+register_send(bot)
+
+from bot.time import register_time
+register_time(bot)
+
+# from bot.help import register_help
+from help import register_help
+register_help(bot)
+
+from bot.nekos import register_nekos
+register_nekos(bot)
+
+from bot.thumb import register_thumb
+register_thumb(bot)
+
+from bot.proxy import register_proxy
+register_proxy(bot)
+
+from bot.random import register_random
+register_random(bot)
+
+from bot.tiktok import register_tiktok
+register_tiktok(bot)
+
+from bot.images import register_images
+register_images(bot)
+
+from bot.github import register_github
+register_github(bot)
+
+from bot.search import register_search
+register_search(bot)
+
+from bot.spamsms import register_spamsms
+register_spamsms(bot)
+
+from bot.lx import register_lx
+register_lx(bot)
+
+from bot.lxmanga import register_lxmanga
+register_lxmanga(bot)
+
+from bot.funlink import register_funlink
+register_funlink(bot)
+
+from bot.yeumoney import register_yeumoney
+register_yeumoney(bot)
+
+from bot.sourceweb import register_sourceweb
 register_sourceweb(bot)
 
 if __name__ == '__main__':
