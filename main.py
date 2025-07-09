@@ -5,9 +5,6 @@ import telebot
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 
-from reaction import register_reaction
-register_reaction(bot)
-
 # from bot.nct import register_nct
 # register_nct(bot)
 
@@ -26,8 +23,7 @@ register_send(bot)
 from bot.time import register_time
 register_time(bot)
 
-# from bot.help import register_help
-from help import register_help
+from bot.help import register_help
 register_help(bot)
 
 from bot.nekos import register_nekos
@@ -68,6 +64,9 @@ register_funlink(bot)
 
 from bot.yeumoney import register_yeumoney
 register_yeumoney(bot)
+
+from bot.reaction import register_reaction
+register_reaction(bot)
 
 from bot.sourceweb import register_sourceweb
 register_sourceweb(bot)
