@@ -11,8 +11,8 @@ def register_reaction(bot):
     # 🎯 Xử lý mọi tin nhắn
     @bot.message_handler(func=lambda message: not (message.text or "").startswith('/'), content_types=["text"])
     def handle_all_messages(message):
-        if message.chat.id not in GROUP_ID:
-            return
+        # if message.chat.id not in GROUP_ID:
+        #     return
 
         emoji = random.choice(emoji_list)
         try:
