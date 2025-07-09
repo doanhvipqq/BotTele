@@ -17,6 +17,9 @@ register_in4(bot)
 from bot.r34 import register_r34
 register_r34(bot)
 
+from bot.pixxx import register_pixxx
+register_pixxx(bot)
+
 from bot.send import register_send
 register_send(bot)
 
