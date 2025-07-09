@@ -5,25 +5,6 @@ import requests
 import threading
 
 def register_funlink(bot):
-    @bot.message_handler(func=lambda message: re.search(r'https://funlink\.io/[A-Za-z0-9]+', message.text))
-    def handle_funlink_direct(message):
-        match = re.search(r'(https://funlink\.io/[A-Za-z0-9]+)', message.text)
-        if not match:
-            return
-
-        nurl = match.group(1)
-        sent_msg = bot.send_message(
-            message.chat.id,
-            "⏳ Đang xử lý... Vui lòng chờ ~60 giây.",
-            reply_to_message_id=message.message_id
-        )
-
-        threading.Thread(
-            target=process_bypass,
-            args=(bot, nurl, sent_msg),
-            daemon=True
-        ).start()
-
     def process_bypass(bot, nurl, sent_msg):
         try:
             result = bypass_funlink(nurl)
@@ -41,7 +22,6 @@ def register_funlink(bot):
 
         link_id = urlmatch.group(1)
 
-        # Tùy theo loại nhiệm vụ mà origin & href khác nhau
         DOMAIN_MAP = {
             '188Bet': 'https://88bet.hiphop',
             'w88': 'https://w88vt.com',
@@ -67,7 +47,6 @@ def register_funlink(bot):
             'id': link_id,
         }
 
-        # 🔁 Lặp lại tối đa 10 lần để thử lấy nhiệm vụ hợp lệ
         max_retry = 10
         for attempt in range(max_retry):
             r1 = requests.get('https://public.funlink.io/api/code/renew-key', params=params, headers=headers)
@@ -79,16 +58,15 @@ def register_funlink(bot):
             keyword_id = dt['data_keyword']['id']
 
             if keyword in DOMAIN_MAP:
-                break  # ✅ Hợp lệ → thoát khỏi vòng lặp và xử lý tiếp
+                break
             else:
-                time.sleep(3)  # ⏱ Đợi vài giây trước khi thử lại
+                time.sleep(3)
         else:
             return f"⚠️ Đã thử {max_retry} lần nhưng không có nhiệm vụ được hỗ trợ."
 
         origin = DOMAIN_MAP[keyword]
         href_sample = f"{origin}/"
 
-        # Bước 1: options
         fheaders = {
             'origin': origin,
             'referer': origin + '/',
@@ -97,7 +75,6 @@ def register_funlink(bot):
         }
         requests.options('https://public.funlink.io/api/code/ch', headers=fheaders)
 
-        # Bước 2: chờ và gửi thông tin
         time.sleep(60)
         json_data = {
             'screen': '1000 x 800',
@@ -130,7 +107,6 @@ def register_funlink(bot):
         if not final_code:
             return "❌ Không lấy được code."
 
-        # Bước 3: gửi truy cập cuối để lấy link đích
         final_payload = {
             'browser_name': 'skibidu',
             'browser_version': '99999',
@@ -160,3 +136,23 @@ def register_funlink(bot):
             dtt = r3.json()
             return f"🔗 Link đích: {dtt['data_link']['url']}"
         return "❌ Không lấy được link cuối."
+
+    # 👇 THÊM ĐOẠN NÀY Ở CUỐI HÀM
+    @bot.message_handler(func=lambda message: re.search(r'https://funlink\.io/[A-Za-z0-9]+', message.text))
+    def handle_funlink_direct(message):
+        match = re.search(r'(https://funlink\.io/[A-Za-z0-9]+)', message.text)
+        if not match:
+            return
+
+        nurl = match.group(1)
+        sent_msg = bot.send_message(
+            message.chat.id,
+            "⏳ Đang xử lý... Vui lòng chờ ~60 giây.",
+            reply_to_message_id=message.message_id
+        )
+
+        threading.Thread(
+            target=process_bypass,
+            args=(bot, nurl, sent_msg),
+            daemon=True
+        ).start()
