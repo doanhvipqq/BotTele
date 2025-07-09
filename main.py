@@ -22,7 +22,6 @@ from bot.lx import register_lx
 from bot.lxmanga import register_lxmanga
 from bot.funlink import register_funlink
 from bot.yeumoney import register_yeumoney
-from bot.reaction import register_reaction
 from bot.sourceweb import register_sourceweb
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -48,6 +47,7 @@ register_lx(bot)
 register_lxmanga(bot)
 register_funlink(bot)
 register_yeumoney(bot)
+from reaction import register_reaction
 register_reaction(bot)
 register_sourceweb(bot)
 
