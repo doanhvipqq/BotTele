@@ -21,9 +21,9 @@ def register_catmeme(bot):
 			img_urls = []
 
 			for tag in img_tags:
-				url = tag.get("src", "")
-				if url.startswith("//s1.aigei.com"):
-					full_url = "https:" + url
+				img_url = tag.get("src", "")
+				if img_url.startswith("//s1.aigei.com"):
+					full_url = "https:" + img_url
 					img_urls.append(full_url)
 
 			if img_urls:
