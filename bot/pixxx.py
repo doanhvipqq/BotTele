@@ -27,7 +27,7 @@ def register_pixxx(bot):
 
 			if img_urls:
 				random_url = random.choice(img_urls)
-				bot.send_animation(message.chat.id, random_url, reply_to_message_id=message.message_id)
+				bot.send_photo(message.chat.id, random_url, reply_to_message_id=message.message_id)
 				return  # Dừng ngay khi gửi được ảnh đầu tiên
 
 			# Nếu không tìm thấy ảnh hợp lệ
