@@ -1,4 +1,5 @@
-caption = """<blockquote expandable>┌───────────────⭓
+caption = """ ‎‧₊˚✧ <b>Tiện ích</b> ✧˚₊‧
+<blockquote expandable>┌───────────────⭓
 ├ /help: Menu bot
 ├ /admin: Info admin
 ├ /time: Check time bot
@@ -12,17 +13,20 @@ caption = """<blockquote expandable>┌─────────────�
 ├ /send: Tải video đa nền tảng 🎬
 ├ /tiktok: Thông tin video TikTok 🫦
 ├ /in4: Thông tin người dùng Tele 👾
-├───────────────⭔
-├ /pussy: 🔞
-├ /r34: Ảnh r34 🔞
-├ /squeeze: Bóp 🌚
-├ /girl: Video gái 😳
-├ /butt: Ảnh mông gái 🙅‍♀️
-├ /anime: Video anime 🇯🇵
-├ /imganime: Ảnh anime 🦄
-├ /cosplay: Ảnh cosplay 🧝‍♀️
-├ /nude: Ảnh bán thoả thân 🔞
-└───────────────⭓
+‎└───────────────⭓</blockquote>
+
+ ‎‧₊˚✧ <b>Random ảnh/video</b> ✧˚₊‧
+<blockquote expandable>✧═════• ༺༻ •═════✧
+   • /pussy: 🔞
+   • /r34: Ảnh r34 🔞
+   • /squeeze: Bóp 🌚
+   • /girl: Video gái 😳
+   • /butt: Ảnh mông gái 🙅‍♀️
+   • /anime: Video anime 🇯🇵
+   • /imganime: Ảnh anime 🦄
+   • /cosplay: Ảnh cosplay 🧝‍♀️
+   • /nude: Ảnh bán thoả thân 🔞
+✧═════• ༺༻ •═════✧
 </blockquote>"""
 
 def register_help(bot):
