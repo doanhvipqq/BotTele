@@ -7,7 +7,7 @@ def register_catmeme(bot):
 	@bot.message_handler(commands=['catmeme'])
 	def handle_catmeme(message):
 		page = random.randint(1, 200)
-		url = f"https://m.aigei.com/lib/gif/?page={page}&sub=oi_mao"
+		url = f"https://aigei.com/lib/gif/?page={page}&sub=oi_mao"
 		headers = {
 			"Referer": url,
 			"User-Agent": "Mozilla/5.0",
