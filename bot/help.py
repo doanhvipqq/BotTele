@@ -21,6 +21,7 @@ caption = """ ‎‧₊˚✧ <b>Tiện ích</b> ✧˚₊‧
    • /r34: Ảnh r34 🔞
    • /squeeze: Bóp 🌚
    • /girl: Video gái 😳
+   • /catmeme: Meme mèo 🐈
    • /butt: Ảnh mông gái 🙅‍♀️
    • /anime: Video anime 🇯🇵
    • /imganime: Ảnh anime 🦄
