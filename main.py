@@ -50,8 +50,8 @@ register_github(bot)
 from bot.search import register_search
 register_search(bot)
 
-from bot.catmeme import register_catmeme
-register_catmeme(bot)
+from bot.meme import register_meme
+register_meme(bot)
 
 from bot.spamsms import register_spamsms
 register_spamsms(bot)
