@@ -14,7 +14,7 @@ def register_catmeme(bot):
 		}
 
 		try:
-			response = requests.get(url, headers=headers, timeout=15)
+			response = requests.get(url, headers=headers, timeout=10)
 			soup = BeautifulSoup(response.text, "html.parser")
 
 			img_tags = soup.find_all("img", src=True)
