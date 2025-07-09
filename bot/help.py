@@ -18,10 +18,10 @@ caption = """ ‎‧₊˚✧ <b>Tiện ích</b> ✧˚₊‧
  ‎‧₊˚✧ <b>Random ảnh/video</b> ✧˚₊‧
 <blockquote expandable>✧═════• ༺༻ •═════✧
    • /pussy: 🔞
+   • /meme: Meme 🤡
    • /r34: Ảnh r34 🔞
    • /squeeze: Bóp 🌚
    • /girl: Video gái 😳
-   • /catmeme: Meme mèo 🐈
    • /butt: Ảnh mông gái 🙅‍♀️
    • /anime: Video anime 🇯🇵
    • /imganime: Ảnh anime 🦄
