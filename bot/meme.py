@@ -3,11 +3,12 @@ import requests
 from bs4 import BeautifulSoup
 from config import ADMIN_ID, ERROR_MSG
 
-def register_catmeme(bot):
-	@bot.message_handler(commands=['catmeme'])
-	def handle_catmeme(message):
+def register_meme(bot):
+	@bot.message_handler(commands=['meme'])
+	def handle_meme(message):
 		page = random.randint(1, 50)
-		url = f"https://aigei.com/lib/gif/?page={page}&sub=oi_mao"
+		# url = f"https://aigei.com/lib/gif/?page={page}&sub=oi_mao"
+		url = f"https://www.aigei.com/s?q=meme&dim=gif-picture_2&page={page}"
 		headers = {
 			"Referer": url,
 			"User-Agent": "Mozilla/5.0",
