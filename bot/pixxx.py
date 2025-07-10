@@ -31,10 +31,10 @@ def register_pixxx(bot):
 					for tag in img_tags:
 						img_url = tag.get("src", "")
 						bot.send_photo(message.chat.id, img_url, reply_to_message_id=message.message_id)
-					
+						return
 
 					# Nếu không tìm thấy ảnh hợp lệ
-					# bot.reply_to(message, ERROR_MSG)
+					bot.reply_to(message, ERROR_MSG)
 				except Exception as e:
 					bot.reply_to(message, ERROR_MSG)
 					bot.send_message(ADMIN_ID, f"⚠️ Lỗi khi xử lý lệnh /pixxx:\n{e}")
