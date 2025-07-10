@@ -11,5 +11,7 @@ GROUP_ID = [
     7605936504
 ]
 
+CHANNEL_ID = 
+
 # ⚠️ Thông báo lỗi
 ERROR_MSG = "⚠️ Đã xảy ra lỗi nội bộ.\nAdmin đang trong quá trình xử lý."
