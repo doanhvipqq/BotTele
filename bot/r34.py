@@ -20,7 +20,7 @@ def register_r34(bot):
 				bot.reply_to(message, ERROR_MSG)
 				return
 				
-			img_url = src.get("src", "")
+			img_url = img_tag.get("src", "")
 			bot.send_photo(message.chat.id, img_url, reply_to_message_id=message.message_id)
 
 		except Exception as e:
