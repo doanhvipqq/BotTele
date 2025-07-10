@@ -22,14 +22,14 @@ def register_pixxx(bot):
 			post_urls = [tag.get("href", "") for tag in a_tags]
 			if post_urls:
 				random_post = random.choice(post_urls)
-				# bot.send_photo(message.chat.id, random_url, reply_to_message_id=message.message_id)
+				
 				try:
 					response = requests.get(random_post, headers=headers, timeout=15)
 					soup = BeautifulSoup(response.text, "html.parser")
 
-					img_tags = soup.find_all("img", src=True, alt=True)
-					for tag in img_tags:
-						img_url = tag.get("src", "")
+					img_tag = soup.find("img", src=True, alt=True)
+					if img_tag:
+						img_url = img_tag.get("src", "")
 						bot.send_photo(message.chat.id, img_url, reply_to_message_id=message.message_id)
 						return
 
