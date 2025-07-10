@@ -6,7 +6,7 @@ from config import ADMIN_ID, ERROR_MSG
 def register_pixxx(bot):
 	@bot.message_handler(commands=['pixxx'])
 	def handle_pixxx(message):
-		page = random.randint(0, 41)
+		page = random.randint(0, 81)
 		url = f"https://rule34.us/index.php?r=posts/index&q=rex_%28naruto_pixxx%29&page={page}"
 
 		headers = {
