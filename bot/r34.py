@@ -17,7 +17,6 @@ def register_r34(bot):
 			
 			img_tag = soup.find("img", id="image")
 			if not img_tag:
-			for src in img_tags:
 				bot.reply_to(message, ERROR_MSG)
 				return
 				
