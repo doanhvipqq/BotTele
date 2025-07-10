@@ -20,24 +20,22 @@ def register_pixxx(bot):
 
 			a_tags = soup.find_all("a", id=True, href=True)
 			post_urls = [tag.get("href", "") for tag in a_tags]
-			if post_urls:
-				random_post = random.choice(post_urls)
+			if not post_urls:
+				bot.reply_to(message, ERROR_MSG)
+				return
+
+			post_url = random.choice(post_urls)
 				
-				try:
-					response = requests.get(random_post, headers=headers, timeout=15)
-					soup = BeautifulSoup(response.text, "html.parser")
+			response = requests.get(post_url, headers=headers, timeout=15)
+			soup = BeautifulSoup(response.text, "html.parser")
 
-					img_tag = soup.find("img", src=True, alt=True)
-					if img_tag:
-						img_url = img_tag.get("src", "")
-						bot.send_photo(message.chat.id, img_url, reply_to_message_id=message.message_id)
-						return
+			img_tag = soup.find("img", src=True, alt=True)
+			if not img_tag:
+				bot.reply_to(message, ERROR_MSG)
+				return
 
-					# Nếu không tìm thấy ảnh hợp lệ
-					bot.reply_to(message, ERROR_MSG)
-				except Exception as e:
-					bot.reply_to(message, ERROR_MSG)
-					bot.send_message(ADMIN_ID, f"⚠️ Lỗi khi xử lý lệnh /pixxx:\n{e}")
+			img_url = img_tag.get("src", "")
+			bot.send_photo(message.chat.id, img_url, reply_to_message_id=message.message_id)
 
 		except Exception as e:
 			bot.reply_to(message, ERROR_MSG)
