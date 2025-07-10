@@ -7,7 +7,6 @@ def register_meme(bot):
 	@bot.message_handler(commands=['meme'])
 	def handle_meme(message):
 		page = random.randint(1, 50)
-		# url = f"https://aigei.com/lib/gif/?page={page}&sub=oi_mao"
 		url = f"https://www.aigei.com/s?q=meme&dim=gif-picture_2&page={page}"
 		headers = {
 			"Referer": url,
@@ -27,13 +26,12 @@ def register_meme(bot):
 					full_url = "https:" + img_url
 					img_urls.append(full_url)
 
-			if img_urls:
-				random_url = random.choice(img_urls)
-				bot.send_animation(message.chat.id, random_url, reply_to_message_id=message.message_id)
-				return  # Dừng ngay khi gửi được ảnh đầu tiên
+			if not img_urls:
+				bot.reply_to(message, ERROR_MSG)
+				return			
 
-			# Nếu không tìm thấy ảnh hợp lệ
-			bot.reply_to(message, ERROR_MSG)
+			random_url = random.choice(img_urls)
+			bot.send_animation(message.chat.id, random_url, reply_to_message_id=message.message_id)
 
 		except Exception as e:
 			bot.reply_to(message, ERROR_MSG)
