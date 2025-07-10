@@ -34,7 +34,7 @@ def register_pixxx(bot):
 					
 
 					# Nếu không tìm thấy ảnh hợp lệ
-					bot.reply_to(message, ERROR_MSG)
+					# bot.reply_to(message, ERROR_MSG)
 				except Exception as e:
 					bot.reply_to(message, ERROR_MSG)
 					bot.send_message(ADMIN_ID, f"⚠️ Lỗi khi xử lý lệnh /pixxx:\n{e}")
