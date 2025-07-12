@@ -7,7 +7,7 @@ from telebot.types import InputFile
 def get_all_image_urls():
 
 	headers = {"User-Agent": "Mozilla/5.0"}
-	base_url = "https://cosplaytele.com/"
+	base_url = "https://cosplaytele.com/category/byoru/"
 
 	all_image_urls = []
 	visited_albums = []
@@ -56,9 +56,9 @@ def get_all_image_urls():
 				except Exception as err:
 					print(f"    ⚠️ Lỗi album: {err}")
 
-				# time.sleep(1)
+				time.sleep(0.1)
 
-			# time.sleep(2)
+			time.sleep(0.5)
 
 	except Exception as e:
 		print(f"Lỗi tổng thể: {e}")
