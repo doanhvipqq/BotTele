@@ -124,7 +124,7 @@ def register_scl(bot):
             "command_msg_id": message.message_id,
         }
 
-        # Tự động xóa sau 3 phút nếu chưa chọn
+        # Tự động xóa sau 2 phút nếu chưa chọn
         def delete_if_not_used():
             if key in scl_data:
                 try:
@@ -134,7 +134,7 @@ def register_scl(bot):
                     pass
                 scl_data.pop(key, None)
 
-        threading.Timer(180, delete_if_not_used).start()
+        threading.Timer(120, delete_if_not_used).start()
 
     @bot.callback_query_handler(func=lambda call: call.data.startswith('scl_'))
     def handle_soundcloud_callback(call):
