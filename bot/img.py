@@ -56,9 +56,9 @@ def get_all_image_urls():
 				except Exception as err:
 					print(f"    ⚠️ Lỗi album: {err}")
 
-				time.sleep(1)
+				# time.sleep(1)
 
-			time.sleep(2)
+			# time.sleep(2)
 
 	except Exception as e:
 		print(f"Lỗi tổng thể: {e}")
