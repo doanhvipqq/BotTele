@@ -56,10 +56,10 @@ COMMANDS = {
         "path": "bot/url/butt.txt",
         "type": "photo"
     },
-    "cosplay": {
-        "path": "bot/url/cosplay.txt",
-        "type": "photo"
-    },
+    # "cosplay": {
+    #     "path": "bot/url/cosplay.txt",
+    #     "type": "photo"
+    # },
     "pussy": {
         "path": "bot/url/pussy.txt",
         "type": "photo"
