@@ -8,6 +8,9 @@ bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 # from bot.nct import register_nct
 # register_nct(bot)
 
+from bot.cosplay import register_cosplay
+register_cosplay(bot)
+
 from bot.scl import register_scl
 register_scl(bot)
 
