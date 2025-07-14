@@ -13,7 +13,6 @@ CONFIG_PATH = "config.json"
 scl_data = {}
 
 def get_client_id():
-	# Đọc config sẵn
 	if os.path.exists(CONFIG_PATH):
 	        with open(CONFIG_PATH, 'r') as f:
 	            config = json.load(f)
