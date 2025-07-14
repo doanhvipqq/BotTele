@@ -74,15 +74,12 @@ def register_scl(bot):
 		keyword = args[1]
 		music_info = get_music_info(keyword)
 
-		if not music_info or not music_info.get("collection"):
+		collection = music_info.get("collection") if music_info else None
+		if not collection:
 			bot.reply_to(message, "🚫 Không tìm thấy bài hát nào khớp với từ khóa.")
 			return
 
-		tracks = []
-		for track in music_info['collection']:
-			if track.get('artwork_url'):
-				tracks.append(track)
-
+		tracks = [t for t in music_info['collection'] if t.get("artwork_url")]
 		tracks = tracks[:10]
 		if not tracks:
 			bot.reply_to(message, "🚫 Không tìm thấy bài hát nào có hình ảnh.")
