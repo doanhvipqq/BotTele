@@ -73,8 +73,7 @@ def register_scl(bot):
 		keyword = args[1]
 		music_info = get_music_info(keyword)
 
-		collection = music_info.get("collection") if music_info else None
-		if not collection:
+		if not music_info or not music_info.get("collection"):
 			bot.reply_to(message, "🚫 Không tìm thấy bài hát nào khớp với từ khóa.")
 			return
 
