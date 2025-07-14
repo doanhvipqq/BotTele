@@ -53,27 +53,16 @@ def get_music_info(question, limit=10):
         return None
 
 def get_music_stream_url(track):
-    try:
-        client_id = get_client_id()
-        api_url = f"{API_BASE}/resolve?url={track['permalink_url']}&client_id={client_id}"
-        response = requests.get(api_url, headers=HEADERS)
-        response.raise_for_status()
-        data = response.json()
-        
-        progressive_url = next(
-            (t['url'] for t in data.get('media', {}).get('transcodings', [])
-             if t['format']['protocol'] == 'progressive'),
-            None
-        )
-        if not progressive_url:
-            raise ValueError("No progressive transcoding URL found")
-            
-        stream_response = requests.get(f"{progressive_url}?client_id={client_id}", headers=HEADERS)
-        stream_response.raise_for_status()
-        return stream_response.json()['url']
-    except Exception:
-        return None
-
+    client_id = get_client_id()  # thêm dòng này
+    transcodings = track.get("media", {}).get("transcodings", [])
+    for item in transcodings:
+        if item["format"]["protocol"] == "progressive":
+            stream_api = item["url"] + f"?client_id={client_id}"
+            resp = requests.get(stream_api)
+            if resp.status_code == 200:
+                return resp.json().get("url")
+    return None
+    
 def register_scl(bot):
     @bot.message_handler(commands=['scl'])
     def soundcloud(message):
