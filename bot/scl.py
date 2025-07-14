@@ -9,7 +9,7 @@ from telebot import types
 API_BASE = "https://api-v2.soundcloud.com"
 CONFIG_PATH = "config.json"
 
-HEADERS = {"User-Agent": "Mozilla/5.0}
+HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 scl_data = {}
 
