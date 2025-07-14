@@ -70,7 +70,7 @@ def register_scl(bot):
 			bot.reply_to(message, "🚫 Vui lòng nhập tên bài hát muốn tìm kiếm.\nVí dụ: /scl Lệ cay 3")
 			return
 
-		keyword = args[1].strip()
+		keyword = args[1]
 		music_info = get_music_info(keyword)
 
 		collection = music_info.get("collection") if music_info else None
