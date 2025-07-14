@@ -17,8 +17,9 @@ def get_client_id():
 	if os.path.exists(CONFIG_PATH):
 		with open(CONFIG_PATH, 'r') as f:
 			cfg_data = json.load(f)
-		if cfg_data.get('client_id'):
-			return cfg_data['client_id']
+			if cfg_data.get('client_id'):
+				return cfg_data['client_id']
+
 
 	# Nếu chưa có trong config, fetch script để lấy
 	try:
