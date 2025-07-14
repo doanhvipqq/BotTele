@@ -15,10 +15,10 @@ scl_data = {}
 def get_client_id():
 	# Đọc config sẵn
 	if os.path.exists(CONFIG_PATH):
-		with open(CONFIG_PATH, 'r') as f:
-			cfg_data = json.load(f)
-			if cfg_data.get('client_id'):
-				return cfg_data['client_id']
+	        with open(CONFIG_PATH, 'r') as f:
+	            config = json.load(f)
+	        if config.get('client_id'):
+	            return config['client_id']
 
 
 	# Nếu chưa có trong config, fetch script để lấy
@@ -78,7 +78,11 @@ def register_scl(bot):
 			bot.reply_to(message, "🚫 Không tìm thấy bài hát nào khớp với từ khóa.")
 			return
 
-		tracks = [t for t in music_info['collection'] if t.get("artwork_url")]
+		tracks = []
+		for track in music_info['collection']:
+			if track.get('artwork_url'):
+				tracks.append(track)
+
 		tracks = tracks[:10]
 		if not tracks:
 			bot.reply_to(message, "🚫 Không tìm thấy bài hát nào có hình ảnh.")
