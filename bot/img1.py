@@ -76,7 +76,7 @@ def get_all_image_urls():
     print(f"\nTổng số ảnh thu được: {len(all_image_urls)}")
     return all_image_urls
 
-def register_img(bot):
+def register_img1(bot):
     @bot.message_handler(commands=['img'])
     def handle_img(message):
         msg = bot.reply_to(message, "⏳ Đang xử lý... Vui lòng chờ!")
