@@ -6,7 +6,7 @@ from telebot.types import InputFile
 
 def get_all_image_urls():
     headers = {"User-Agent": "Mozilla/5.0"}
-    base_url = "https://cosplaytele.com/category/aqua/"
+    base_url = "https://cosplaytele.com/category/byoru/"
 
     all_image_urls = []
     visited_albums = []
