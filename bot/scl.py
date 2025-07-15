@@ -13,12 +13,12 @@ CONFIG_PATH = "config.json"
 scl_data = {}
 
 def get_client_id():
+	config = {}
 	if os.path.exists(CONFIG_PATH):
-	        with open(CONFIG_PATH, 'r') as f:
-	            config = json.load(f)
-	        if config.get('client_id'):
-	            return config['client_id']
-
+		with open(CONFIG_PATH, 'r') as f:
+			config = json.load(f)
+		if config.get('client_id'):
+			return config['client_id']
 
 	# Nếu chưa có trong config, fetch script để lấy
 	try:
@@ -34,7 +34,7 @@ def get_client_id():
 	except Exception:
 		return "vjvE4M9RytEg9W09NH1ge2VyrZPUSKo5"
 
-def get_music_info(question, limit=20):
+def get_music_info(question, limit=25):
 	try:
 		client_id = get_client_id()
 		response = requests.get(
@@ -52,7 +52,7 @@ def get_music_info(question, limit=20):
 		return None
 
 def get_music_stream_url(track):
-	client_id = get_client_id()  # thêm dòng này
+	client_id = get_client_id()
 	transcodings = track.get("media", {}).get("transcodings", [])
 	for item in transcodings:
 		if item["format"]["protocol"] == "progressive":
@@ -61,24 +61,22 @@ def get_music_stream_url(track):
 			if resp.status_code == 200:
 				return resp.json().get("url")
 	return None
-	
+
 def register_scl(bot):
 	@bot.message_handler(commands=['scl'])
 	def soundcloud(message):
 		args = message.text.split(maxsplit=1)
 		if len(args) < 2:
-			bot.reply_to(message, "🚫 Vui lòng nhập tên bài hát muốn tìm kiếm.\nVí dụ: /scl Lệ cay 3")
+			bot.reply_to(message, "🚫 Vui lòng nhập tên bài hát muốn tìm kiếm.\nVí dụ: /scl Tên bài hát")
 			return
 
 		keyword = args[1]
 		music_info = get_music_info(keyword)
-
-		collection = music_info.get("collection") if music_info else None
-		if not collection:
+		if not music_info or not music_info.get('collection') or len(music_info['collection']) == 0:
 			bot.reply_to(message, "🚫 Không tìm thấy bài hát nào khớp với từ khóa.")
 			return
 
-		tracks = [t for t in music_info['collection'] if t.get("artwork_url")]
+		tracks = [track for track in music_info['collection'] if track.get('artwork_url')]
 		tracks = tracks[:10]
 		if not tracks:
 			bot.reply_to(message, "🚫 Không tìm thấy bài hát nào có hình ảnh.")
