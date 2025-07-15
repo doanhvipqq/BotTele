@@ -10,7 +10,6 @@ def get_all_image_urls():
 
     all_image_urls = []
     visited_albums = []
-    albums = []  # Khai báo danh sách chứa album URL
 
     try:
         response = requests.get(base_url, headers=headers, timeout=10)
@@ -29,25 +28,17 @@ def get_all_image_urls():
             url_page = f"{base_url}page/{page}/"
 
             response = requests.get(url_page, headers=headers, timeout=10)
-            soup = BeautifulSoup(response.text, "html.parser")  # Cập nhật lại soup cho trang mới
+            soup = BeautifulSoup(response.text, "html.parser")
 
-            # Tìm tất cả các album liên kết
             for tag in soup.find_all(True):
                 if tag.name == "a" and tag.has_attr("href") and "plain" in tag.get("class", []):
-                    albums.append(tag['href'])
+                    album_url = tag['href']
+                    if album_url not in visited_albums:
+                        visited_albums.append(album_url)
 
-                # Dừng khi gặp "Popular Cosplay"
                 if tag.name == "span" and tag.get("class") == ["section-title-main"]:
                     if "Popular Cosplay" in tag.text:
-                        break  # Dừng lại khi gặp thẻ này
-
-            # Loại bỏ album trùng lặp
-            unique_urls = list(set(albums))
-
-            # Thêm các album vào danh sách visited_albums
-            for album_url in unique_urls:
-                if album_url not in visited_albums:
-                    visited_albums.append(album_url)
+                        break
 
             print(f"Đã tìm thấy {len(visited_albums)} album.")
 
@@ -67,7 +58,6 @@ def get_all_image_urls():
             except Exception as err:
                 print(f"    ⚠️ Lỗi album: {err}")
 
-            # Thêm thời gian chờ giữa các request để giảm tải
             time.sleep(0.5)
 
     except Exception as e:
@@ -88,11 +78,9 @@ def register_img1(bot):
                 bot.send_message(message.chat.id, "❌ Không tìm thấy ảnh nào.")
                 return
 
-            # Ghi vào file
             with open("cosplay_links.txt", "w") as f:
                 f.write("\n".join(image_urls))
 
-            # Gửi file
             bot.send_document(message.chat.id, InputFile("cosplay_links.txt"), caption=f"📦 Tổng cộng: {len(image_urls)} ảnh")
         finally:
             bot.delete_message(msg.chat.id, msg.message_id)
