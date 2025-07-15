@@ -77,7 +77,7 @@ def get_all_image_urls():
     return all_image_urls
 
 def register_img1(bot):
-    @bot.message_handler(commands=['img'])
+    @bot.message_handler(commands=['img1'])
     def handle_img(message):
         msg = bot.reply_to(message, "⏳ Đang xử lý... Vui lòng chờ!")
 
