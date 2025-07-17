@@ -8,9 +8,6 @@ bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 # from bot.nct import register_nct
 # register_nct(bot)
 
-from bot.img1 import register_img1
-register_img1(bot)
-
 from bot.img import register_img
 register_img(bot)
 
