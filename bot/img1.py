@@ -1,5 +1,4 @@
 import time
-import random
 import requests
 from bs4 import BeautifulSoup
 from telebot.types import InputFile
@@ -23,7 +22,7 @@ def get_all_image_urls():
 			last_page = 1
 			print("Chỉ có 1 trang.")
 
-		for page in range(1, int(last_page) + 1):
+		for page in range(1, last_page + 1):
 			print(f"Đang xử lý trang {page}...")
 			url_page = f"{base_url}page/{page}/"
 
@@ -43,8 +42,8 @@ def get_all_image_urls():
 			print(f"Đã tìm thấy {len(visited_albums)} album.")
 
 		# Lấy ảnh từ các album
-		for album_url in visited_albums:
-			print(f"  → Lấy ảnh từ album: {album_url}")
+		for index, album_url in enumerate(visited_albums, 1):
+			print(f"  → Lấy ảnh từ album {index}: {album_url}")
 			try:
 				response = requests.get(album_url, headers=headers, timeout=10)
 				soup = BeautifulSoup(response.text, "html.parser")
@@ -53,7 +52,9 @@ def get_all_image_urls():
 					if tag.name == "strong" and "Recommend For You" in tag.text:
 						break
 
-					if tag.name == "img" and tag.has_attr("src") and "attachment-full" in tag.get("class", []) and "size-full" in tag.get("class", []):
+					if tag.name == "img" and tag.has_attr("src") and \
+						"attachment-full" in tag.get("class", []) and "size-full" in tag.get("class", []):
+						
 						src = tag['src']
 						album_images.setdefault(album_url, [])
 						if src not in album_images[album_url]:
@@ -70,22 +71,31 @@ def get_all_image_urls():
 	total = sum(len(v) for v in album_images.values())
 	print(f"\nTổng số ảnh thu được: {total}")
 	return album_images
-	
+
+
 def register_img1(bot):
 	@bot.message_handler(commands=['img1'])
 	def handle_img(message):
 		msg = bot.reply_to(message, "⏳ Đang xử lý... Vui lòng chờ!")
 
-		image_urls = get_all_image_urls()
+		image_data = get_all_image_urls()
 
 		try:
-			if not image_urls:
+			if not image_data:
 				bot.send_message(message.chat.id, "❌ Không tìm thấy ảnh nào.")
 				return
 
-			with open("cosplay_links.txt", "w") as f:
-				f.write("\n".join(image_urls))
+			total = sum(len(v) for v in image_data.values())
 
-			bot.send_document(message.chat.id, InputFile("cosplay_links.txt"), caption=f"📦 Tổng cộng: {len(image_urls)} ảnh")
+			with open("cosplay_links.txt", "w", encoding="utf-8") as f:
+				for urls in image_data.values():
+					for url in urls:
+						f.write(url + "\n")
+
+			bot.send_document(
+				message.chat.id,
+				InputFile("cosplay_links.txt"),
+				caption=f"📦 Tổng cộng: {total} ảnh"
+			)
 		finally:
 			bot.delete_message(msg.chat.id, msg.message_id)
