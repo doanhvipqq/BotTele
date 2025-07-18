@@ -48,6 +48,7 @@ def get_all_image_urls():
 				response = requests.get(album_url, headers=headers, timeout=10)
 				soup = BeautifulSoup(response.text, "html.parser")
 
+				image_list = []
 				for tag in soup.find_all(True):
 					if tag.name == "strong" and "Recommend For You" in tag.text:
 						break
@@ -56,9 +57,11 @@ def get_all_image_urls():
 						"attachment-full" in tag.get("class", []) and "size-full" in tag.get("class", []):
 						
 						src = tag['src']
-						album_images.setdefault(album_url, [])
-						if src not in album_images[album_url]:
-							album_images[album_url].append(src)
+						if src not in image_list:
+							image_list.append(src)
+
+				# ✅ Sau khi thu thập xong toàn bộ ảnh → đảo ngược 1 lần
+				album_images[album_url] = image_list[::-1]
 
 			except Exception as err:
 				print(f"    ⚠️ Lỗi album: {err}")
