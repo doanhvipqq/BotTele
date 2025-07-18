@@ -32,27 +32,27 @@ QUEST_INFO = {
         "endpoint": "GET_MA.php",
         "regex": r'<span id="layma_me_vuatraffic"[^>]*>\s*(\d+)\s*</span>'
     },
-    "v9bet": {
-        "url": "https://v9betho.com/ca-cuoc-bong-ro-ao",
-        "traffic": "https://v9betho.com/",
-        "codexn": "taodeptrai",
-        "endpoint": "GET_MA.php",
-        "regex": r'<span id="layma_me_vuatraffic"[^>]*>\s*(\d+)\s*</span>'
-    },
-    "vn88": {
-        "url": "https://vn88no.com/keo-chap-1-trai-la-gi",
-        "traffic": "https://vn88no.com/",
-        "codexn": "bomaydeptrai",
-        "endpoint": "GET_MA.php",
-        "regex": r'<span id="layma_me_vuatraffic"[^>]*>\s*(\d+)\s*</span>'
-    },
-    "bk8": {
-        "url": "https://bk8ze.com/cach-choi-bai-catte",
-        "traffic": "https://bk8ze.com/",
-        "codexn": "taodeptrai",
-        "endpoint": "GET_MA.php",
-        "regex": r'<span id="layma_me_vuatraffic"[^>]*>\s*(\d+)\s*</span>'
-    },
+    # "v9bet": {
+    #     "url": "https://v9betho.com/ca-cuoc-bong-ro-ao",
+    #     "traffic": "https://v9betho.com/",
+    #     "codexn": "taodeptrai",
+    #     "endpoint": "GET_MA.php",
+    #     "regex": r'<span id="layma_me_vuatraffic"[^>]*>\s*(\d+)\s*</span>'
+    # },
+    # "vn88": {
+    #     "url": "https://vn88no.com/keo-chap-1-trai-la-gi",
+    #     "traffic": "https://vn88no.com/",
+    #     "codexn": "bomaydeptrai",
+    #     "endpoint": "GET_MA.php",
+    #     "regex": r'<span id="layma_me_vuatraffic"[^>]*>\s*(\d+)\s*</span>'
+    # },
+    # "bk8": {
+    #     "url": "https://bk8ze.com/cach-choi-bai-catte",
+    #     "traffic": "https://bk8ze.com/",
+    #     "codexn": "taodeptrai",
+    #     "endpoint": "GET_MA.php",
+    #     "regex": r'<span id="layma_me_vuatraffic"[^>]*>\s*(\d+)\s*</span>'
+    # },
     "88betag": {
         "url": "https://88betag.com/keo-chau-a-la-gi",
         "traffic": "https://88betag.com/",
