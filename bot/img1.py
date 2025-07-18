@@ -2,11 +2,9 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from telebot.types import InputFile
-import os
+from config import ADMIN_ID, ERROR_MSG
 
-from config import ADMIN_ID, ERROR_MSG  # Bạn có thể tự tạo file config.py
-
-def get_all_pixxx_image_urls():
+def get_all_pixxx_image_urls(bot):
 	headers = {
 		"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
 	}
@@ -27,16 +25,18 @@ def get_all_pixxx_image_urls():
 					last_page = int(match.group(1))
 				break
 
-		print(f"🔍 Tổng số trang: {last_page + 1}")
+		bot.send_message(ADMIN_ID, f"🔍 Tổng số trang: {last_page + 1}")
 
 		for page in range(0, last_page + 1):
-			print(f"📄 Đang xử lý trang {page}...")
+			bot.send_message(ADMIN_ID, f"📄 Đang xử lý trang {page}...")
 			url = base_url + str(page)
 			try:
 				resp = requests.get(url, headers=headers, timeout=30)
 				soup = BeautifulSoup(resp.text, "html.parser")
 
 				post_links = [a['href'] for a in soup.find_all("a", id=True, href=True)]
+				if not post_links:
+					continue
 
 				for post_url in post_links:
 					try:
@@ -46,20 +46,17 @@ def get_all_pixxx_image_urls():
 						if img_tag and img_tag['src'].startswith("http"):
 							img_url = img_tag['src']
 							all_img_urls.append(img_url)
-							print(f"   → {img_url}")
 					except Exception as err:
-						print(f"⚠️ Lỗi tải post: {post_url} → {err}")
-						continue
+						bot.send_message(ADMIN_ID, f"⚠️ Lỗi tải post:\n{post_url}\n<b>{err}</b>", parse_mode="HTML")
 
 			except Exception as err:
-				print(f"⚠️ Lỗi trang {page}: {err}")
-				continue
+				bot.send_message(ADMIN_ID, f"⚠️ Lỗi tải trang {page}:\n{err}")
 
 	except Exception as e:
-		print(f"❌ Lỗi tổng thể: {e}")
+		bot.send_message(ADMIN_ID, f"❌ Lỗi tổng thể:\n{e}")
 		return []
 
-	return all_img_urls
+	return all_img_urls[::-1]
 
 def register_img1(bot):
 	@bot.message_handler(commands=["img1"])
@@ -67,7 +64,7 @@ def register_img1(bot):
 		msg = bot.reply_to(message, "⏳ Đang xử lý... Vui lòng chờ...")
 
 		try:
-			img_urls = get_all_pixxx_image_urls()
+			img_urls = get_all_pixxx_image_urls(bot)
 
 			if not img_urls:
 				bot.send_message(message.chat.id, "❌ Không tìm thấy ảnh nào.")
