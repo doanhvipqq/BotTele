@@ -2,8 +2,9 @@ import time
 import requests
 from bs4 import BeautifulSoup
 from telebot.types import InputFile
+from config import ADMIN_ID  # Thêm dòng này để lấy ID quản trị viên
 
-def get_all_image_urls():
+def get_all_image_urls(bot):
 	headers = {"User-Agent": "Mozilla/5.0"}
 	base_url = "https://cosplaytele.com/category/byoru/"
 
@@ -17,33 +18,38 @@ def get_all_image_urls():
 		a_tags = soup.find_all("a", class_="page-number")
 		if len(a_tags) >= 2:
 			last_page = int(a_tags[-2].text)
-			print(f"Tổng số trang: {last_page}")
+			bot.send_message(ADMIN_ID, f"📄 Tổng số trang: {last_page}")
 		else:
 			last_page = 1
-			print("Chỉ có 1 trang.")
+			bot.send_message(ADMIN_ID, "📄 Chỉ có 1 trang.")
 
 		for page in range(1, last_page + 1):
-			print(f"Đang xử lý trang {page}...")
+			bot.send_message(ADMIN_ID, f"➡️ Đang xử lý trang {page}...")
 			url_page = f"{base_url}page/{page}/"
 
-			response = requests.get(url_page, headers=headers, timeout=10)
-			soup = BeautifulSoup(response.text, "html.parser")
+			try:
+				response = requests.get(url_page, headers=headers, timeout=10)
+				soup = BeautifulSoup(response.text, "html.parser")
 
-			for tag in soup.find_all(True):
-				if tag.name == "span" and tag.get("class") == ["section-title-main"]:
-					if "Popular Cosplay" in tag.text:
-						break
+				for tag in soup.find_all(True):
+					if tag.name == "span" and tag.get("class") == ["section-title-main"]:
+						if "Popular Cosplay" in tag.text:
+							break
 
-				if tag.name == "a" and tag.has_attr("href") and "plain" in tag.get("class", []):
-					album_url = tag['href']
-					if album_url not in visited_albums:
-						visited_albums.append(album_url)
+					if tag.name == "a" and tag.has_attr("href") and "plain" in tag.get("class", []):
+						album_url = tag['href']
+						if album_url not in visited_albums:
+							visited_albums.append(album_url)
 
-			print(f"Đã tìm thấy {len(visited_albums)} album.")
+				bot.send_message(ADMIN_ID, f"📸 Đã tìm thấy {len(visited_albums)} album.")
+
+			except Exception as e:
+				bot.send_message(ADMIN_ID, f"⚠️ Lỗi tải trang {page}:\n{e}")
+				continue
 
 		# Lấy ảnh từ các album
 		for index, album_url in enumerate(visited_albums, 1):
-			print(f"  → Lấy ảnh từ album {index}: {album_url}")
+			bot.send_message(ADMIN_ID, f"  → Đang lấy ảnh từ album {index}: {album_url}")
 			try:
 				response = requests.get(album_url, headers=headers, timeout=10)
 				soup = BeautifulSoup(response.text, "html.parser")
@@ -60,19 +66,21 @@ def get_all_image_urls():
 						if src not in image_list:
 							image_list.append(src)
 
-				# ✅ Sau khi thu thập xong toàn bộ ảnh → đảo ngược 1 lần
+				# ✅ Đảo ngược danh sách ảnh
 				album_images[album_url] = image_list[::-1]
 
 			except Exception as err:
-				print(f"    ⚠️ Lỗi album: {err}")
+				bot.send_message(ADMIN_ID, f"⚠️ Lỗi album:\n{album_url}\n{err}")
+				continue
 
 			time.sleep(0.5)
 
 	except Exception as e:
-		print(f"Lỗi tổng thể: {e}")
+		bot.send_message(ADMIN_ID, f"❌ Lỗi tổng thể:\n{e}")
+		return {}
 
 	total = sum(len(v) for v in album_images.values())
-	print(f"\nTổng số ảnh thu được: {total}")
+	bot.send_message(ADMIN_ID, f"✅ Tổng số ảnh thu được: {total}")
 	return album_images
 
 
@@ -81,7 +89,7 @@ def register_img(bot):
 	def handle_img(message):
 		msg = bot.reply_to(message, "⏳ Đang xử lý... Vui lòng chờ!")
 
-		image_data = get_all_image_urls()
+		image_data = get_all_image_urls(bot)
 
 		try:
 			if not image_data:
