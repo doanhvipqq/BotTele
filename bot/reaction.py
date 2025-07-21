@@ -9,10 +9,7 @@ emoji_list = ['👍', '👎', '❤️', '🔥', '🥰', '👏', '😁', '🤔', 
 
 def register_reaction(bot):
     # 🎯 Xử lý mọi tin nhắn
-    @bot.message_handler(
-        func=lambda m: not (m.content_type == 'text' and m.text.startswith('/')),
-        content_types=['text', 'photo', 'video', 'sticker', 'audio', 'document', 'voice']
-    )
+    @bot.message_handler(func=lambda message: not (message.text or "").startswith('/'), content_types=['text', 'photo', 'video', 'sticker', 'audio', 'document', 'voice'])
     def handle_all_messages(message):
         # if message.chat.id not in GROUP_ID:
         #     return
