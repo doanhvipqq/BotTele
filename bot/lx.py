@@ -69,9 +69,11 @@ def get_chapter_images(chapter_url):
 			images.append(img)
 	return images
 
-def create_chapter_zip(manga_name, chapter_title, chapter_url):
+def create_chapter_zip(manga_name, chapter_title, chapter_url, cover_file=None):
 	zip_buf = BytesIO()
 	with zipfile.ZipFile(zip_buf, "w", zipfile.ZIP_DEFLATED) as zipf:
+		if cover_file:
+			zipf.writestr(f"{manga_name}/cover.jpg", cover_file.getvalue())
 		images = get_chapter_images(chapter_url)
 		if not images:
 			return None, "Không có ảnh"
@@ -105,7 +107,7 @@ def register_lx(bot):
 		try:
 			manga_name = get_name_manga(url)
 			chapters, chapter_urls = get_chapters_and_urls(url)
-			
+			cover = get_cover(url)
 			if not chapters:
 				bot.edit_message_text("❌ Không tìm thấy chương nào!", 
 									chat_id, processing_msg.message_id)
@@ -116,7 +118,8 @@ def register_lx(bot):
 				'manga_name': manga_name,
 				'chapters': chapters,
 				'urls': chapter_urls,
-				'manga_url': url
+				'manga_url': url,
+				'cover': cover
 			}
 
 			# Tạo keyboard chọn chương
@@ -138,7 +141,6 @@ def register_lx(bot):
 			markup.add(types.InlineKeyboardButton("📦 Tải tất cả", callback_data="all"))
 
 			# Gửi ảnh bìa + menu chọn
-			cover = get_cover(url)
 			bot.delete_message(chat_id, processing_msg.message_id)
 			
 			caption = f"📚 <b>{manga_name}</b>\n🔢 Có {len(chapters)} chương\n\n👇 Chọn chương cần tải:"
@@ -164,6 +166,7 @@ def register_lx(bot):
 		data = chat_data[chat_id]
 		chapter_title = data['chapters'][chapter_index]
 		chapter_url = data['urls'][chapter_index]
+		cover = data.get('cover')
 		
 		# Edit tin nhắn thành trạng thái đang tải
 		bot.edit_message_caption(
@@ -175,7 +178,7 @@ def register_lx(bot):
 		
 		try:
 			manga_name = data['manga_name']
-			zip_file, error = create_chapter_zip(manga_name, chapter_title, chapter_url)
+			zip_file, error = create_chapter_zip(manga_name, chapter_title, chapter_url, cover)
 			if error:
 				bot.edit_message_caption(
 					caption=f"❌ Lỗi tải chương: {error}",
@@ -224,7 +227,9 @@ def register_lx(bot):
 			zip_buf = BytesIO()
 			manga_name = data['manga_name']
 			with zipfile.ZipFile(zip_buf, "w", zipfile.ZIP_DEFLATED) as zipf:
-				
+				if data.get('cover'):
+					zipf.writestr(f"{manga_name}/cover.jpg", data['cover'].getvalue())
+					
 				for i, (chapter_title, chapter_url) in enumerate(zip(data['chapters'], data['urls'])):
 					# Update progress mỗi 3 chương
 					if i % 3 == 0:
@@ -245,7 +250,7 @@ def register_lx(bot):
 						zipf.writestr(path, img.getvalue())
 			
 			zip_buf.seek(0)
-			zip_buf.name = f"{data['manga_name']}.zip"
+			zip_buf.name = "lxm.zip"
 			
 			# Edit thành hoàn thành
 			bot.edit_message_caption(
