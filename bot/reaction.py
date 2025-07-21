@@ -8,23 +8,21 @@ emoji_list = ['👍', '👎', '❤️', '🔥', '🥰', '👏', '😁', '🤔', 
               '🎅', '🎄', '☃️', '💅', '🤪', '🗿', '🆒', '💘', '🙉', '🦄', '😘', '💊', '🙊', '😎', '👾', '🤷‍♂️', '🤷', '🤷‍♀️', '😡']
 
 def register_reaction(bot):
-    content_types = ['text', 'photo', 'video', 'sticker', 'audio', 'document', 'voice']
+    # 🎯 Xử lý mọi tin nhắn
+    @bot.message_handler(
+        func=lambda m: not (m.content_type == 'text' and m.text.startswith('/')),
+        content_types=['text', 'photo', 'video', 'sticker', 'audio', 'document', 'voice']
+    )
+    def handle_all_messages(message):
+        # if message.chat.id not in GROUP_ID:
+        #     return
 
-    def create_handler(content_type):
-        @bot.message_handler(content_types=[content_type])
-        def handle_message(message):
-            # Nếu chỉ muốn phản ứng trong group nhất định:
-            # if message.chat.id not in GROUP_ID:
-            #     return
-            emoji = random.choice(emoji_list)
-            try:
-                bot.set_message_reaction(
-                    message.chat.id,
-                    message.message_id,
-                    reaction=[types.ReactionTypeEmoji(emoji)]
-                )
-            except Exception:
-                pass
-
-    for ct in content_types:
-        create_handler(ct)
+        emoji = random.choice(emoji_list)
+        try:
+            bot.set_message_reaction(
+                message.chat.id,
+                message.message_id,
+                reaction=[types.ReactionTypeEmoji(emoji)]
+            )
+        except Exception:
+            pass
