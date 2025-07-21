@@ -1,13 +1,9 @@
 import re
 import zipfile
-import telebot
 import requests
 from io import BytesIO
 from telebot import types
 from bs4 import BeautifulSoup
-
-TOKEN = "7201356785:AAG_NZqh_6xCcshO--JfNU_K-N8VKVuK2D8"
-bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 
 # Lưu thông tin theo chat để tránh lẫn lộn
 chat_data = {}
