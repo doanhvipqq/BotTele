@@ -50,7 +50,7 @@ def get_chapters_and_urls(url):
 	for a in soup.find_all("a", href=True):
 		href = a.get("href", "")
 		if href.startswith("/truyen/") and href.count("/") == 3:
-			urls.append(f"https://lxmanga.blog{href}")
+			urls.append(f"https://lxmanga.my{href}")
 	
 	return chapters, urls[1:] if urls else []
 
@@ -95,14 +95,14 @@ def register_lx(bot):
 	def handle_manga_request(message):
 		args = message.text.split(maxsplit=1)
 		if len(args) < 2:
-			bot.reply_to(message, "🚫 Nhập URL truyện cần tải.\nVí dụ: /lx https://lxmanga.blog/truyen/...")
+			bot.reply_to(message, "🚫 Nhập URL truyện cần tải.\nVí dụ: /lx https://lxmanga.my/truyen/...")
 			return
 
 		url = args[1]
 		chat_id = message.chat.id
 		
-		if not url.startswith("https://lxmanga.blog/"):
-			bot.reply_to(message, "🚫 Chỉ hỗ trợ lxmanga.blog")
+		if not url.startswith("https://lxmanga.my/"):
+			bot.reply_to(message, "🚫 Chỉ hỗ trợ lxmanga.my")
 			return
 
 		# Hiển thị đang xử lý
