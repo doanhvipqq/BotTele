@@ -5,6 +5,9 @@ import telebot
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 
+from bot.reaction import register_reaction
+register_reaction(bot)
+
 # from bot.nct import register_nct
 # register_nct(bot)
 
@@ -86,9 +89,6 @@ register_yeumoney(bot)
 
 from bot.sourceweb import register_sourceweb
 register_sourceweb(bot)
-
-from bot.reaction import register_reaction
-register_reaction(bot)
 
 if __name__ == '__main__':
     print("Bot đang chạy...")
