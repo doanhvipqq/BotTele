@@ -230,7 +230,7 @@ def register_lx(bot):
 				if data.get('cover'):
 					zipf.writestr(f"{manga_name}/cover.jpg", data['cover'].getvalue())
 					
-				for i, (chapter_title, chapter_url) in enumerate(zip(data['chapters'], data['urls'])):
+				for i, (chapter_title, chapter_url) in enumerate(zip(data['chapters'][::-1], data['urls'][::-1])):
 					# Update progress mỗi 3 chương
 					if i % 3 == 0:
 						progress = int((i + 1) / total * 100)
