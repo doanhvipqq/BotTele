@@ -81,6 +81,10 @@ def create_chapter_zip(manga_name, chapter_title, chapter_url, cover_file=None):
 		for i, img in enumerate(images, 1):
 			path = f"{manga_name}/{chapter_title}/{i}.jpg"
 			zipf.writestr(path, img.getvalue())
+
+	zip_buf.seek(0, 2)
+	if zip_buf.tell() > 50 * 1024 * 1024:
+		return None, "File vượt quá 50MB, không thể gửi qua Telegram"
 	
 	zip_buf.seek(0)
 	zip_buf.name = "lxm.zip"
@@ -195,7 +199,8 @@ def register_lx(bot):
 			)
 			
 			bot.send_document(chat_id, zip_file, caption=f"📁 {chapter_title}")
-			
+			del chat_data[chat_id]
+
 		except Exception as e:
 			bot.edit_message_caption(
 				caption=f"❌ Lỗi: {e}",
@@ -248,6 +253,15 @@ def register_lx(bot):
 					for j, img in enumerate(images, 1):
 						path = f"{data['manga_name']}/{chapter_title}/{j}.jpg"
 						zipf.writestr(path, img.getvalue())
+
+			zip_buf.seek(0, 2)  # Di chuyển tới cuối để đo dung lượng
+			if zip_buf.tell() > 50 * 1024 * 1024:
+				bot.edit_message_caption(
+					caption="🚫 File toàn bộ chương vượt quá 50MB, không thể gửi qua Telegram!",
+					chat_id=chat_id,
+					message_id=call.message.message_id
+				)
+				return
 			
 			zip_buf.seek(0)
 			zip_buf.name = "lxm.zip"
@@ -260,6 +274,7 @@ def register_lx(bot):
 			)
 			
 			bot.send_document(chat_id, zip_buf, caption=f"📦 {data['manga_name']} - Full")
+			del chat_data[chat_id]
 			
 		except Exception as e:
 			bot.edit_message_caption(
