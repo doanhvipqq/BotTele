@@ -142,7 +142,8 @@ def register_lx(bot):
 				markup.row(*buttons[::-1][i:i+3])
 			
 			# Nút tải tất cả
-			markup.add(types.InlineKeyboardButton("📦 Tải tất cả", callback_data="all"))
+			if len(chapters) > 1:
+				markup.add(types.InlineKeyboardButton("📦 Tải tất cả", callback_data="all"))
 
 			# Gửi ảnh bìa + menu chọn
 			bot.delete_message(chat_id, processing_msg.message_id)
