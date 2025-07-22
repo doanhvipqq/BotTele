@@ -202,6 +202,7 @@ def register_lx(bot):
 			)
 			
 			bot.send_document(chat_id, zip_file, caption=f"📁 {chapter_title}")
+			zip_file.close()
 			chat_data.pop(chat_id, None)
 
 		except Exception as e:
@@ -257,7 +258,8 @@ def register_lx(bot):
 				
 				# Gửi file zip của chương
 				bot.send_document(chat_id, zip_file, caption=f"📁 {chapter_title} ({i+1}/{total})")
-			
+				zip_file.close()
+
 			# Edit thành hoàn thành
 			bot.edit_message_caption(
 				caption=f"<b>{manga_name}</b>\n✅ Đã gửi thành công {total} file zip!",
