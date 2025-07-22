@@ -51,8 +51,10 @@ def get_chapters_and_urls(url):
 		href = a.get("href", "")
 		if href.startswith("/truyen/") and href.count("/") == 3:
 			urls.append(f"https://lxmanga.my{href}")
-	
-	return chapters, urls[1:] if urls else []
+
+	if len(urls) <= 1:
+		return [], []
+	return chapters, urls[1:]
 
 def get_chapter_images(chapter_url):
 	headers = {"Referer": chapter_url, "User-Agent": "Mozilla/5.0"}
@@ -101,8 +103,8 @@ def register_lx(bot):
 		url = args[1]
 		chat_id = message.chat.id
 		
-		if not url.startswith("https://lxmanga.my/"):
-			bot.reply_to(message, "🚫 Chỉ hỗ trợ lxmanga.my")
+		if not url.startswith("https://lxmanga."):
+			bot.reply_to(message, "🚫 Chỉ hỗ trợ lxmanga")
 			return
 
 		# Hiển thị đang xử lý
@@ -131,15 +133,15 @@ def register_lx(bot):
 			
 			# Tạo nút cho từng chương (đảo ngược để chương mới nhất ở trên)
 			buttons = []
-			for i in range(len(chapters)):
+			for i in range(len(chapters)-1, -1, -1):
 				buttons.append(types.InlineKeyboardButton(
 					text=chapters[i], 
 					callback_data=f"ch|{i}"
 				))
 			
 			# Chia thành hàng 3 nút
-			for i in range(0, len(buttons[::-1]), 3):  # Đảo ngược
-				markup.row(*buttons[::-1][i:i+3])
+			for i in range(0, len(buttons), 3):  # Đảo ngược
+				markup.row(*buttons[i:i+3])
 			
 			# Nút tải tất cả
 			if len(chapters) > 1:
@@ -200,7 +202,7 @@ def register_lx(bot):
 			)
 			
 			bot.send_document(chat_id, zip_file, caption=f"📁 {chapter_title}")
-			del chat_data[chat_id]
+			chat_data.pop(chat_id, None)
 
 		except Exception as e:
 			bot.edit_message_caption(
@@ -230,51 +232,39 @@ def register_lx(bot):
 		bot.answer_callback_query(call.id)
 		
 		try:
-			zip_buf = BytesIO()
 			manga_name = data['manga_name']
-			with zipfile.ZipFile(zip_buf, "w", zipfile.ZIP_DEFLATED) as zipf:
-				if data.get('cover'):
-					zipf.writestr(f"{manga_name}/cover.jpg", data['cover'].getvalue())
-					
-				for i, (chapter_title, chapter_url) in enumerate(zip(data['chapters'][::-1], data['urls'][::-1])):
-					# Update progress mỗi 3 chương
-					if i % 3 == 0:
-						progress = int((i + 1) / total * 100)
-						try:
-							bot.edit_message_caption(
-								caption=f"📦 Đang tải... {i+1}/{total} ({progress}%)\n📖 {chapter_title}",
-								chat_id=chat_id,
-								message_id=call.message.message_id
-							)
-						except:
-							pass
-					
-					# Tải ảnh chương
-					images = get_chapter_images(chapter_url)
-					for j, img in enumerate(images, 1):
-						path = f"{data['manga_name']}/{chapter_title}/{j}.jpg"
-						zipf.writestr(path, img.getvalue())
-
-			zip_buf.seek(0, 2)  # Di chuyển tới cuối để đo dung lượng
-			if zip_buf.tell() > 50 * 1024 * 1024:
-				bot.edit_message_caption(
-					caption="🚫 File toàn bộ chương vượt quá 50MB, không thể gửi qua Telegram!",
-					chat_id=chat_id,
-					message_id=call.message.message_id
-				)
-				return
+			cover = data.get('cover')
 			
-			zip_buf.seek(0)
-			zip_buf.name = "lxm.zip"
+			# Lặp qua từng chương và tạo file zip riêng
+			for i, (chapter_title, chapter_url) in enumerate(zip(data['chapters'][::-1], data['urls'][::-1])):
+				# Update progress
+				progress = int((i + 1) / total * 100)
+				try:
+					bot.edit_message_caption(
+						caption=f"📦 Đang tải... {i+1}/{total} ({progress}%)\n📖 {chapter_title}",
+						chat_id=chat_id,
+						message_id=call.message.message_id
+					)
+				except:
+					pass
+				
+				# Tạo file zip cho chương này
+				zip_file, error = create_chapter_zip(manga_name, chapter_title, chapter_url, cover)
+				
+				if error:
+					bot.send_message(chat_id, f"❌ Lỗi tải {chapter_title}: {error}")
+					continue
+				
+				# Gửi file zip của chương
+				bot.send_document(chat_id, zip_file, caption=f"📁 {chapter_title} ({i+1}/{total})")
 			
 			# Edit thành hoàn thành
 			bot.edit_message_caption(
-				caption=f"<b>{manga_name}</b>\n✅ Đã tải thành công {total} chương!",
+				caption=f"<b>{manga_name}</b>\n✅ Đã gửi thành công {total} file zip!",
 				chat_id=chat_id,
 				message_id=call.message.message_id
 			)
 			
-			bot.send_document(chat_id, zip_buf, caption=f"📦 {data['manga_name']} - Full")
 			del chat_data[chat_id]
 			
 		except Exception as e:
