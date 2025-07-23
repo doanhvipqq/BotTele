@@ -170,10 +170,8 @@ def register_lx(bot):
 			
 			author = author or 'Không rõ'
 			caption = f"""<b>{manga_name}</b>
-<blockquote>⭔───────────────⭓
  » <b>Tác giả:</b> {author}
  » <b>Số chương:</b> {len(chapters)}
-⭓───────────────⭔</blockquote>
 
  👇 Chọn chương cần tải:"""
 			
