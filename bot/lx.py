@@ -172,7 +172,7 @@ def register_lx(bot):
 			caption = f"📚 <b>{manga_name}</b>\n🖌 <b>Tác giả:</b> {author}\n🔢 Có {len(chapters)} chương\n\n👇 Chọn chương cần tải:"
 			
 			if cover:
-				bot.send_photo(chat_id, cover, caption=caption, reply_markup=markup, disable_web_page_preview=True)
+				bot.send_photo(chat_id, cover, caption=caption, reply_markup=markup)
 			else:
 				bot.send_message(chat_id, caption, reply_markup=markup, disable_web_page_preview=True)
 				
