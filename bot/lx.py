@@ -169,7 +169,13 @@ def register_lx(bot):
 			bot.delete_message(chat_id, processing_msg.message_id)
 			
 			author = author or 'Không rõ'
-			caption = f"📚 <b>{manga_name}</b>\n🖌 <b>Tác giả:</b> {author}\n🔢 Có {len(chapters)} chương\n\n👇 Chọn chương cần tải:"
+			caption = f"""<b>{manga_name}</b>
+<blockquote>⭔───────────────⭓
+ » <b>Tác giả:</b> {author}
+ » <b>Số chương:</b> {len(chapters)}
+⭓───────────────⭔</blockquote>
+
+ 👇 Chọn chương cần tải:"""
 			
 			if cover:
 				bot.send_photo(chat_id, cover, caption=caption, reply_markup=markup)
