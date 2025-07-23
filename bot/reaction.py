@@ -11,7 +11,8 @@ def register_reaction(bot):
     # 🎯 Xử lý mọi tin nhắn
     @bot.message_handler(
         func=lambda message: not (message.text or "").startswith('/'),
-        content_types=['text', 'photo', 'video', 'sticker', 'audio', 'document', 'voice']
+        # content_types=['text', 'photo', 'video', 'sticker', 'audio', 'document', 'voice']
+      content_types=['text', 'video', 'sticker', 'audio', 'document', 'voice']
     )
     
     def handle_all_messages(message):
