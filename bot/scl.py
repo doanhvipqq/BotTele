@@ -177,8 +177,8 @@ def register_scl(bot):
 				)
 				return
 			
-			caption = f""" <b>{track['title']}</b>
-<blockquote>⭔───────────────⭓
+			caption = f"""<blockquote>⭔───────────────⭓
+ <b>{track['title']}</b>
  » <b>Nghệ sĩ:</b> {track['user']['username']}
  » <b>Lượt nghe:</b> {track['playback_count']:,}
  » <b>Lượt thích:</b> {track['likes_count']:,}
