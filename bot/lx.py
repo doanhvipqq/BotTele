@@ -12,6 +12,23 @@ def get_name_manga(url):
 	response = requests.get(url, timeout=10)
 	soup = BeautifulSoup(response.text, "html.parser")
 	return soup.find("title").text.strip()
+	# return f'<a href="{url}">{title}</a>'
+
+def get_author(url):
+	response = requests.get(url, timeout=10)
+	soup = BeautifulSoup(response.text, "html.parser")
+
+	divs = soup.find_all("div", class_="mt-2")
+	for div in divs:
+		if "Tác giả" in div.text:
+			a = div.find("a")
+			if a:
+				href = a.get("href", "")
+				name = a.text.strip()
+				return f'<a href="https://lxmanga.my{href}">{name}</a>'
+	return None
+
+# print(get_author())
 
 def get_cover(url):
 	response = requests.get(url, timeout=10)
@@ -22,8 +39,7 @@ def get_cover(url):
 		return None
 		
 	style = cover_div.get("style", "")
-	match = re.search(r"url\(['\"]?(.*?)['\"]?\)", style)
-	if not match:
+	if match := re.search(r"url\(['\"]?(.*?)['\"]?\)", style):
 		return None
 		
 	headers = {"Referer": url, "User-Agent": "Mozilla/5.0"}
@@ -114,6 +130,7 @@ def register_lx(bot):
 			manga_name = get_name_manga(url)
 			chapters, chapter_urls = get_chapters_and_urls(url)
 			cover = get_cover(url)
+			author = get_author(url)
 			if not chapters:
 				bot.edit_message_text("❌ Không tìm thấy chương nào!", 
 									chat_id, processing_msg.message_id)
@@ -125,7 +142,8 @@ def register_lx(bot):
 				'chapters': chapters,
 				'urls': chapter_urls,
 				'manga_url': url,
-				'cover': cover
+				'cover': cover,
+				'author': author
 			}
 
 			# Tạo keyboard chọn chương
@@ -150,7 +168,10 @@ def register_lx(bot):
 			# Gửi ảnh bìa + menu chọn
 			bot.delete_message(chat_id, processing_msg.message_id)
 			
-			caption = f"📚 <b>{manga_name}</b>\n🔢 Có {len(chapters)} chương\n\n👇 Chọn chương cần tải:"
+			data = chat_data[chat_id]
+			author = author or 'Không rõ'
+			manga_url = data['manga_url']
+			caption = f"📚 <b><a href='{manga_url}'>{manga_name}</a></b>\n🖌 <b>Tác giả:</b> {author}\n🔢 Có {len(chapters)} chương\n\n👇 Chọn chương cần tải:"
 			
 			if cover:
 				bot.send_photo(chat_id, cover, caption=caption, reply_markup=markup)
@@ -193,15 +214,13 @@ def register_lx(bot):
 					message_id=call.message.message_id
 				)
 				return
-			
-			# Edit thành hoàn thành và gửi file
-			bot.edit_message_caption(
-				caption=f"<b>{manga_name}</b>\n✅ Tải thành công <b>{chapter_title}</b>",
-				chat_id=chat_id,
-				message_id=call.message.message_id
-			)
-			
-			bot.send_document(chat_id, zip_file, caption=f"📁 {chapter_title}")
+
+			data = chat_data[chat_id]
+			author = data.get('author', 'Không rõ')
+			manga_url = data['manga_url']
+			caption = f"<b><a href='{manga_url}'>{manga_name}</a></b>\nTác giả: {author}\n📁 {chapter_title}"
+			bot.send_document(chat_id, zip_file, caption)
+			bot.delete_message(chat_id, call.message.message_id)
 			zip_file.close()
 			chat_data.pop(chat_id, None)
 
@@ -256,18 +275,16 @@ def register_lx(bot):
 					bot.send_message(chat_id, f"❌ Lỗi tải {chapter_title}: {error}")
 					continue
 				
+				data = chat_data[chat_id]
+				author = data.get('author', 'Không rõ')
+				manga_url = data['manga_url']
 				# Gửi file zip của chương
-				bot.send_document(chat_id, zip_file, caption=f"📁 {chapter_title} ({i+1}/{total})")
+				caption = f"<b><a href='{manga_url}'>{manga_name}</a></b>\nTác giả: {author}\n📁 {chapter_title} ({i+1}/{total})"
+				bot.send_document(chat_id, zip_file, caption)
+				bot.delete_message(chat_id, call.message.message_id)
 				zip_file.close()
 
-			# Edit thành hoàn thành
-			bot.edit_message_caption(
-				caption=f"<b>{manga_name}</b>\n✅ Đã gửi thành công {total} file zip!",
-				chat_id=chat_id,
-				message_id=call.message.message_id
-			)
-			
-			del chat_data[chat_id]
+			chat_data.pop(chat_id, None)
 			
 		except Exception as e:
 			bot.edit_message_caption(
