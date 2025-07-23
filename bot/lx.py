@@ -12,7 +12,6 @@ def get_name_manga(url):
 	response = requests.get(url, timeout=10)
 	soup = BeautifulSoup(response.text, "html.parser")
 	return soup.find("title").text.strip()
-	# return f'<a href="{url}">{title}</a>'
 
 def get_author(url):
 	response = requests.get(url, timeout=10)
@@ -39,7 +38,8 @@ def get_cover(url):
 		return None
 		
 	style = cover_div.get("style", "")
-	if match := re.search(r"url\(['\"]?(.*?)['\"]?\)", style):
+	match = re.search(r"url\(['\"]?(.*?)['\"]?\)", style)
+	if not match:
 		return None
 		
 	headers = {"Referer": url, "User-Agent": "Mozilla/5.0"}
