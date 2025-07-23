@@ -172,9 +172,9 @@ def register_lx(bot):
 			caption = f"📚 <b>{manga_name}</b>\n🖌 <b>Tác giả:</b> {author}\n🔢 Có {len(chapters)} chương\n\n👇 Chọn chương cần tải:"
 			
 			if cover:
-				bot.send_photo(chat_id, cover, caption=caption, reply_markup=markup)
+				bot.send_photo(chat_id, cover, caption=caption, reply_markup=markup, disable_web_page_preview=True)
 			else:
-				bot.send_message(chat_id, caption, reply_markup=markup)
+				bot.send_message(chat_id, caption, reply_markup=markup, disable_web_page_preview=True)
 				
 		except Exception as e:
 			bot.edit_message_text(f"❌ Lỗi: {e}", chat_id, processing_msg.message_id)
