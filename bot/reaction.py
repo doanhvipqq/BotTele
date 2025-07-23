@@ -12,7 +12,7 @@ def register_reaction(bot):
     @bot.message_handler(
         func=lambda message: not (message.text or "").startswith('/'),
         # content_types=['text', 'photo', 'video', 'sticker', 'audio', 'document', 'voice']
-      content_types=['text', 'video', 'sticker', 'audio', 'document', 'voice']
+      content_types=['text', 'video', 'sticker', 'audio', 'document', 'voice'] # Bỏ photo để tránh lỗi lệnh /thumb
     )
     
     def handle_all_messages(message):
