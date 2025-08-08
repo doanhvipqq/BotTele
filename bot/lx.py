@@ -221,7 +221,7 @@ def register_lx(bot):
 			author = data.get('author', 'Không rõ')
 			manga_url = data['manga_url']
 			caption = f"<b><a href='{manga_url}'>{manga_name}</a></b>\nTác giả: {author}\n📁 {chapter_title}"
-			bot.send_document(chat_id, zip_file, caption, disable_web_page_preview=True)
+			bot.send_document(chat_id, zip_file, caption)
 			bot.delete_message(chat_id, call.message.message_id)
 			zip_file.close()
 			chat_data.pop(chat_id, None)
@@ -282,7 +282,7 @@ def register_lx(bot):
 				manga_url = data['manga_url']
 				# Gửi file zip của chương
 				caption = f"<b><a href='{manga_url}'>{manga_name}</a></b>\nTác giả: {author}\n📁 {chapter_title} ({i+1}/{total})"
-				bot.send_document(chat_id, zip_file, caption, disable_web_page_preview=True)
+				bot.send_document(chat_id, zip_file, caption)
 				bot.delete_message(chat_id, call.message.message_id)
 				zip_file.close()
 
