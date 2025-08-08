@@ -9,12 +9,12 @@ from bs4 import BeautifulSoup
 chat_data = {}
 
 def get_name_manga(url):
-	response = requests.get(url, timeout=10)
+	response = requests.get(url, timeout=15)
 	soup = BeautifulSoup(response.text, "html.parser")
 	return soup.find("title").text.strip()
 
 def get_author(url):
-	response = requests.get(url, timeout=10)
+	response = requests.get(url, timeout=15)
 	soup = BeautifulSoup(response.text, "html.parser")
 
 	divs = soup.find_all("div", class_="mt-2")
@@ -30,7 +30,7 @@ def get_author(url):
 # print(get_author())
 
 def get_cover(url):
-	response = requests.get(url, timeout=10)
+	response = requests.get(url, timeout=15)
 	soup = BeautifulSoup(response.text, "html.parser")
 	
 	cover_div = soup.select_one(".cover")
@@ -43,14 +43,14 @@ def get_cover(url):
 		return None
 		
 	headers = {"Referer": url, "User-Agent": "Mozilla/5.0"}
-	resp = requests.get(match.group(1), headers=headers, timeout=10)
+	resp = requests.get(match.group(1), headers=headers, timeout=15)
 	
 	cover_file = BytesIO(resp.content)
 	cover_file.name = "cover.jpg"
 	return cover_file
 
 def get_chapters_and_urls(url):
-	response = requests.get(url, timeout=10)
+	response = requests.get(url, timeout=15)
 	soup = BeautifulSoup(response.text, "html.parser")
 	
 	# Lấy tên chương
@@ -81,7 +81,7 @@ def get_chapter_images(chapter_url):
 	for index, div in enumerate(soup.select("div.text-center div.lazy"), 1):
 		img_url = div.get("data-src")
 		if img_url:
-			r = requests.get(img_url, headers=headers, timeout=10)
+			r = requests.get(img_url, headers=headers, timeout=15)
 			img = BytesIO(r.content)
 			img.name = f"{index:03}.jpg"
 			images.append(img)
