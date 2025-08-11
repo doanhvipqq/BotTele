@@ -9,6 +9,9 @@ bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 from bot.reaction import register_reaction
 register_reaction(bot)
 
+from bot.encode import register_encode
+register_encode(bot)
+
 # from bot.nct import register_nct
 # register_nct(bot)
 
