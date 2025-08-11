@@ -41,7 +41,7 @@ def register_encode(bot):
 			# Gọi encode.py
 			output_file = f"obf-{file_name}"
 			subprocess.run(
-				['python3', '/encode/Sakura.py', "-f", input_file, '-o', output_file, "-m", mode],
+				['python3', '/bot/encode/Sakura.py', "-f", input_file, '-o', output_file, "-m", mode],
 				check=True
 			)
 			
