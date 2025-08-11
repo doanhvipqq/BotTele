@@ -23,7 +23,7 @@ def register_encode(bot):
 	def handle_file(message):
 		user_id = message.from_user.id
 		if user_id not in user_modes:
-			bot.reply_to(message, "Bạn chưa chọn chế độ encode. Dùng: /encode 1, 2 hoặc 3")
+			bot.reply_to(message, "Bạn chưa chọn chế độ encode. Dùng: /encode 1 hoặc 2")
 			return
 	
 		mode = user_modes.pop(user_id)  # Lấy và xóa mode sau khi dùng
