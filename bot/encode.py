@@ -4,7 +4,7 @@ import subprocess
 # Lưu chế độ encode của từng user: {user_id: mode}
 user_modes = {}
 
-def register_encode(bot)
+def register_encode(bot):
 	@bot.message_handler(commands=['encode'])
 	def encode_command(message):
 		# Lấy chế độ encode
