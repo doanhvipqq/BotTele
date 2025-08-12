@@ -17,7 +17,7 @@ def register_encode(bot):
 			user_modes[message.from_user.id] = mode
 			bot.reply_to(message, "Gửi file để encode!")
 		except:
-			bot.reply_to(message, "Dùng: /encode 1, 2 hoặc 3")
+			bot.reply_to(message, "Dùng: /encode 1 hoặc 2")
 	
 	@bot.message_handler(content_types=['document'])
 	def handle_file(message):
