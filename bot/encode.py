@@ -23,10 +23,13 @@ def register_encode(bot):
 	def handle_file(message):
 		user_id = message.from_user.id
 		if user_id not in user_modes:
-			bot.reply_to(message, "Bạn chưa chọn chế độ encode. Dùng: /encode 1 hoặc 2")
 			return
 	
 		mode = user_modes.pop(user_id)  # Lấy và xóa mode sau khi dùng
+		if not message.document.file_name.endswith(".py"):
+			bot.reply_to(message, "Chỉ nhận file Python (.py)!")
+			return
+			
 		try:
 			# Tải file
 			file_info = bot.get_file(message.document.file_id)
