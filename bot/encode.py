@@ -37,7 +37,7 @@ def register_encode(bot):
 			downloaded_file = bot.download_file(file_info.file_path)
 			
 			# Lưu file tạm
-			input_file = f"temp_{file_name}"
+			input_file = f"./bot/encode/temp_{file_name}"
 			with open(input_file, 'wb') as f:
 				f.write(downloaded_file)
 			
