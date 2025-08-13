@@ -77,7 +77,7 @@ try:
 
     def build_var():
         global anti_debug, pro
-        concacto = open('anti.py', 'r', encoding='utf-8-sig').read()
+        concacto = open('./bot/encode/anti.py', 'r', encoding='utf-8-sig').read()
         globals()['anti_debug'] = 'open(__file__, "w", encoding="utf-8").write("Địt Con Bà Mày Dec Hook Cái Lồn!") if (len(open(__file__, "r", encoding="utf-8").read().split("\\n"))) != 51 else None\n' + concacto + '\n'
         pro = ANTI_PYCDC
         list_ten_bienn = ['TrinhSieuDepTrai', 'CalceSieuCapVip', 'TrinhCodeThuongThua', 'CalceVoDichTheGioi', 'TrinhChuyenGiaPro', 'CalceBacThoDinhCao', 'TrinhCongNgheDinh', 'CalceLapTrinhMaster', 'TrinhSangTaoVoSong', 'CalceVuongGiaCode', 'TrinhThuatToanHay', 'CalceHackerPro', 'TrinhThanhCongLon', 'CalceToiThuongDev', 'TrinhAnDanhElite', 'CalceChienThanCode', 'TrinhProMaxVIP', 'CalceTruyenKyLapTrinh', 'TrinhMasterMind', 'CalceUltimateDev', 'TrinhDevKing', 'CalceInfinityCode', 'TrinhCodeWarrior', 'CalceChampionCoder', 'TrinhCyberHero', 'CalceTheBestDev', 'TrinhAIWizard', 'CalceOverlordCoder', 'TrinhEliteHacker', 'CalceDarkMode', 'TrinhQuantumTech', 'CalceGodLike']
