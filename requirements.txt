@@ -5,3 +5,7 @@ requests
 
 yt_dlp
 colorama
+
+
+pystyle
+pytz
