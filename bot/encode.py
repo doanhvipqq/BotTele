@@ -45,8 +45,13 @@ def register_encode(bot):
 			output_file = f"obf-{file_name}"
 			subprocess.run(
 				['python3', './bot/encode/Sakura.py', "-f", input_file, '-o', output_file, "-m", mode],
+				capture_output=True,
 				check=True
 			)
+
+			if result.returncode != 0:
+				bot.reply_to(message, f"Lỗi Sakura:\n{result.stderr}")
+				return
 			
 			# Gửi file encode
 			with open(output_file, 'rb') as f:
