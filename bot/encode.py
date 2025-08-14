@@ -37,14 +37,14 @@ def register_encode(bot):
 			downloaded_file = bot.download_file(file_info.file_path)
 			
 			# Lưu file tạm
-			input_file = f"./bot/encode/temp_{file_name}"
+			input_file = f"/bot/encode/temp_{file_name}"
 			with open(input_file, 'wb') as f:
 				f.write(downloaded_file)
 			
 			# Gọi encode.py
 			output_file = f"obf-{file_name}"
 			subprocess.run(
-				['python3', './bot/encode/Sakura.py', "-f", input_file, '-o', output_file, "-m", mode],
+				['python3', '/bot/encode/Sakura.py', "-f", input_file, '-o', output_file, "-m", mode],
 				check=True
 			)
 			
