@@ -53,6 +53,8 @@ def register_encode(bot):
 				bot.reply_to(message, f"Lỗi encode:\n{result.stderr}")
 				os.remove(input_file)
 				return
+
+			bot.send_message(message.chat.id, f"📂 File encode lưu tại:\n{os.path.abspath(output_file)}")
 			
 			# Gửi file encode
 			with open(output_file, 'rb') as f:
