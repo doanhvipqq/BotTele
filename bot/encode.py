@@ -37,20 +37,21 @@ def register_encode(bot):
 			downloaded_file = bot.download_file(file_info.file_path)
 			
 			# Lưu file tạm
-			input_file = f"./bot/encode/temp_{file_name}"
+			input_file = f"temp_{file_name}"
 			with open(input_file, 'wb') as f:
 				f.write(downloaded_file)
 			
 			# Gọi encode.py
 			output_file = f"obf-{file_name}"
-			subprocess.run(
+			result = subprocess.run(
 				['python3', './bot/encode/Sakura.py', '-f', input_file, '-o', output_file, '-m', mode],
 				capture_output=True,
-				check=True
+				text=True
 			)
 
 			if result.returncode != 0:
-				bot.reply_to(message, f"Lỗi Sakura:\n{result.stderr}")
+				bot.reply_to(message, f"Lỗi encode:\n{result.stderr}")
+				os.remove(input_file)
 				return
 			
 			# Gửi file encode
