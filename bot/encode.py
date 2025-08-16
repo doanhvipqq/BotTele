@@ -1,4 +1,5 @@
 import os
+import time
 import subprocess
 
 # Lưu chế độ encode của từng user: {user_id: mode}
@@ -42,7 +43,7 @@ def register_encode(bot):
 				f.write(downloaded_file)
 			
 			# Gọi encode.py
-			output_file = f"obf_{file_name}"
+			output_file = f"obf-{file_name}"
 			result = subprocess.run(
 				['python3', './bot/encode/Sakura.py', '-f', input_file, '-o', output_file, '-m', mode],
 				capture_output=True,
@@ -51,6 +52,16 @@ def register_encode(bot):
 
 			if result.returncode != 0:
 				bot.reply_to(message, f"Lỗi encode:\n{result.stderr}")
+				os.remove(input_file)
+				return
+
+			timeout = 5
+			while not os.path.exists(output_file) and timeout > 0:
+				time.sleep(0.5)
+				timeout -= 0.5
+
+			if not os.path.exists(output_file):
+				bot.reply_to(message, "Lỗi: Không tìm thấy file encode sau khi chạy Sakura.py")
 				os.remove(input_file)
 				return
 
