@@ -42,9 +42,9 @@ def register_encode(bot):
 				f.write(downloaded_file)
 			
 			# Gọi encode.py
-			output_file = f"/app/obf-{file_name}"
+			output_file = f"./app/obf-{file_name}"
 			result = subprocess.run(
-				['python3', './bot/encode/Sakura.py', '-f', input_file, '-o', output_file, '-m', mode],
+				['python3', './bot/encode/Sakura.py', '-f', input_file, '-o', f'obf-{file_name}', '-m', mode],
 				capture_output=True,
 				text=True
 			)
