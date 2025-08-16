@@ -350,8 +350,8 @@ try:
             formated = '+'.join((f'chr({char})' for char in [ord(char_) for char_ in text]))
             return f'eval(eval({formated!r}), globals())' if evalCode else f'eval({formated!r})'
         exceptionCode = "\n    while True:\n        try:\n            print('Fuck You')\n        except KeyboardInterrupt:\n            continue\n        except:\n            continue"
-        botLink = '@TrinhNguyen0611_bot'
-        infos = {'__OBFBy__': 'NguyenXuanTrinh - @CalceIsMe (Telegram)', '__OBFBot__': botLink}
+        botLink = '@BotMainByHoangAnh_Bot'
+        infos = {'__OBFBy__': 'HoangAnh - @HgAnh7 (Telegram)', '__OBFBot__': botLink}
         DitMeMayDungCoDecKey = random.randint(0, 10000)
 
         def DitMeMayDungCoDec() -> str:
