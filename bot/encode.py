@@ -72,7 +72,8 @@ tìm thấy file encode sau khi chạy Sakura.py
 			# Gửi file encode
 			with open(output_file, 'rb') as f:
 				bot.send_document(message.chat.id, f, caption=f"File đã encode với chế độ {mode}!\n: ̗̀➛ Only python 3.12", visible_file_name=output_file)
-				bot.delete_message(msg.chat.id, status_msg.message_id)
+			
+			bot.delete_message(msg.chat.id, status_msg.message_id)
 	
 			# Xóa file tạm
 			os.remove(input_file)
