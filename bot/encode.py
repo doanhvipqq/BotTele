@@ -54,11 +54,11 @@ def register_encode(bot):
 				os.remove(input_file)
 				return
 
-			bot.send_message(message.chat.id, f"📂 File encode lưu tại:\n{os.path.abspath(output_file)}")
+			# bot.send_message(message.chat.id, f"📂 File encode lưu tại:\n{os.path.abspath(output_file)}")
 			
 			# Gửi file encode
 			with open(output_file, 'rb') as f:
-				bot.send_document(message.chat.id, f, caption=f"File đã encode với chế độ {mode}!", visible_file_name=output_file)
+				bot.send_document(message.chat.id, f, caption=f"File đã encode với chế độ {mode}!\n: ̗̀➛ Only python 3.12", visible_file_name=output_file)
 	
 			# Xóa file tạm
 			os.remove(input_file)
