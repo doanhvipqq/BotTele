@@ -25,13 +25,13 @@ def register_encode(bot):
 		user_id = message.from_user.id
 		if user_id not in user_modes:
 			return
-
-		status_msg = bot.reply_to(message, "⏳ Đang xử lý... Vui lòng chờ!")
 	
 		mode = user_modes.pop(user_id)  # Lấy và xóa mode sau khi dùng
 		if not message.document.file_name.endswith(".py"):
 			bot.reply_to(message, "Chỉ nhận file Python (.py)!")
 			return
+
+		status_msg = bot.reply_to(message, "⏳ Đang xử lý... Vui lòng chờ!")
 			
 		try:
 			# Tải file
