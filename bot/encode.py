@@ -26,7 +26,7 @@ def register_encode(bot):
 		if user_id not in user_modes:
 			return
 
-		status_msg = bot.reply_to(msg, "⏳ Đang xử lý... Vui lòng chờ!")
+		status_msg = bot.reply_to(message, "⏳ Đang xử lý... Vui lòng chờ!")
 	
 		mode = user_modes.pop(user_id)  # Lấy và xóa mode sau khi dùng
 		if not message.document.file_name.endswith(".py"):
@@ -73,7 +73,7 @@ tìm thấy file encode sau khi chạy Sakura.py
 			with open(output_file, 'rb') as f:
 				bot.send_document(message.chat.id, f, caption=f"File đã encode với chế độ {mode}!\n: ̗̀➛ Only python 3.12", visible_file_name=output_file)
 			
-			bot.delete_message(msg.chat.id, status_msg.message_id)
+			bot.delete_message(message.chat.id, status_msg.message_id)
 	
 			# Xóa file tạm
 			os.remove(input_file)
