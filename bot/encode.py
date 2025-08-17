@@ -54,6 +54,7 @@ def register_encode(bot):
 
 			if result.returncode != 0:
 				bot.reply_to(message, f"Lỗi encode:\n{result.stderr}")
+				bot.delete_message(message.chat.id, status_msg.message_id)
 				os.remove(input_file)
 				return
 
