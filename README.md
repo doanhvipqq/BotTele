@@ -21,6 +21,17 @@ Một bot Telegram đa chức năng được viết bằng Python với nhiều 
 
 ## 🛠️ Cài đặt
 
+### Cách 1: Sử dụng Batch Scripts (Windows - Đơn giản nhất)
+
+1. **Tải và giải nén** project về máy
+2. **Double-click** vào file `setup_and_run.bat`
+3. **Làm theo hướng dẫn** trên màn hình
+4. **Các lần sau** chỉ cần chạy `run_bot.bat`
+
+📖 **Xem hướng dẫn chi tiết**: [HUONG_DAN_WINDOWS.md](HUONG_DAN_WINDOWS.md)
+
+### Cách 2: Cài đặt thủ công
+
 1. **Clone repository:**
    ```bash
    git clone https://github.com/doanhvipqq/BotTele.git
@@ -92,6 +103,9 @@ Một bot Telegram đa chức năng được viết bằng Python với nhiều 
 
 ```
 BotTele/
+├── setup_and_run.bat    # Windows: Cài đặt và chạy tự động
+├── run_bot.bat          # Windows: Chạy nhanh bot
+├── HUONG_DAN_WINDOWS.md # Hướng dẫn chi tiết cho Windows
 ├── main.py              # File chính để chạy bot
 ├── config.py            # Cấu hình bot
 ├── requirements.txt     # Dependencies
