@@ -1,6 +1,10 @@
 # main.py
 import os
 import telebot
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
@@ -85,11 +89,11 @@ from bot.lxmanga import register_lxmanga
 register_lxmanga(bot)
 
 # from bot.funlink import register_funlink
-from funlink import register_funlink
-register_funlink(bot)
+# from funlink import register_funlink
+# register_funlink(bot)
 
-from bot.yeumoney import register_yeumoney
-register_yeumoney(bot)
+# from bot.yeumoney import register_yeumoney
+# register_yeumoney(bot)
 
 from bot.sourceweb import register_sourceweb
 register_sourceweb(bot)

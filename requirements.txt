@@ -2,7 +2,7 @@ bs4
 pillow
 telebot
 requests
-
+python-dotenv
 yt_dlp
 colorama
 
