@@ -66,7 +66,7 @@ def register_encode(bot):
 				bot.reply_to(message, "Lỗi: Không thể encode file này!")
 				os.remove(input_file)
 				return
-tìm thấy file encode sau khi chạy Sakura.py
+
 			# bot.send_message(message.chat.id, f"📂 File encode lưu tại:\n{os.path.abspath(output_file)}")
 			
 			# Gửi file encode
