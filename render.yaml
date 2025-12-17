@@ -7,4 +7,4 @@ services:
     startCommand: "python -u main.py"
     envVars:
       - key: TELEGRAM_TOKEN
-        value: "" # Set this value in the Render dashboard, do NOT commit your token in the repo
+        value: "8567340377:AAG9LLjKin8NjJDtIWDsS7jXa_vogHY6nMI" # Set this value in the Render dashboard, do NOT commit your token in the repo
