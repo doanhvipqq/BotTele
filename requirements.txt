@@ -1,6 +1,6 @@
 bs4
 pillow
-telebot
+pyTelegramBotAPI
 requests
 python-dotenv
 yt_dlp
