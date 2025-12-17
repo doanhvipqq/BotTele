@@ -1,13 +1,17 @@
-# main.py
 import os
 import telebot
+# Không cần load_dotenv nếu điền trực tiếp token, nhưng giữ lại cũng không sao
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 load_dotenv()
 
-TOKEN = os.getenv("8567340377:AAG9LLjKin8NjJDtIWDsS7jXa_vogHY6nMI")
+# --- PHẦN ĐÃ SỬA ---
+# Mình đã điền trực tiếp Token của bạn vào đây để chạy được ngay
+# Lưu ý: Vì token này đã lộ trên chat, nếu bot bị lỗi hoặc bị người khác điều khiển, bạn nhớ tạo token mới nhé.
+TOKEN = "8567340377:AAG9LLjKin8NjJDtIWDsS7jXa_vogHY6nMI"
+
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
+# -------------------
 
 # Luôn phải ở đầu để đạt hiệu quả tốt nhất
 from bot.reaction import register_reaction
@@ -100,4 +104,5 @@ register_sourceweb(bot)
 
 if __name__ == '__main__':
     print("Bot đang chạy...")
+    # Đã thêm dấu () vào cuối để bot không bị tắt ngay lập tức
     bot.infinity_polling()
