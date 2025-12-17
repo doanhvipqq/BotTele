@@ -1,7 +1,6 @@
-caption = """ ‎‧₊˚✧ <b>Tiện ích</b> ✧˚₊‧
+caption = """ ‎‧₊˚✧ <b>Bóng x</b> ✧˚₊‧
 <blockquote expandable>┌───────────────⭓
 ├ /help: Menu bot
-├ /admin: Info admin
 ├ /time: Check time bot
 ├───────────────⭔
 ├ /proxy: Proxy free 📦
@@ -17,16 +16,9 @@ caption = """ ‎‧₊˚✧ <b>Tiện ích</b> ✧˚₊‧
 
  ‎‧₊˚✧ <b>Random ảnh/video</b> ✧˚₊‧
 <blockquote expandable>✧═════• ༺༻ •═════✧
-   • /pussy: 🔞
-   • /meme: Meme 🤡
-   • /r34: Ảnh r34 🔞
-   • /squeeze: Bóp 🌚
-   • /girl: Video gái 😳
-   • /butt: Ảnh mông gái 🙅‍♀️
+   • /meme: Meme 😂
+   • /girl: Video gái 👍
    • /anime: Video anime 🇯🇵
-   • /imganime: Ảnh anime 🦄
-   • /cosplay: Ảnh cosplay 🧝‍♀️
-   • /nude: Ảnh bán thoả thân 🔞
 ✧═════• ༺༻ •═════✧
 </blockquote>"""
 
