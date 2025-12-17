@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-TOKEN = os.getenv("TELEGRAM_TOKEN")
+TOKEN = os.getenv("8567340377:AAG9LLjKin8NjJDtIWDsS7jXa_vogHY6nMI")
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 
 # Luôn phải ở đầu để đạt hiệu quả tốt nhất
