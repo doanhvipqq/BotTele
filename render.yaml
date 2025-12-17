@@ -1,0 +1,10 @@
+services:
+  - type: worker
+    name: bottele-worker
+    env: python
+    branch: main
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python -u main.py"
+    envVars:
+      - key: TELEGRAM_TOKEN
+        value: "" # Set this value in the Render dashboard, do NOT commit your token in the repo
