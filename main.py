@@ -1,6 +1,25 @@
 import os
 import telebot
+import threading
+from flask import Flask
 from dotenv import load_dotenv
+
+# --- CẤU HÌNH WEB SERVER GIẢ ĐỂ RENDER KHÔNG TẮT BOT ---
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot đang chạy ổn định!"
+
+def run_web_server():
+    # Render sẽ cung cấp cổng qua biến môi trường PORT, nếu không có thì dùng 8080
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port)
+
+def keep_alive():
+    t = threading.Thread(target=run_web_server)
+    t.start()
+# -------------------------------------------------------
 
 load_dotenv()
 
@@ -80,7 +99,7 @@ register_sourceweb(bot)
 # from bot.nekos import register_nekos
 # register_nekos(bot)
 
-# Các module ảnh khác (Thường chứa ảnh gái, mông, v.v...)
+# Các module ảnh khác
 # from bot.img import register_img
 # register_img(bot)
 
@@ -111,5 +130,8 @@ register_sourceweb(bot)
 
 
 if __name__ == '__main__':
+    # Chạy Web Server giả trên luồng riêng
+    keep_alive()
+    
     print("Bot đang chạy (Đã tắt các lệnh NSFW/Anime)...")
     bot.infinity_polling()
