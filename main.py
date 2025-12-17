@@ -1,51 +1,27 @@
 import os
 import telebot
-# Không cần load_dotenv nếu điền trực tiếp token, nhưng giữ lại cũng không sao
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# --- PHẦN ĐÃ SỬA ---
-# Mình đã điền trực tiếp Token của bạn vào đây để chạy được ngay
-# Lưu ý: Vì token này đã lộ trên chat, nếu bot bị lỗi hoặc bị người khác điều khiển, bạn nhớ tạo token mới nhé.
+# --- TOKEN ---
 TOKEN = "8567340377:AAG9LLjKin8NjJDtIWDsS7jXa_vogHY6nMI"
-
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
-# -------------------
+# -------------
 
-# Luôn phải ở đầu để đạt hiệu quả tốt nhất
-from bot.reaction import register_reaction
-register_reaction(bot)
+# --- CÁC MODULE GIỮ LẠI (TIỆN ÍCH, SYSTEM) ---
 
 from bot.encode import register_encode
 register_encode(bot)
 
-# from bot.nct import register_nct
-# register_nct(bot)
-
 from bot.share import register_share
 register_share(bot)
-
-from bot.img import register_img
-register_img(bot)
-
-from bot.img1 import register_img1
-register_img1(bot)
-
-from bot.cosplay import register_cosplay
-register_cosplay(bot)
 
 from bot.scl import register_scl
 register_scl(bot)
 
 from bot.in4 import register_in4
 register_in4(bot)
-
-from bot.r34 import register_r34
-register_r34(bot)
-
-from bot.pixxx import register_pixxx
-register_pixxx(bot)
 
 from bot.send import register_send
 register_send(bot)
@@ -56,12 +32,6 @@ register_time(bot)
 from bot.help import register_help
 register_help(bot)
 
-from bot.nekos import register_nekos
-register_nekos(bot)
-
-from bot.thumb import register_thumb
-register_thumb(bot)
-
 from bot.proxy import register_proxy
 register_proxy(bot)
 
@@ -70,9 +40,6 @@ register_random(bot)
 
 from bot.tiktok import register_tiktok
 register_tiktok(bot)
-
-from bot.images import register_images
-register_images(bot)
 
 from bot.github import register_github
 register_github(bot)
@@ -86,23 +53,63 @@ register_meme(bot)
 from bot.spamsms import register_spamsms
 register_spamsms(bot)
 
-from bot.lx import register_lx
-register_lx(bot)
+from bot.sourceweb import register_sourceweb
+register_sourceweb(bot)
 
-from bot.lxmanga import register_lxmanga
-register_lxmanga(bot)
+
+# --- CÁC MODULE ĐÃ BỊ TẮT (THEO YÊU CẦU CỦA BẠN) ---
+# Đã thêm dấu # ở đầu dòng để vô hiệu hóa lệnh
+
+# Reaction (Chứa /squeeze)
+# from bot.reaction import register_reaction
+# register_reaction(bot)
+
+# Ảnh Cosplay (/cosplay)
+# from bot.cosplay import register_cosplay
+# register_cosplay(bot)
+
+# Ảnh R34 (/r34)
+# from bot.r34 import register_r34
+# register_r34(bot)
+
+# Ảnh 18+, Pixxx (/pussy, /nude, /butt...)
+# from bot.pixxx import register_pixxx
+# register_pixxx(bot)
+
+# Ảnh Anime, Nekos (/anime, /imganime)
+# from bot.nekos import register_nekos
+# register_nekos(bot)
+
+# Các module ảnh khác (Thường chứa ảnh gái, mông, v.v...)
+# from bot.img import register_img
+# register_img(bot)
+
+# from bot.img1 import register_img1
+# register_img1(bot)
+
+# from bot.images import register_images
+# register_images(bot)
+
+# from bot.thumb import register_thumb
+# register_thumb(bot)
+
+# Nội dung người lớn/Lầu xanh (/lx, /lxmanga)
+# from bot.lx import register_lx
+# register_lx(bot)
+
+# from bot.lxmanga import register_lxmanga
+# register_lxmanga(bot)
+
+# from bot.nct import register_nct
+# register_nct(bot)
 
 # from bot.funlink import register_funlink
-# from funlink import register_funlink
 # register_funlink(bot)
 
 # from bot.yeumoney import register_yeumoney
 # register_yeumoney(bot)
 
-from bot.sourceweb import register_sourceweb
-register_sourceweb(bot)
 
 if __name__ == '__main__':
-    print("Bot đang chạy...")
-    # Đã thêm dấu () vào cuối để bot không bị tắt ngay lập tức
+    print("Bot đang chạy (Đã tắt các lệnh NSFW/Anime)...")
     bot.infinity_polling()
