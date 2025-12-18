@@ -1,12 +1,7 @@
-# ID Telegram của admin
+# config.py
+
+# ID admin (bắt buộc là int)
 ADMIN_ID = 7509896689
 
-# 📌 Danh sách các nhóm được phép
-GROUP_ID = [
-    -1002256706038
-]
-
-# CHANNEL_ID = 
-
-# ⚠️ Thông báo lỗi
-ERROR_MSG = "⚠️ Đã xảy ra lỗi nội bộ.\nAdmin đang trong quá trình xử lý."
+# Danh sách group được phép dùng bot (bắt buộc là list)
+GROUP_ID = [-1002256706038]
