@@ -19,6 +19,8 @@ caption = """ ‎‧₊˚✧ <b>Bóng x</b> ✧˚₊‧
    • /meme: Meme 😂
    • /girl: Video gái 👍
    • /anime: Video anime 🇯🇵
+   • /sms:spam số điện thoại lỏ 😭
+   • /smsvip: lỏ ai muốn thì ib free 
 ✧═════• ༺༻ •═════✧
 </blockquote>"""
 
