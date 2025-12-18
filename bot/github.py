@@ -29,4 +29,4 @@ def register_github(bot):
                 bot.reply_to(message, "Không tìm thấy thông tin Github của người dùng. Vui lòng thử lại.") 
      
         except IndexError: 
-            bot.reply_to(message, "🚫 Vui lòng cung cấp username cần check. Ví dụ: /github HgAnh7")
+            bot.reply_to(message, "🚫 Vui lòng cung cấp username cần check. Ví dụ: /github bóng x")
