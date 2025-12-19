@@ -80,7 +80,7 @@ register_sourceweb(bot)
 # Đã thêm dấu # ở đầu dòng để vô hiệu hóa lệnh
 
 # Reaction (Chứa /squeeze)
-from bot.reaction import register_bypass
+from bot.bypass import register_bypass
 register_bypass(bot)
 
 # Ảnh Cosplay (/cosplay)
