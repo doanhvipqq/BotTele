@@ -82,8 +82,8 @@ register_sourceweb(bot)
 # Reaction (Chứa /squeeze)
 
 # Ảnh Cosplay (/cosplay)
-# from bot.cosplay import register_bot/share
-# register_share(bot)
+from bot.reg import register_bot/reg
+register_reg(bot)
 
 # Ảnh R34 (/r34)
 # from bot.r34 import register_r34
