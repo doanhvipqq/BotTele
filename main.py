@@ -82,7 +82,9 @@ register_sourceweb(bot)
 # Reaction (Chứa /squeeze)
 
 # Ảnh Cosplay (/cosplay)
-from bot.reg import register_bot/reg
+# Sửa từ: from bot.reg import register_bot/reg
+# Thành:
+from bot.reg import register_handlers
 register_reg(bot)
 
 # Ảnh R34 (/r34)
