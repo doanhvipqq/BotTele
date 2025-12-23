@@ -85,8 +85,7 @@ register_sourceweb(bot)
 # Sửa từ: from bot.reg import register_bot/reg
 # Thành:
 from bot.reg import register_handlers
-register_reg(bot)
-
+register_handlers(bot)
 # Ảnh R34 (/r34)
 # from bot.r34 import register_r34
 # register_r34(bot)
