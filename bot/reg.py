@@ -67,7 +67,7 @@ def register_handlers(bot):
             if i < qty - 1:
                 time.sleep(1)
 
-        final_text = "🚀 **KẾT QUẢ REG GARENA** 🚀\n\n" + "\n\n".join(results)
-        final_text += "\n\n⚠️ *Lưu ý: Không lưu trữ, hãy lưu lại thông tin ngay!*"
+        final_text = "🚀 **KẾT QUẢ RAMDOM GARENA** 🚀\n\n" + "\n\n".join(results)
+        final_text += "\n\n⚠️ *Lưu ý: lưu ý dựa vào nhân phẩm nha acc không trắng thông tin đâu chỉ là acc test hack !*"
         
         bot.edit_message_text(final_text, chat_id, status_msg.message_id, parse_mode="Markdown")
