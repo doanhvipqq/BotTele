@@ -14,13 +14,14 @@ caption = """ ‎‧₊˚✧ <b>Bóng x</b> ✧˚₊‧
 ├ /in4: Thông tin người dùng Tele 👾
 ‎└───────────────⭓</blockquote>
 
- ‎‧₊˚✧ <b>Random ảnh/video</b> ✧˚₊‧
+ ‎‧₊˚✧ <b>Bóng X</b> ✧˚₊‧
 <blockquote expandable>✧═════• ༺༻ •═════✧
    • /meme: Meme 😂
    • /girl: Video gái 👍
    • /anime: Video anime 🇯🇵
-   • /sms:spam số điện thoại lỏ 😭
+   • /sms:spam: số điện thoại lỏ 😭
    • /smsvip: lỏ ai muốn thì ib free 
+   • /reg : tạo acc ramdom
 ✧═════• ༺༻ •═════✧
 </blockquote>"""
 
