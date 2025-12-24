@@ -1,113 +1,82 @@
 import requests
-import asyncio
 import urllib.parse
 import json
+import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-# --- CẤU HÌNH MODULE (Cho menu Help của Bot) ---
-__MODULE__ = "MMO Tools"
-__HELP__ = """
-**Công cụ lấy mã 4MMO:**
+# Config Headers
+HEADERS = {
+    "accept": "*/*",
+    "accept-language": "vi",
+    "user-agent": "Mozilla/5.0"
+}
 
-• Cú pháp: `.j [link]`
-• Ví dụ: `.j https://trumtruyen.vn/`
-"""
-
-# --- CODE CHÍNH ---
-@Client.on_message(filters.command("j", prefixes=[".", "/", "!", "?"]) & filters.me)
-async def get_code_mmo(client: Client, message: Message):
-    """
-    Hàm xử lý lấy mã 4mmo chạy trên Userbot
-    """
-    # 1. Lấy link từ tin nhắn người dùng nhập
-    try:
-        if len(message.command) < 2:
-            await message.edit("⚠️ **Vui lòng nhập link!**\nVí dụ: `.j https://google.com`")
-            return
-        
-        web = message.command[1].strip()
-    except Exception:
-        await message.edit("⚠️ **Lỗi cú pháp.**")
-        return
-
-    # Xử lý URL: thêm dấu / vào cuối nếu thiếu
+@Client.on_message(filters.command("4mmo", prefixes=[".", "/", "!"]))
+async def get_4mmo_code(client: Client, message: Message):
+    # Lấy tham số từ tin nhắn (URL)
+    if len(message.command) < 2:
+        return await message.reply("⚠️ Vui lòng nhập link cần lấy mã.\nVí dụ: `.4mmo https://google.com/`")
+    
+    web = message.command[1].strip()
     if not web.endswith("/"):
         web += "/"
-
-    # 2. Thông báo trạng thái ban đầu
-    status_msg = await message.edit(f"🔄 **Đang kết nối 4MMO...**\n🌐 Target: `{web}`")
-
-    # Headers giả lập trình duyệt
-    headers = {
-        "accept": "*/*",
-        "accept-language": "vi",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
-    }
-
+    
+    # Gửi tin nhắn thông báo đang xử lý
+    msg = await message.reply("⏳ Đang kết nối tới 4mmo...")
+    
     try:
-        # BƯỚC 1: Kích hoạt traffic (Request mở đầu)
-        # Timeout 10s để tránh treo nếu mạng lag
-        requests.get("https://4mmo.net/cd?&t=1", headers=headers, timeout=10)
+        # Bước 1: Request khởi tạo
+        requests.get("https://4mmo.net/cd?&t=1", headers=HEADERS)
         
-        # Đợi 3s (dùng asyncio để không chặn luồng của bot)
+        # Đợi 3 giây (Dùng asyncio để không chặn luồng của Bot)
+        await msg.edit("⏳ Đang đợi server phản hồi (3s)...")
         await asyncio.sleep(3)
-
-        # Tạo URL kiểm tra mã
+        
+        # Bước 2: Tạo URL load traffic
         encoded_web = urllib.parse.quote(web, safe='')
-        url_check = f"https://4mmo.net/load_traffic?&r=https%3A%2F%2Fwww.google.com%2F&w={encoded_web}&t=1"
+        url2 = f"https://4mmo.net/load_traffic?&r=https%3A%2F%2Fwww.google.com%2F&w={encoded_web}&t=1"
         
         retry_count = 0
-        max_retries = 40  # Giới hạn khoảng 80s (40 lần * 2s)
-
-        # BƯỚC 2: Vòng lặp kiểm tra mã (Polling)
+        max_retries = 30 # Giới hạn vòng lặp để tránh treo bot mãi mãi
+        
         while retry_count < max_retries:
+            res2 = requests.get(url2, headers=HEADERS)
+            text2 = res2.text
+            
             try:
-                res = requests.get(url_check, headers=headers, timeout=10)
-                j = res.json() # Tự động parse JSON
-            except Exception:
-                # Nếu lỗi mạng hoặc lỗi JSON, đợi 2s rồi thử lại
+                j = json.loads(text2)
+            except json.JSONDecodeError:
                 await asyncio.sleep(2)
                 retry_count += 1
                 continue
 
-            # --- TRƯỜNG HỢP 1: LẤY MÃ THÀNH CÔNG ---
+            # Trường hợp 1: Lấy được mã thành công
             if j.get("status") == 1 and j.get("data", {}).get("html"):
                 code = j["data"]["html"]
-                await status_msg.edit(
-                    f"✅ **LẤY MÃ THÀNH CÔNG**\n"
-                    f"━━━━━━━━━━━━━━━━\n"
-                    f"🌐 Web: `{web}`\n"
-                    f"🔑 Code: `{code}`"
-                )
+                await msg.edit(f"✅ **Lấy mã thành công!**\n\n🌐 Web: `{web}`\n🔑 Code: `{code}`")
                 return
 
-            # --- TRƯỜNG HỢP 2: ĐANG CHỜ CLICK (Mã lỗi #5) ---
+            # Trường hợp 2: Đang chờ (#5)
             if j.get("status") == 0 and "#5" in j.get("message", ""):
-                # Cập nhật thông báo mỗi 5 lần thử (10s) để tránh spam edit limit
-                if retry_count % 5 == 0:
-                    await status_msg.edit(
-                        f"⏳ **Đang đợi click...**\n"
-                        f"🔗 Link: `{web}`\n"
-                        f"⏱ Thời gian chờ: {retry_count * 2}s"
-                    )
+                # Chỉ edit message mỗi 5 lần lặp để tránh spam API Telegram
+                if retry_count % 3 == 0:
+                    await msg.edit(f"⏳ Đang chờ mã... (Lần thử {retry_count})")
                 
                 await asyncio.sleep(2)
                 retry_count += 1
                 continue
             
-            # --- TRƯỜNG HỢP 3: SAI WEB (Mã lỗi #1) ---
+            # Trường hợp 3: Sai web (#1)
             if j.get("status") == 0 and "#1" in j.get("message", ""):
-                await status_msg.edit(f"❌ **Sai Web!**\nLink `{web}` không đúng yêu cầu.")
+                await msg.edit("❌ Sai web lấy mã, vui lòng kiểm tra lại link!")
                 return
 
-            # Các trường hợp khác: Đợi và thử lại
+            # Các trường hợp lỗi khác
             retry_count += 1
             await asyncio.sleep(2)
 
-        # BƯỚC 3: Xử lý khi hết thời gian chờ (Timeout)
-        await status_msg.edit(f"❌ **Hết thời gian!**\nKhông tìm thấy mã sau {max_retries * 2} giây.")
+        await msg.edit("❌ Quá thời gian chờ, không lấy được mã.")
 
     except Exception as e:
-        # Bắt lỗi hệ thống (ví dụ: mất mạng, lỗi code)
-        await status_msg.edit(f"❌ **Lỗi System:** `{str(e)}`")
+        await msg.edit(f"❌ Có lỗi xảy ra: {str(e)}")
