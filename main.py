@@ -90,10 +90,9 @@ register_handlers(bot)
 # from bot.r34 import register_r34
 # register_r34(bot)
 
-# Ảnh 18+, Pixxx (/pussy, /nude, /butt...)
-# from bot.pixxx import register_pixxx
-# register_pixxx(bot)
-
+# --- Thêm vào main.py ---
+from bot.mmo import register_mmo
+register_mmo(bot)
 # Ảnh Anime, Nekos (/anime, /imganime)
 # from bot.nekos import register_nekos
 # register_nekos(bot)
