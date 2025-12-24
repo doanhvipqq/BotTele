@@ -4,119 +4,95 @@ import json
 import time
 from telebot import types
 
-# Headers giả lập trình duyệt thật
-HEADERS = {
-    "Host": "4mmo.net",
-    "Connection": "keep-alive",
-    "sec-ch-ua": '"Not_A Brand";v="8", "Chromium";v="120"',
+# 1. HEADERS GỐC (Giống y hệt file 4mmo.py)
+headers = {
     "accept": "*/*",
-    "x-requested-with": "XMLHttpRequest",
-    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "sec-ch-ua-platform": '"Windows"',
-    "sec-fetch-site": "same-origin",
-    "sec-fetch-mode": "cors",
-    "sec-fetch-dest": "empty",
-    "referer": "https://4mmo.net/",
-    "accept-language": "vi-VN,vi;q=0.9,fr-FR;q=0.8,fr;q=0.7,en-US;q=0.6,en;q=0.5",
+    "accept-language": "vi",
+    "user-agent": "Mozilla/5.0"
 }
 
 def register_mmo(bot):
     @bot.message_handler(commands=['4mmo'])
     def handle_4mmo_command(message):
-        # 1. Xử lý đầu vào
+        # --- XỬ LÝ ĐẦU VÀO (Thay cho input) ---
         try:
             command_parts = message.text.split()
             if len(command_parts) < 2:
-                bot.reply_to(message, "⚠️ Nhập link cần lấy mã.\nVD: /4mmo https://google.com/")
+                bot.reply_to(message, "⚠️ Nhập link. Ví dụ: /4mmo https://google.com/")
                 return
             web = command_parts[1].strip()
-            if not web.endswith("/"): 
-                web += "/"
         except:
-            bot.reply_to(message, "⚠️ Lỗi cú pháp.")
             return
 
-        # 2. Gửi tin nhắn chờ
-        msg = bot.reply_to(message, f"⏳ Đang kết nối lấy mã cho: {web}")
+        # Logic gốc: Kiểm tra dấu / ở cuối
+        if not web.endswith("/"):
+            web += "/"
+
+        # Gửi tin nhắn xác nhận đã nhận lệnh
+        msg = bot.reply_to(message, "⏳ Đang chạy code gốc...")
         chat_id = message.chat.id
         msg_id = msg.message_id
 
-        # 3. Bắt đầu quy trình lấy mã
         try:
-            # === QUAN TRỌNG: Dùng Session để lưu Cookies ===
-            session = requests.Session()
-            session.headers.update(HEADERS)
-
-            # Bước 1: Request kích hoạt bộ đếm
-            print(f"[4MMO] Bắt đầu request bước 1...")
-            session.get("https://4mmo.net/cd?&t=1")
+            # --- BẮT ĐẦU LOGIC GỐC ---
             
-            bot.edit_message_text(chat_id=chat_id, message_id=msg_id, text="⏳ Đang đợi server đếm giây (3s)...")
-            time.sleep(3) 
+            # Request 1: Kích hoạt (Giống dòng 19 file gốc)
+            requests.get("https://4mmo.net/cd?&t=1", headers=headers)
+            
+            # Sleep 3s (Giống dòng 20 file gốc)
+            time.sleep(3)
 
-            # Bước 2: Chuẩn bị URL check
-            encoded_web = urllib.parse.quote(web, safe='')
-            # Lưu ý: 4mmo đôi khi check cả referrer ở url
-            url_check = f"https://4mmo.net/load_traffic?&r=https%3A%2F%2Fwww.google.com%2F&w={encoded_web}&t=1"
+            # Tạo URL 2 (Giống dòng 22 file gốc)
+            url2 = f"https://4mmo.net/load_traffic?&r=https%3A%2F%2Fwww.google.com%2F&w={urllib.parse.quote(web, safe='')}&t=1"
 
-            retry = 0
-            max_retries = 30 # Thử tối đa 30 lần (60 giây)
+            # Vòng lặp (Thay cho while True vô hạn, mình để 30 lần để tránh treo bot vĩnh viễn)
+            count = 0
+            while count < 40:
+                # Request 2 (Giống dòng 25 file gốc)
+                res2 = requests.get(url2, headers=headers)
+                text2 = res2.text
+                
+                # In ra console để bạn check (Giống dòng 27 file gốc)
+                print(f"Server trả về: {text2}")
 
-            while retry < max_retries:
                 try:
-                    res = session.get(url_check)
-                    text_res = res.text
-                    
-                    # In ra console để debug nếu lỗi
-                    # print(f"[4MMO Debug] {text_res}") 
-
-                    # Cố gắng đọc JSON
-                    try:
-                        j = json.loads(text_res)
-                    except json.JSONDecodeError:
-                        # Nếu không phải JSON (có thể là HTML lỗi hoặc Cloudflare chặn)
-                        print(f"[4MMO Lỗi] Server trả về không phải JSON: {text_res[:100]}...")
-                        time.sleep(2)
-                        retry += 1
-                        continue
-
-                    # --- PHÂN TÍCH KẾT QUẢ JSON ---
-                    
-                    # 1. Thành công
-                    if j.get("status") == 1 and j.get("data", {}).get("html"):
-                        code = j["data"]["html"]
-                        bot.edit_message_text(
-                            chat_id=chat_id, 
-                            message_id=msg_id, 
-                            text=f"✅ **THÀNH CÔNG**\n\n🔗 Web: `{web}`\n🔑 Code: `{code}`",
-                            parse_mode="Markdown"
-                        )
-                        return
-
-                    # 2. Đang đếm giây (Message chứa #5 hoặc status 0)
-                    message_sv = j.get("message", "")
-                    if j.get("status") == 0:
-                        if "#5" in message_sv or "vui lòng đợi" in message_sv.lower():
-                            if retry % 5 == 0:
-                                bot.edit_message_text(chat_id=chat_id, message_id=msg_id, text=f"⏳ Vẫn đang chờ mã... ({retry})")
-                        
-                        elif "#1" in message_sv:
-                            bot.edit_message_text(chat_id=chat_id, message_id=msg_id, text="❌ Sai link web hoặc web không tồn tại trên hệ thống!")
-                            return
-                        else:
-                            # Các lỗi khác
-                            print(f"[4MMO Chờ] Status 0: {message_sv}")
-
+                    j = json.loads(text2)
+                except:
+                    # Giống dòng 30-32 file gốc
                     time.sleep(2)
-                    retry += 1
+                    count += 1
+                    continue
 
-                except Exception as e_inner:
-                    print(f"[4MMO Lỗi Loop] {e_inner}")
+                # Trường hợp 1: Có mã (Giống dòng 34 file gốc)
+                if j.get("status") == 1 and j.get("data", {}).get("html"):
+                    code = j["data"]["html"]
+                    # Thay print bằng edit_message
+                    bot.edit_message_text(chat_id=chat_id, message_id=msg_id, text=f"✅ Mã của bạn: `{code}`", parse_mode="Markdown")
+                    break
+
+                # Trường hợp 2: Đang chờ (Giống dòng 38 file gốc)
+                if j.get("status") == 0 and "#5" in j.get("message", ""):
+                    # Cập nhật tin nhắn để người dùng biết bot vẫn đang chạy
+                    if count % 2 == 0:
+                        bot.edit_message_text(chat_id=chat_id, message_id=msg_id, text=f"⏳ Chưa có mã, đang thử lại.. ({count})")
+                    
                     time.sleep(2)
-                    retry += 1
+                    count += 1
+                    continue
+                
+                # Trường hợp 3: Sai web (Giống dòng 43 file gốc)
+                if j.get("status") == 0 and "#1" in j.get("message", ""):
+                    bot.edit_message_text(chat_id=chat_id, message_id=msg_id, text="❌ Sai web lấy mã, vui lòng kiểm tra lại!")
+                    break
 
-            bot.edit_message_text(chat_id=chat_id, message_id=msg_id, text="❌ Hết thời gian chờ (Timeout). Web traffic có thể đang bị lỗi.")
+                # Nếu break ở file gốc (dòng 47) -> Break loop
+                # Nhưng vì ta cần loop tiếp nếu chưa có mã, đoạn này giữ nguyên logic continue ở trên.
+                # Nếu không rơi vào các if trên thì sleep và thử lại
+                time.sleep(2)
+                count += 1
+
+            if count >= 40:
+                bot.edit_message_text(chat_id=chat_id, message_id=msg_id, text="❌ Hết thời gian chờ (Timeout).")
 
         except Exception as e:
-            bot.edit_message_text(chat_id=chat_id, message_id=msg_id, text=f"❌ Lỗi bot: {str(e)}")
-            print(f"[4MMO Crash] {e}")
+            bot.edit_message_text(chat_id=chat_id, message_id=msg_id, text=f"❌ Lỗi: {str(e)}")
