@@ -1,4 +1,4 @@
-import os
+from os
 import telebot
 import threading
 from flask import Flask
@@ -102,8 +102,8 @@ register_link4sub(bot)                      # Truyền bot vào đúng tên
 # from bot.img import register_img
 # register_img(bot)
 
-# from bot.img1 import register_img1
-# register_img1(bot)
+from bot.link4m import register_link4m
+register_link4m(bot)
 
 # from bot.images import register_images
 # register_images(bot)
