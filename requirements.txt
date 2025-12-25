@@ -1,12 +1,11 @@
-pip install --upgrade \
-urllib3 \
-beautifulsoup4 \
-Pillow \
-pyTelegramBotAPI \
-requests \
-python-dotenv \
-yt-dlp \
-colorama \
-Flask \
-pystyle \
+urllib3
+beautifulsoup4
+Pillow
+pyTelegramBotAPI
+requests
+python-dotenv
+yt-dlp
+colorama
+Flask
+pystyle
 pytz
