@@ -91,12 +91,14 @@ register_handlers(bot)
 # register_r34(bot)
 
 # --- Thêm vào main.py ---
-from bot.mmo import register_mmo
-register_mmo(bot)
+#from bot.mmo import register_mmo
+#register_mmo(bot)
 # Ảnh Anime, Nekos (/anime, /imganime)
 # from bot.nekos import register_nekos
 # register_nekos(bot)
-
+# Sửa trong main.py
+from bot.link4sub import register_link4sub  # Import file link4sub
+register_link4sub(bot)                      # Truyền bot vào đúng tên
 # Các module ảnh khác
 # from bot.img import register_img
 # register_img(bot)
