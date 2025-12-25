@@ -9,3 +9,4 @@ colorama
 Flask
 pystyle
 pytz
+aiohttp
