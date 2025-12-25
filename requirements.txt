@@ -1,10 +1,12 @@
-bs4
-pillow
-pyTelegramBotAPI
-requests
-python-dotenv
-yt_dlp
-colorama
-flask
-pystyle
+pip install --upgrade \
+urllib3 \
+beautifulsoup4 \
+Pillow \
+pyTelegramBotAPI \
+requests \
+python-dotenv \
+yt-dlp \
+colorama \
+Flask \
+pystyle \
 pytz
