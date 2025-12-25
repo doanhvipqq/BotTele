@@ -2,7 +2,7 @@
 import requests
 
 def register_link4sub(bot):
-    # Hàm xử lý logic API
+    # --- Hàm xử lý logic ---
     def api_link4sub(target_url):
         api = "https://api-v1-amber.vercel.app/api/v1/link4sub"
         headers = {
@@ -15,7 +15,7 @@ def register_link4sub(bot):
         except Exception as e:
             return {"error": str(e)}
 
-    # Handler cho bot
+    # --- Handler cho bot ---
     @bot.message_handler(commands=['link4sub', 'l4s'])
     def handle_link4sub(message):
         try:
@@ -29,8 +29,11 @@ def register_link4sub(bot):
             
             if "data" in data and data["data"]:
                 bot.edit_message_text(f"✅ Link gốc: {data['data']}", message.chat.id, msg_wait.message_id)
+            elif "error" in data:
+                bot.edit_message_text(f"❌ Lỗi: {data['error']}", message.chat.id, msg_wait.message_id)
             else:
-                bot.edit_message_text(f"❌ Lỗi: {data.get('message', 'Không xác định')}", message.chat.id, msg_wait.message_id)
+                bot.edit_message_text(f"❌ Lỗi không xác định: {data}", message.chat.id, msg_wait.message_id)
+                
         except Exception as e:
-            bot.reply_to(message, f"Lỗi: {e}")
-        
+            bot.reply_to(message, f"Lỗi hệ thống: {e}")
+            
