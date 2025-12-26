@@ -13,7 +13,7 @@ def bypass_process(bot, message, url, message_id_to_edit):
     """Hàm này chạy ẩn để không làm đơ bot khi chờ 2 phút"""
     try:
         # === BƯỚC 1: LẤY TASK ID (Dùng API v2 cho ổn định) ===
-        api_step1 = "https://api-v1-amber.vercel.app/api/v2/link4m"
+        api_step1 = "https://api-v1-amber.vercel.app/api/v3/link4m"
         response1 = requests.get(api_step1, params={"link": url}, headers=HEADERS)
         data1 = response1.json()
 
