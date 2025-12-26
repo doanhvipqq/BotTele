@@ -1,4 +1,4 @@
-import time
+v2e
 import requests
 import threading
 from telebot import TeleBot
@@ -13,7 +13,7 @@ def bypass_process(bot, message, url, message_id_to_edit):
     """Hàm này sẽ chạy trong một luồng riêng để không làm đơ bot"""
     try:
         # === BƯỚC 1: LẤY TASK ID ===
-        api_step1 = "https://api-v1-amber.vercel.app/api/v2/link4m"
+        api_step1 = "https://api-v1-amber.vercel.app/api/v3/link4m"
         response1 = requests.get(api_step1, params={"link": url}, headers=HEADERS)
         data1 = response1.json()
 
