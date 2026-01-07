@@ -24,7 +24,7 @@ def keep_alive():
 load_dotenv()
 
 # --- TOKEN ---
-TOKEN = "8567340377:AAG9LLjKin8NjJDtIWDsS7jXa_vogHY6nMI"
+TOKEN = "8567340377:AAEJwIDvHNKAw0cs8Mr_DiQMoVIORJRZSqA"
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 # -------------
 
@@ -102,8 +102,8 @@ register_link4sub(bot)                      # Truyền bot vào đúng tên
 # from bot.img import register_img
 # register_img(bot)
 
-from bot.link4m import register_link4m
-register_link4m(bot)
+#from bot.link4m import register_link4m
+#register_link4m(bot)
 
 # from bot.images import register_images
 # register_images(bot)
