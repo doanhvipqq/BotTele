@@ -21,9 +21,8 @@ caption = """ ‎‧₊˚✧ <b>Bóng x</b> ✧˚₊‧
    • /anime: Video anime 🇯🇵
    • /sms:spam: số điện thoại lỏ 😭
    • /smsvip: lỏ ai muốn thì ib free 
-   • /reg : tạo acc ramdom
+   • /reg : tạo acc ramdom 🙉
    • /link4sub : link ra 👑
-   • /l4m : link ra 👾
 ✧═════• ༺༻ •═════✧
 </blockquote>"""
 
