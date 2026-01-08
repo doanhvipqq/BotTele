@@ -47,6 +47,16 @@ def register_admin(bot):
         target_user = message.reply_to_message.from_user
         
         try:
+            # Kiểm tra xem user có phải là admin không
+            member = bot.get_chat_member(message.chat.id, target_user.id)
+            if member.status in ['creator', 'administrator']:
+                return bot.reply_to(
+                    message,
+                    f"❌ Không thể kick <b>{target_user.first_name}</b>!\n"
+                    f"⚠️ User này là <b>Admin</b> của nhóm.",
+                    parse_mode="HTML"
+                )
+            
             # Ban vĩnh viễn - KHÔNG cho vào lại nhóm
             bot.ban_chat_member(message.chat.id, target_user.id)
             
@@ -59,6 +69,7 @@ def register_admin(bot):
             )
         except Exception as e:
             bot.reply_to(message, f"❌ Lỗi: {e}")
+
 
     
     
@@ -104,6 +115,16 @@ def register_admin(bot):
         target_user = message.reply_to_message.from_user
         
         try:
+            # Kiểm tra xem user có phải là admin không
+            member = bot.get_chat_member(message.chat.id, target_user.id)
+            if member.status in ['creator', 'administrator']:
+                return bot.reply_to(
+                    message,
+                    f"❌ Không thể cấm chat <b>{target_user.first_name}</b>!\n"
+                    f"⚠️ User này là <b>Admin</b> của nhóm.",
+                    parse_mode="HTML"
+                )
+            
             # Tính thời điểm unban
             until_date = datetime.now() + timedelta(seconds=duration_seconds)
             
@@ -146,6 +167,7 @@ def register_admin(bot):
             )
         except Exception as e:
             bot.reply_to(message, f"❌ Lỗi: {e}")
+
     
     
     @bot.message_handler(commands=['unban', 'unmute'])
