@@ -39,6 +39,7 @@ def send_random_media(bot, message, file_path, media_type):
     bot.reply_to(message, ERROR_MSG)
 
 
+
 COMMANDS = {
     "anime": {
         "path": "bot/url/anime.txt",
@@ -51,32 +52,9 @@ COMMANDS = {
     "imganime": {
         "path": "bot/url/imganime.txt",
         "type": "photo"
-    },
-    "butt": {
-        "path": "bot/url/butt.txt",
-        "type": "photo"
-    },
-    # "cosplay": {
-    #     "path": "bot/url/cosplay.txt",
-    #     "type": "photo"
-    # },
-    "pussy": {
-        "path": "bot/url/pussy.txt",
-        "type": "photo"
-    },
-    "nude": {
-        "path": "bot/url/nude.txt",
-        "type": "photo"
-    },
-    "girlsexy": {
-        "path": "bot/url/girlsexy.txt",
-        "type": "photo"
-    },
-    "squeeze": {
-        "path": "bot/url/squeeze.txt",
-        "type": "animation"
     }
 }
+
 
 def create_handler(bot, path, mtype):
     def handler(message):

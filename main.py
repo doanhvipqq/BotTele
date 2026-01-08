@@ -75,6 +75,22 @@ register_spamsms(bot)
 from bot.sourceweb import register_sourceweb
 register_sourceweb(bot)
 
+from bot.nct import register_nct
+register_nct(bot)
+
+from bot.thumb import register_thumb
+register_thumb(bot)
+
+from bot.images import register_images
+register_images(bot)
+
+from bot.reaction import register_reaction
+register_reaction(bot)
+
+from bot.admin import register_admin
+register_admin(bot)
+
+
 
 # --- CÁC MODULE ĐÃ BỊ TẮT (THEO YÊU CẦU CỦA BẠN) ---
 # Đã thêm dấu # ở đầu dòng để vô hiệu hóa lệnh
@@ -99,17 +115,15 @@ register_link4sub(bot)                      # Truyền bot vào đúng tên
 # register_nekos(bot)
 
 # Các module ảnh khác
-# from bot.img import register_img
+# from bot.img import register_img (ĐÃ XÓA - NSFW)
 # register_img(bot)
 
 #from bot.link4m import register_link4m
 #register_link4m(bot)
 
-# from bot.images import register_images
-# register_images(bot)
+# Module images đã được thêm vào phía trên (dòng ~89)
 
-# from bot.thumb import register_thumb
-# register_thumb(bot)
+# Module thumb đã được thêm vào phía trên (dòng ~93)
 
 # Nội dung người lớn/Lầu xanh (/lx, /lxmanga)
 # from bot.lx import register_lx
@@ -118,8 +132,7 @@ register_link4sub(bot)                      # Truyền bot vào đúng tên
 # from bot.lxmanga import register_lxmanga
 # register_lxmanga(bot)
 
-# from bot.nct import register_nct
-# register_nct(bot)
+# Module nct đã được thêm vào phía trên (dòng ~81)
 
 # from bot.funlink import register_funlink
 # register_funlink(bot)
