@@ -1,4 +1,4 @@
-#!/bin/python3
+﻿#!/bin/python3
 try:
     import argparse
     import ast
@@ -38,7 +38,13 @@ try:
         return f' {Col.Symbol(symbol, col1, dark)} {col2}{text}{Col.reset}'
     hcm_tz = pytz.timezone('Asia/Ho_Chi_Minh')
     current_time_hcm = datetime.now(hcm_tz)
-    check_pyver = lambda a='.'.join(__import__('sys').version.split(' ')[0].split('.')[:-1]): f'''\nif ".".join(__HoangAnh3101__[{Pycloak().encode('__import__')}]({Pycloak().encode('sys')}).version.split(" ")[0].split(".")[:-1]) != "{a}":\n    print("\\n >> Your Python is {'.'.join(__import__('sys').version.split(' ')[0].split('.')[:-1])}\\n You need to run this code in Python {a}\\n Using Python other than {a} won't work!\\n")\n    input('Press Enter to Exit! ')\n    exit(-1)\n[print(c, end="", flush=True) or __HoangAnh3101__[{Pycloak().encode('__import__')}]({Pycloak().encode('time')}).sleep(0.01) for c in ">> Loading... <<"]\n'''
+    check_pyver = lambda a='.'.join(__import__('sys').version.split(' ')[0].split('.')[:-1]): f'''
+if ".".join(__bongx__[{Pycloak().encode('__import__')}]({Pycloak().encode('sys')}).version.split(" ")[0].split(".")[:-1]) != "{a}":
+    print("\n >> Your Python is {'.'.join(__import__('sys').version.split(' ')[0].split('.')[:-1])}\n You need to run this code in Python {a}\n Using Python other than {a} won't work!\n")
+    input('Press Enter to Exit! ')
+    exit(-1)
+[print(c, end="", flush=True) or __bongx__[{Pycloak().encode('__import__')}]({Pycloak().encode('time')}).sleep(0.01) for c in ">> Loading... <<"]
+'''
     anti = '\n'
     global pro
     global anti_debug
@@ -338,20 +344,20 @@ try:
 
                 def __reduce__(self):
                     return (exec, (cc,))
-            return f'__HoangAnh3101__[{Pycloak().encode('__import__')}]({Pycloak().encode('_pickle')}).loads(' + str(pickle.dumps(c())) + ')'
+            return f'__bongx__[{Pycloak().encode('__import__')}]({Pycloak().encode('_pickle')}).loads(' + str(pickle.dumps(c())) + ')'
 
         def ll(code: str) -> str:
             com = marshal.dumps(compile(code, '<NguyenXuanTrinh>', 'exec'))
             compressed = bz2.compress(zlib.compress(com))
             encoded = base64.b85encode(compressed)
-            return f"exec(__HoangAnh3101__[{Pycloak().encode('__import__')}]({Pycloak().encode('marshal')}).loads(__HoangAnh3101__['__import__']({Pycloak().encode('zlib')}).decompress(__HoangAnh3101__['__import__']({Pycloak().encode('bz2')}).decompress(__HoangAnh3101__['__import__']({Pycloak().encode('base64')}).b85decode({repr(encoded)}.decode())))), globals())"
+            return f"exec(__bongx__[{Pycloak().encode('__import__')}]({Pycloak().encode('marshal')}).loads(__bongx__['__import__']({Pycloak().encode('zlib')}).decompress(__bongx__['__import__']({Pycloak().encode('bz2')}).decompress(__bongx__['__import__']({Pycloak().encode('base64')}).b85decode({repr(encoded)}.decode())))), globals())"
 
         def Alt(text: str, evalCode: bool=True) -> str:
             formated = '+'.join((f'chr({char})' for char in [ord(char_) for char_ in text]))
             return f'eval(eval({formated!r}), globals())' if evalCode else f'eval({formated!r})'
         exceptionCode = "\n    while True:\n        try:\n            print('Fuck You')\n        except KeyboardInterrupt:\n            continue\n        except:\n            continue"
-        botLink = '@BotMainByHoangAnh_Bot'
-        infos = {'__OBFBy__': 'HoangAnh - @HgAnh7 (Telegram)', '__OBFBot__': botLink}
+        botLink = '@bongxtonghop_bot'
+        infos = {'__OBFBy__': '@doanhvip12', '__OBFBot__': botLink}
         DitMeMayDungCoDecKey = random.randint(0, 10000)
 
         def DitMeMayDungCoDec() -> str:
@@ -361,10 +367,10 @@ try:
             code = AnhOiDungCoDecObj.code['bytes']
             obj.executed = True
             return (key * 8 / 1.5, code)
-        comment = '__HoangAnh3101__'
+        comment = '__bongx__'
         checkInfos = ' and '.join((f'{key} == "{value}"' for key, value in infos.items()))
-        AnhOiDungCoDecClass = "\nclass AnhOiDungCoDec():\n    def __init__(self, code: str, layersFunction: bytes, module, _module_, globals_, backend: bytes = b'') -> None:\n        self.__module = module\n        self.___module = _module_\n        self.layersFunction = layersFunction\n        self.__globals = globals_\n        self.code = {'bytes': code, 'str': str(code)}\n        self.__backend = backend\n\n    def __tunnel(self) -> DitMeMayDungCoDec:\n        return DitMeMayDungCoDec(\n            self.__backend,\n            DitMeMayDungCoDecKEY,\n            __module = self.__module,\n            ___module = self.___module,\n            __globals = self.__globals,\n            AnhOiDungCoDec = self\n        )\n\n    def DitMeMayDecDi(self) -> None:\n        decoder = self.__getobject__()\n        gate = self.__tunnel().ConCac()\n        exec(\n            eval(\n                MARSHALMODULE.loads(decoder),\n                globals().update({\n                    '__selfObject__': self,\n                    '__module': self.__module,\n                    '___module': self.___module,\n                    '__sr_m': MARSHALMODULE,\n                    '__globals': self.__globals,\n                    'gate': gate\n                })\n            ),\n            self.__globals\n        )\n\n    def __getobject__(self) -> object:\n        func = self.layersFunction\n        return self.__module.b64decode(func)\n"[1:-1].replace('MARSHALMODULE', Alt('__HoangAnh3101__["__import__"]("marshal")')).replace('DitMeMayDungCoDecKEY', str(DitMeMayDungCoDecKey))
-        DitMeMayDungCoDecClass = "\nclass DitMeMayDungCoDec():\n    def __init__(self, way: bytes, key: int, **ext) -> None:\n        self.way = way\n        self.key = key\n        self.module__ = ext.get('__module', None)\n        self.__globals = ext.get('__globals', None)\n        self.__module = ext.get('__module', None)\n        self.__AnhOiDungCoDec = ext.get('AnhOiDungCoDec', None)\n\n    def ConCac(self):\n        exec(\n            MARSHALMODULE.loads(self.module__.b16decode(self.way)),\n            globals().update({\n                '__selfObject__': self,\n                '__key__': self.key,\n                '__module': self.module__,\n                '__globals': self.__globals,\n                '__AnhOiDungCoDecObject__': self.__AnhOiDungCoDec\n            })\n        )\n        return self\n"[1:-1].replace('MARSHALMODULE', Alt('__HoangAnh3101__["__import__"]("marshal")'))
+        AnhOiDungCoDecClass = "\nclass AnhOiDungCoDec():\n    def __init__(self, code: str, layersFunction: bytes, module, _module_, globals_, backend: bytes = b'') -> None:\n        self.__module = module\n        self.___module = _module_\n        self.layersFunction = layersFunction\n        self.__globals = globals_\n        self.code = {'bytes': code, 'str': str(code)}\n        self.__backend = backend\n\n    def __tunnel(self) -> DitMeMayDungCoDec:\n        return DitMeMayDungCoDec(\n            self.__backend,\n            DitMeMayDungCoDecKEY,\n            __module = self.__module,\n            ___module = self.___module,\n            __globals = self.__globals,\n            AnhOiDungCoDec = self\n        )\n\n    def DitMeMayDecDi(self) -> None:\n        decoder = self.__getobject__()\n        gate = self.__tunnel().ConCac()\n        exec(\n            eval(\n                MARSHALMODULE.loads(decoder),\n                globals().update({\n                    '__selfObject__': self,\n                    '__module': self.__module,\n                    '___module': self.___module,\n                    '__sr_m': MARSHALMODULE,\n                    '__globals': self.__globals,\n                    'gate': gate\n                })\n            ),\n            self.__globals\n        )\n\n    def __getobject__(self) -> object:\n        func = self.layersFunction\n        return self.__module.b64decode(func)\n"[1:-1].replace('MARSHALMODULE', Alt('__bongx__["__import__"]("marshal")')).replace('DitMeMayDungCoDecKEY', str(DitMeMayDungCoDecKey))
+        DitMeMayDungCoDecClass = "\nclass DitMeMayDungCoDec():\n    def __init__(self, way: bytes, key: int, **ext) -> None:\n        self.way = way\n        self.key = key\n        self.module__ = ext.get('__module', None)\n        self.__globals = ext.get('__globals', None)\n        self.__module = ext.get('__module', None)\n        self.__AnhOiDungCoDec = ext.get('AnhOiDungCoDec', None)\n\n    def ConCac(self):\n        exec(\n            MARSHALMODULE.loads(self.module__.b16decode(self.way)),\n            globals().update({\n                '__selfObject__': self,\n                '__key__': self.key,\n                '__module': self.module__,\n                '__globals': self.__globals,\n                '__AnhOiDungCoDecObject__': self.__AnhOiDungCoDec\n            })\n        )\n        return self\n"[1:-1].replace('MARSHALMODULE', Alt('__bongx__["__import__"]("marshal")'))
 
         def RemoveLayers() -> str:
             if not globals().get('gate'):
@@ -394,11 +400,11 @@ try:
             code__ = base64.b85encode(code__)
             done = current_time_hcm.strftime('%Y-%m-%d %H:%M:%S')
             if mode == 1:
-                mode_ = 'AnhTraiSayHi'
+                mode_ = 'Bóng X 1'
             else:
-                mode_ = 'AnhTraiSayGex'
+                mode_ = 'Bóng X 2'
             protect_ = type_run + ' - ' + mode_
-            code_ = f'\n{infos_}\n__OBFType__ = "{protect_}"\n__Comment__ = "Edit Your Comment Here!"\n__OBFTime__ = "{done}"\nglobal {Compile.comment}\n__HoangAnh3101__ = vars(globals()[{Pycloak().encode('__builtins__')}])\n{check_pyver()}\nVARS\n{Compile.DitMeMayDungCoDecClass}\n{Compile.AnhOiDungCoDecClass}\n\nAnhOiDungCoDec({code__!r},\n            {base64.b64encode(Compile.serializer.dumps(Compile.RemoveLayers.__code__))!r},\n            {Compile.Alt('__HoangAnh3101__["__import__"]("base64")')},\n            {Compile.Alt('__HoangAnh3101__["__import__"]("zlib")')}, globals(),\n            {base64.b16encode(Compile.serializer.dumps(Compile.DitMeMayDungCoDec.__code__))!r}\n).DitMeMayDecDi()\n'.replace('VARS', Compile.trash(Compile.ll(pro)))[1:-1]
+            code_ = f'\n{infos_}\n__OBFType__ = "{protect_}"\n__Comment__ = "Edit Your Comment Here!"\n__OBFTime__ = "{done}"\nglobal {Compile.comment}\n__bongx__ = vars(globals()[{Pycloak().encode('__builtins__')}])\n{check_pyver()}\nVARS\n{Compile.DitMeMayDungCoDecClass}\n{Compile.AnhOiDungCoDecClass}\n\nAnhOiDungCoDec({code__!r},\n            {base64.b64encode(Compile.serializer.dumps(Compile.RemoveLayers.__code__))!r},\n            {Compile.Alt('__bongx__["__import__"]("base64")')},\n            {Compile.Alt('__bongx__["__import__"]("zlib")')}, globals(),\n            {base64.b16encode(Compile.serializer.dumps(Compile.DitMeMayDungCoDec.__code__))!r}\n).DitMeMayDecDi()\n'.replace('VARS', Compile.trash(Compile.ll(pro)))[1:-1]
             return code_
 
     class Methods:
@@ -409,7 +415,7 @@ try:
             tree = ast.parse(code)
             for node in ast.walk(tree):
                 if isinstance(node, ast.Name) and node.id in target_builtins:
-                    node.id = f'__HoangAnh3101__["{str(node.id)}"]'
+                    node.id = f'__bongx__["{str(node.id)}"]'
             return ast.unparse(tree)
 
         def last_obf_builtins(code: str) -> str:
@@ -418,7 +424,7 @@ try:
             tree = ast.parse(code)
             for node in ast.walk(tree):
                 if isinstance(node, ast.Name) and node.id in target_builtins:
-                    node.id = f'__HoangAnh3101__[{Pycloak().encode(str(node.id))}]'
+                    node.id = f'__bongx__[{Pycloak().encode(str(node.id))}]'
             return ast.unparse(tree)
 
         def obf_vars(code: str) -> str:
@@ -1199,7 +1205,7 @@ try:
             operations = [Methods.obf_vars, Ast_obf().spam, Ast_obf().spam, Methods.obf_builtins, Methods.obf_strings(args.mode, True), Compile.Obfuscate, Methods.last_obf_builtins]
         else:
             operations = [Ast_obf().spam, Ast_obf().spam, Methods.obf_builtins, Methods.obf_strings(args.mode, True), Compile.Obfuscate, Methods.last_obf_builtins]
-        hacker = f'__HoangAnh3101__ = vars(globals()[{Pycloak().encode('__builtins__')}])\n' + pro
+        hacker = f'__bongx__ = vars(globals()[{Pycloak().encode('__builtins__')}])\n' + pro
         st = time.time()
         for operation in operations:
             code = operation(code)
@@ -1213,3 +1219,5 @@ except KeyboardInterrupt:
     exit()
 except Exception as TrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTrai:
     print(TrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTraiTrinhDepTrai)
+
+
