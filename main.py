@@ -26,6 +26,42 @@ load_dotenv()
 # --- TOKEN ---
 TOKEN = "8567340377:AAEJwIDvHNKAw0cs8Mr_DiQMoVIORJRZSqA"
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
+
+# --- THIẾT LẬP GỢI Ý LỆNH (BOTCOMMAND) ---
+from telebot.types import BotCommand
+
+commands = [
+    BotCommand("help", "📋 Xem danh sách lệnh"),
+    BotCommand("time", "🕐 Xem giờ hiện tại"),
+    BotCommand("encode", "🔐 Mã hóa/giải mã"),
+    BotCommand("share", "📤 Chia sẻ file"),
+    BotCommand("send", "💬 Gửi tin nhắn"),
+    BotCommand("in4", "ℹ️ Thông tin user/group"),
+    BotCommand("tiktok", "📱 Tải video TikTok"),
+    BotCommand("scl", "🎧 Tải SoundCloud"),
+    BotCommand("search", "🔍 Tìm kiếm Google"),
+    BotCommand("meme", "😂 Random meme"),
+    BotCommand("proxy", "🌐 Lấy proxy"),
+    BotCommand("github", "💻 Thông tin GitHub"),
+    BotCommand("spamsms", "📲 SMS tools"),
+    BotCommand("add", "➕ Thêm VIP (Admin)"),
+    BotCommand("smsvip", "💎 SMS VIP (Chỉ VIP)"),
+    BotCommand("sourceweb", "🌍 Lấy source code website"),
+    BotCommand("link4sub", "🔗 Link4Sub tools"),
+    BotCommand("reg", "📝 Đăng ký tools"),
+    BotCommand("nct", "🎵 Tải nhạc NhạcCủaTui"),
+    BotCommand("thumb", "🖼️ Thêm thumbnail cho file"),
+    BotCommand("images", "📷 Lấy URL ảnh từ web"),
+    BotCommand("anime", "🎬 Random video anime"),
+    BotCommand("girl", "👧 Random video girl"),
+    BotCommand("imganime", "🖼️ Random ảnh anime"),
+    # Lệnh admin (chỉ admin mới dùng được)
+    BotCommand("kick", "🚫 Kick và ban vĩnh viễn (Admin)"),
+    BotCommand("ban", "🔇 Cấm chat có thời hạn (Admin)"),
+    BotCommand("unban", "✅ Bỏ cấm (Admin)"),
+]
+
+bot.set_my_commands(commands)
 # -------------
 
 # --- CÁC MODULE GIỮ LẠI (TIỆN ÍCH, SYSTEM) ---
