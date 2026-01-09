@@ -19,8 +19,10 @@ try:
     from pystyle import Colors, Colorate, Col, System, Add
     from typing import Set, Dict, List, Tuple, Any, Union
     import sys
+    import sys
     System.Clear()
-    print('>> Loading...', end='\r')
+    # Suppress banner to avoid encoding errors in Windows
+    # print('>> Loading...', end='\r')
     VIP_ANTI = '\nif len(globals()) != 100:\n    globals()["_HOOK_CAI_LON_"]=[[[[[((\'HoangAnh3101\') * 987654321)] * 987654321] * 987654321] * 987654321] * 987654321] * 2123000000 * 2123000000\n    exit()\nif __import__(\'os\').environ.get("HTTP_TOOLKIT_ACTIVE") == "true":\n    globals()["_HOOK_CAI_LON_"]=[[[[[((\'HoangAnh3101\') * 987654321)] * 987654321] * 987654321] * 987654321] * 987654321] * 2123000000 * 2123000000\n    exit()\nfor ev in ["SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS", "PATH"]:\n    if ev in __import__(\'os\').environ and "httptoolkit" in __import__(\'os\').environ[ev].lower():\n        globals()["_HOOK_CAI_LON_"]=[[[[[((\'HoangAnh3101\') * 987654321)] * 987654321] * 987654321] * 987654321] * 987654321] * 2123000000 * 2123000000\n        exit()\nfor px in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:\n    if px in __import__(\'os\').environ and "127.0.0.1:8000" in __import__(\'os\').environ[px]:\n        globals()["_HOOK_CAI_LON_"]=[[[[[((\'HoangAnh3101\') * 987654321)] * 987654321] * 987654321] * 987654321] * 987654321] * 2123000000 * 2123000000\n        exit()\ntry:\n    h = requests.get("https://example.com", timeout=5).headers\n    if any("HTTP-Toolkit" in h.get(x, "") for x in ["Server", "Via", "X-Powered-By"]):\n        globals()["_HOOK_CAI_LON_"]=[[[[[((\'HoangAnh3101\') * 987654321)] * 987654321] * 987654321] * 987654321] * 987654321] * 2123000000 * 2123000000\n        exit()\nexcept:\n    pass\n'
     dark = Col.white
     light = Col.light_gray
@@ -410,7 +412,7 @@ if ".".join(__bongx__[{Pycloak().encode('__import__')}]({Pycloak().encode('sys')
     class Methods:
 
         def obf_builtins(code: str) -> str:
-            Logging.event('Obfuscate builtins lần đầu')
+            Logging.event('Obfuscate builtins first pass')
             target_builtins = ['chr', 'ord', 'hex', 'bin', 'oct', 'bytes', 'bytearray', 'str', 'int', 'float', 'globals', 'locals', 'vars', 'exec', 'eval', 'getattr', 'setattr', 'delattr', 'dir', '__import__', 'compile', 'map', 'filter', 'zip', 'hash', 'repr', 'format']
             tree = ast.parse(code)
             for node in ast.walk(tree):
@@ -419,7 +421,7 @@ if ".".join(__bongx__[{Pycloak().encode('__import__')}]({Pycloak().encode('sys')
             return ast.unparse(tree)
 
         def last_obf_builtins(code: str) -> str:
-            Logging.event('Obfuscate builtins lần cuối')
+            Logging.event('Obfuscate builtins final pass')
             target_builtins = {'print', 'input', 'exec', 'eval'}
             tree = ast.parse(code)
             for node in ast.walk(tree):
@@ -1174,7 +1176,8 @@ if ".".join(__bongx__[{Pycloak().encode('__import__')}]({Pycloak().encode('sys')
         global banner
         print(' ' * len('>> Loading...'), end='\r')
         banner = Add.Add(banner, sakura, center=True)
-        print(Colorate.Diagonal(Colors.DynamicMIX((sakura_, dark)), banner))
+        # Suppress banner to avoid encoding issues
+        # print(Colorate.Diagonal(Colors.DynamicMIX((sakura_, dark)), banner))
         args = ParseArgs().args
         print(' ' + '- ' * 30)
         if not args.file:
