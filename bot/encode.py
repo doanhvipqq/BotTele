@@ -47,13 +47,15 @@ def register_encode(bot):
 			# Gọi encode.py
 			output_file = f"obf-{file_name}"
 			result = subprocess.run(
-				['python3', './bot/encode/Sakura.py', '-f', input_file, '-o', output_file, '-m', mode],
+				['python', './bot/encode/Sakura.py', '-f', input_file, '-o', output_file, '-m', mode],
 				capture_output=True,
-				text=True
+				text=True,
+				encoding='utf-8',
+				errors='ignore'
 			)
 
 			if result.returncode != 0:
-				bot.reply_to(message, f"Lỗi encode:\n{result.stderr}")
+				bot.reply_to(message, f"❌ Lỗi encode:\n{result.stderr}")
 				bot.delete_message(message.chat.id, status_msg.message_id)
 				os.remove(input_file)
 				return
@@ -64,7 +66,14 @@ def register_encode(bot):
 				timeout -= 0.5
 
 			if not os.path.exists(output_file):
-				bot.reply_to(message, "Lỗi: Không thể encode file này!")
+				error_msg = f"❌ Lỗi: Không thể encode file này!\n\n"
+				error_msg += f"📝 Return code: {result.returncode}\n"
+				if result.stdout:
+					error_msg += f"📤 Output:\n{result.stdout[:500]}\n"
+				if result.stderr:
+					error_msg += f"⚠️ Stderr:\n{result.stderr[:500]}\n"
+				bot.reply_to(message, error_msg)
+				bot.delete_message(message.chat.id, status_msg.message_id)
 				os.remove(input_file)
 				return
 
