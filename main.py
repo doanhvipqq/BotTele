@@ -40,6 +40,7 @@ commands = [
     BotCommand("tiktok", "📱 Tải video TikTok"),
     BotCommand("scl", "🎧 Tải SoundCloud"),
     BotCommand("search", "🔍 Tìm kiếm Google"),
+    BotCommand("translate", "🇨🇳➡️🇻🇳 Dịch Trung-Việt"),
     BotCommand("meme", "😂 Random meme"),
     BotCommand("proxy", "🌐 Lấy proxy"),
     BotCommand("github", "💻 Thông tin GitHub"),
@@ -48,7 +49,7 @@ commands = [
     BotCommand("smsvip", "💎 SMS VIP (Chỉ VIP)"),
     BotCommand("sourceweb", "🌍 Lấy source code website"),
     BotCommand("link4sub", "🔗 Link4Sub tools"),
-    BotCommand("reg", "📝 Đăng ký tools"),
+    BotCommand("reg", "📝 Ramdon acc liên quân"),
     BotCommand("nct", "🎵 Tải nhạc NhạcCủaTui"),
     BotCommand("thumb", "🖼️ Thêm thumbnail cho file"),
     BotCommand("images", "📷 Lấy URL ảnh từ web"),
@@ -101,6 +102,9 @@ register_github(bot)
 
 from bot.search import register_search
 register_search(bot)
+
+from bot.translate import register_translate
+register_translate(bot)
 
 from bot.meme import register_meme
 register_meme(bot)

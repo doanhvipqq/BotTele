@@ -12,6 +12,7 @@ caption = """ ‎‧₊˚✧ <b>Bóng X Bot</b> ✧˚₊‧
 ├ /scl - Tải nhạc SoundCloud
 ├ /nct - Tải nhạc NhạcCủaTui
 ├ /search - Tìm kiếm Google
+├ /translate - Dịch Trung-Việt 🇨🇳➡️🇻🇳
 ├ /meme - Random meme
 ├ /proxy - Lấy proxy
 ├ /github - Thông tin GitHub
