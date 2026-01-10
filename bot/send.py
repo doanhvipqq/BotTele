@@ -53,17 +53,17 @@ def register_send(bot):
             try:
                 video_file_path = download_video(url, temp_dir)
                 if video_file_path:
-                    file_size = os.path.getsize(video_file_path)
-                    if file_size <= 50 * 1024 * 1024: # 50MB
-                        with open(video_file_path, 'rb') as video_file:
-                            bot.send_video(message.chat.id, video_file, reply_to_message_id=message.message_id)
-                        bot.delete_message(msg.chat.id, msg.message_id)
-                    else:
-                        
-                        bot.edit_message_text(
-                            f"🚫 File quá lớn (>50MB), không thể gửi qua Telegram.",
-                            msg.chat.id, msg.message_id
-                        )
+                    # Không giới hạn kích thước file nữa
+                    # file_size = os.path.getsize(video_file_path)
+                    # if file_size <= 50 * 1024 * 1024: # 50MB
+                    with open(video_file_path, 'rb') as video_file:
+                        bot.send_video(message.chat.id, video_file, reply_to_message_id=message.message_id)
+                    bot.delete_message(msg.chat.id, msg.message_id)
+                    # else:
+                    #     bot.edit_message_text(
+                    #         f"🚫 File quá lớn (>50MB), không thể gửi qua Telegram.",
+                    #         msg.chat.id, msg.message_id
+                    #     )
                 else:
                     bot.edit_message_text(
                         "❌ Không thể tải video. Vui lòng kiểm tra lại URL.",

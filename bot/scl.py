@@ -188,14 +188,7 @@ def register_scl(bot):
 			resp = requests.get(audio_url, stream=True)
 			resp.raise_for_status()
 
-			content_length = int(resp.headers.get('Content-Length', 0))
-			if content_length > 50 * 1024 * 1024:  # Giới hạn 50MB
-				bot.edit_message_text(
-					"🚫 File nhạc quá lớn (>50MB) nên không thể gửi qua Telegram.",
-					chat_id=call.message.chat.id,
-					message_id=call.message.message_id,
-				)
-				return
+			# Không giới hạn kích thước file nữa - đã bỏ check 50MB
 
 			audio = io.BytesIO(resp.content)
 			audio.name = f"{track['title']}.mp3"

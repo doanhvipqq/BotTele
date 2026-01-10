@@ -28,7 +28,7 @@ def register_sourceweb(bot):
                 downloaded = download_website(url, temp_dir, bot, message, msg.message_id)
 
                 if not downloaded:
-                    bot.edit_message_text("🚫 Không thể tải nội dung (lỗi mạng hoặc vượt quá 50MB).", message.chat.id, msg.message_id)
+                    bot.edit_message_text("🚫 Không thể tải nội dung (lỗi mạng).", message.chat.id, msg.message_id)
                     return
 
                 zip_path = os.path.join(temp_dir, zip_filename)
@@ -45,7 +45,7 @@ def register_sourceweb(bot):
         except Exception as e:
             bot.edit_message_text(f"❌ Lỗi: {str(e)}", message.chat.id, msg.message_id)
 
-    def download_website(base_url, output_dir, bot, message, msg_id, max_total_size=50 * 1024 * 1024):
+    def download_website(base_url, output_dir, bot, message, msg_id, max_total_size=None):
         processed = set()
         files = []
         queue = [base_url]
@@ -84,8 +84,9 @@ def register_sourceweb(bot):
 
                 file_size = os.path.getsize(save_path)
                 total_size += file_size
-                if total_size > max_total_size:
-                    break
+                # Không giới hạn kích thước
+                # if max_total_size and total_size > max_total_size:
+                #     break
 
                 files.append(save_path)
 
