@@ -24,7 +24,7 @@ def keep_alive():
 load_dotenv()
 
 # --- TOKEN ---
-TOKEN = "8567340377:AAEJwIDvHNKAw0cs8Mr_DiQMoVIORJRZSqA"
+TOKEN = "8556138415:AAHVZ9pF91VbsCEAXjsIxDOhPeA1EkBoSVY"
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 
 # --- THIẾT LẬP GỢI Ý LỆNH (BOTCOMMAND) ---
